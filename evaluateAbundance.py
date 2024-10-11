@@ -43,7 +43,8 @@ def read_result_file(filepath, standard_labels, software='default'):
 
     Parameters:
     - filepath: Path to the result file.
-    - software: The format of the result file (e.g., 'default', 'kraken2', 'ganon').
+    - standard_labels: Dictionary of standard labels (sequence IDs).
+    - software: The format of the result file (e.g., 'chimera', 'kraken2', 'ganon', 'ganon2', 'taxor').
 
     Returns:
     - predicted_labels: Dictionary with SequenceID as keys and predicted TAXID as values.
@@ -52,10 +53,10 @@ def read_result_file(filepath, standard_labels, software='default'):
     with open(filepath, 'r', encoding='utf-8') as f:
         for line in f:
             line = line.strip()
-            if not line:
+            if not line or line.startswith('#'):
                 continue
             if software == 'chimera':
-                # Handle chimera format
+                # Handle Chimera format
                 parts = line.split('\t')
                 sequence_id = parts[0]
                 if len(parts) >= 2:
@@ -83,24 +84,85 @@ def read_result_file(filepath, standard_labels, software='default'):
                     # If the line doesn't have enough parts, mark as unclassified
                     sequence_id = parts[0]
                     predicted_labels[sequence_id] = 'unclassified'
-            elif software == 'ganon2':
-                # Handle Ganon result format
+            elif software in ['ganon', 'ganon2']:
+                # Handle Ganon and Ganon2 result format
                 # Example Ganon format: [sequence_id] \t [taxid] \t [other fields...]
                 parts = line.split('\t')
+                sequence_id = parts[0]
                 if len(parts) >= 2:
-                    sequence_id = parts[0]
                     taxid = parts[1]
-                    predicted_labels[sequence_id] = taxid
+                    if taxid == '-' or taxid == '':
+                        predicted_labels[sequence_id] = 'unclassified'
+                    else:
+                        predicted_labels[sequence_id] = taxid
+                else:
+                    predicted_labels[sequence_id] = 'unclassified'
+            elif software == 'taxor':
+                # Handle Taxor format
+                # Header: #QUERY_NAME	ACCESSION	REFERENCE_NAME	TAXID	REF_LEN	QUERY_LEN	QHASH_COUNT	QHASH_MATCH	TAX_STR	TAX_ID_STR
+                parts = line.split('\t')
+                sequence_id = parts[0]
+                if len(parts) >= 4:
+                    taxid = parts[3]
+                    if taxid == '-' or taxid == '':
+                        predicted_labels[sequence_id] = 'unclassified'
+                    else:
+                        predicted_labels[sequence_id] = taxid
+                else:
+                    predicted_labels[sequence_id] = 'unclassified'
             else:
                 # Handle unsupported software formats
                 raise ValueError(f"Unsupported software format: {software}")
     return predicted_labels
 
 
+def read_bracken_abundance(filepath, tax, rank):
+    """
+    Reads the Bracken output file and returns a dictionary mapping TAXID to abundance (fraction)
+    at the specified taxonomic rank.
+
+    Parameters:
+    - filepath: Path to the Bracken result file.
+    - tax: NcbiTx instance for taxonomy operations.
+    - rank: Taxonomic rank to consider.
+
+    Returns:
+    - abundances: Dictionary with TAXID as keys and abundances (normalized fractions) as values.
+    """
+    abundances = defaultdict(float)
+    total_fraction = 0.0
+    with open(filepath, 'r', encoding='utf-8') as f:
+        next(f)  # Skip header line
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            parts = line.split('\t')
+            if len(parts) >= 7:
+                name = parts[0]
+                taxid = parts[1]
+                taxonomy_lvl = parts[2]
+                fraction = float(parts[6])  # fraction_total_reads
+                # Map the taxid to the specified rank
+                try:
+                    lineage = tax.lineage(taxid, ranks=[rank])
+                    rank_taxid = lineage[0] if lineage else None
+                    if rank_taxid:
+                        abundances[rank_taxid] += fraction
+                        total_fraction += fraction
+                except KeyError:
+                    continue
+    # Normalize abundances
+    if total_fraction > 0:
+        for taxid in abundances:
+            abundances[taxid] /= total_fraction
+    return abundances
+
+
 def compute_abundance(labels, tax, rank):
     """
     Calculate the abundance of a specified classification level based on the provided labels (standards or predictions).
-    Return a dictionary with taxid as the key and abundance (number of sequences) as the value.
+    Return a dictionary with taxid as the key and abundance (proportion of sequences) as the value.
     """
     abundance = defaultdict(int)
     total_sequences = 0
@@ -124,8 +186,16 @@ def compute_abundance(labels, tax, rank):
 
 
 def compute_l1_distance(abundance1, abundance2):
+    """
+    Compute the L1 distance between two abundance distributions.
 
-    # 获取所有taxid的集合
+    Parameters:
+    - abundance1: Dictionary of abundances (taxid: abundance)
+    - abundance2: Dictionary of abundances (taxid: abundance)
+
+    Returns:
+    - distance: L1 distance between the two distributions
+    """
     all_taxids = set(abundance1.keys()).union(set(abundance2.keys()))
     distance = 0.0
     for taxid in all_taxids:
@@ -135,57 +205,79 @@ def compute_l1_distance(abundance1, abundance2):
     return distance
 
 
-def main():
+def evaluate_abundance(standard_file, result_files, software_list, output_file, dataset, database, tax=None):
+    if tax is None:
+        tax = NcbiTx()
+
+    if len(result_files) != len(software_list):
+        raise ValueError("The number of result files and software formats must match.")
+
+    standard_labels = read_standard_file(standard_file)
+
+    # Compute standard abundances once for all ranks
+    ranks = ['superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species']
+    standard_abundances = {}
+    for rank in ranks:
+        abundance = compute_abundance(standard_labels, tax, rank)
+        standard_abundances[rank] = abundance
+
+    with open(output_file, 'w', newline='', encoding='utf-8') as csvfile:
+        fieldnames = ['Dataset Name', 'Database', 'Taxonomic Rank', 'Software', 'L1 Distance']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+
+        for filepath, software in zip(result_files, software_list):
+            if software == 'bracken':
+                # For Bracken, read abundances directly
+                for rank in ranks:
+                    predicted_abundance = read_bracken_abundance(filepath, tax, rank)
+                    standard_abundance = standard_abundances[rank]
+                    l1_distance = compute_l1_distance(standard_abundance, predicted_abundance)
+                    writer.writerow({
+                        'Dataset Name': dataset,
+                        'Database': database,
+                        'Taxonomic Rank': rank.capitalize(),
+                        'Software': software,
+                        'L1 Distance': f"{l1_distance:.4f}"
+                    })
+            else:
+                predicted_labels = read_result_file(filepath, standard_labels, software=software)
+                for rank in ranks:
+                    predicted_abundance = compute_abundance(predicted_labels, tax, rank)
+                    standard_abundance = standard_abundances[rank]
+                    l1_distance = compute_l1_distance(standard_abundance, predicted_abundance)
+                    writer.writerow({
+                        'Dataset Name': dataset,
+                        'Database': database,
+                        'Taxonomic Rank': rank.capitalize(),
+                        'Software': software,
+                        'L1 Distance': f"{l1_distance:.4f}"
+                    })
+
+    print(f"Abundance analysis results have been saved to {output_file}.")
+
+
+def main(argv=None):
     parser = argparse.ArgumentParser(
         description='Perform abundance analysis and compute L1 distance between standard and software results.')
     parser.add_argument('-s', '--standard', required=True, help='Path to the standard file')
     parser.add_argument('-r', '--results', required=True, nargs='+',
                         help='Paths to the result files from different software')
     parser.add_argument('-w', '--software', required=True, nargs='+',
-                        help='Software formats corresponding to the result files (e.g., default, kraken2, ganon2)')
+                        help='Software formats corresponding to the result files (e.g., kraken2, ganon2, bracken)')
     parser.add_argument('-o', '--output', default='abundance_analysis.csv', help='Output CSV file name')
     parser.add_argument('-d', '--dataset', required=True, help='Name of the dataset')
     parser.add_argument('-db', '--database', required=True, help='Name of the database')
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
-    if len(args.results) != len(args.software):
-        raise ValueError("The number of result files and software formats must match.")
-
-    tax = NcbiTx()
-
-    standard_labels = read_standard_file(args.standard)
-
-    predicted_labels_list = []
-    for filepath, software in zip(args.results, args.software):
-        predicted_labels = read_result_file(filepath, standard_labels, software=software)
-        predicted_labels_list.append(predicted_labels)
-
-    ranks = ['superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species']
-
-    with open(args.output, 'w', newline='', encoding='utf-8') as csvfile:
-        fieldnames = ['Dataset Name', 'Database', 'Taxonomic Rank', 'Software', 'L1 Distance']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader()
-
-        standard_abundances = {}
-        for rank in ranks:
-            abundance = compute_abundance(standard_labels, tax, rank)
-            standard_abundances[rank] = abundance
-
-        for predicted_labels, software in zip(predicted_labels_list, args.software):
-            for rank in ranks:
-                predicted_abundance = compute_abundance(predicted_labels, tax, rank)
-                standard_abundance = standard_abundances[rank]
-                l1_distance = compute_l1_distance(standard_abundance, predicted_abundance)
-                writer.writerow({
-                    'Dataset Name': args.dataset,
-                    'Database': args.database,
-                    'Taxonomic Rank': rank.capitalize(),
-                    'Software': software,
-                    'L1 Distance': f"{l1_distance:.4f}"
-                })
-
-    print(f"Abundance analysis results have been saved to {args.output}.")
+    evaluate_abundance(
+        standard_file=args.standard,
+        result_files=args.results,
+        software_list=args.software,
+        output_file=args.output,
+        dataset=args.dataset,
+        database=args.database
+    )
 
 
 if __name__ == '__main__':

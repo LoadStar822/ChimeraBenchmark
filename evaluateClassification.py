@@ -5,6 +5,7 @@ import argparse
 from multitax import NcbiTx
 import csv
 
+
 def read_standard_file(filepath):
     """
     Reads the standard file and returns a dictionary mapping SequenceID to TAXID.
@@ -34,13 +35,14 @@ def read_standard_file(filepath):
     return standard_labels
 
 
-def read_result_file(filepath, standard_labels, software='default'):
+def read_result_file(filepath, standard_labels, software):
     """
     Reads the result file and returns a dictionary mapping SequenceID to predicted TAXID.
 
     Parameters:
     - filepath: Path to the result file.
-    - software: The format of the result file (e.g., 'default', 'kraken2', 'ganon').
+    - standard_labels: Dictionary of standard labels (sequence IDs).
+    - software: The format of the result file (e.g., 'chimera', 'kraken2', 'ganon', 'taxor').
 
     Returns:
     - predicted_labels: Dictionary with SequenceID as keys and predicted TAXID as values.
@@ -49,10 +51,10 @@ def read_result_file(filepath, standard_labels, software='default'):
     with open(filepath, 'r', encoding='utf-8') as f:
         for line in f:
             line = line.strip()
-            if not line:
+            if not line or line.startswith('#'):
                 continue
             if software == 'chimera':
-                # Handle chimera format
+                # Handle Chimera format
                 parts = line.split('\t')
                 sequence_id = parts[0]
                 if len(parts) >= 2:
@@ -70,8 +72,7 @@ def read_result_file(filepath, standard_labels, software='default'):
                 # Example Kraken2 format: [status] \t [sequence_id] \t [taxonomy]
                 parts = line.split('\t')
                 if len(parts) >= 3:
-                    # Kraken2 typically has a status character in the first column
-                    # e.g., 'C' for classified, 'U' for unclassified
+                    # Kraken2 uses 'C' for classified, 'U' for unclassified
                     status = parts[0]
                     sequence_id = parts[1]
                     taxid = parts[2] if status == 'C' else 'unclassified'
@@ -80,14 +81,35 @@ def read_result_file(filepath, standard_labels, software='default'):
                     # If the line doesn't have enough parts, mark as unclassified
                     sequence_id = parts[0]
                     predicted_labels[sequence_id] = 'unclassified'
-            elif software == 'ganon2':
-                # Handle Ganon result format
+            elif software in ['ganon', 'ganon2']:
+                # Handle Ganon format (same for ganon and ganon2)
                 # Example Ganon format: [sequence_id] \t [taxid] \t [other fields...]
                 parts = line.split('\t')
                 if len(parts) >= 2:
                     sequence_id = parts[0]
                     taxid = parts[1]
-                    predicted_labels[sequence_id] = taxid
+                    if taxid == '-':
+                        predicted_labels[sequence_id] = 'unclassified'
+                    else:
+                        predicted_labels[sequence_id] = taxid
+                else:
+                    # If the line doesn't have enough parts, mark as unclassified
+                    sequence_id = parts[0]
+                    predicted_labels[sequence_id] = 'unclassified'
+            elif software == 'taxor':
+                # Handle Taxor format
+                # Header: #QUERY_NAME	ACCESSION	REFERENCE_NAME	TAXID	REF_LEN	QUERY_LEN	QHASH_COUNT	QHASH_MATCH	TAX_STR	TAX_ID_STR
+                parts = line.split('\t')
+                sequence_id = parts[0]
+                if len(parts) >= 4:
+                    taxid = parts[3]
+                    if taxid == '-' or taxid == '':
+                        predicted_labels[sequence_id] = 'unclassified'
+                    else:
+                        predicted_labels[sequence_id] = taxid
+                else:
+                    # If the line doesn't have enough parts, mark as unclassified
+                    predicted_labels[sequence_id] = 'unclassified'
             else:
                 # Handle unsupported software formats
                 raise ValueError(f"Unsupported software format: {software}")
@@ -149,28 +171,18 @@ def compute_metrics_at_rank(standard_labels, predicted_labels, tax, rank):
     return TP, FP, FN, accuracy, precision, recall, f1
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description='Compare classification results with a standard and calculate evaluation metrics.')
-    parser.add_argument('-s', '--standard', required=True, help='Path to the standard file')
-    parser.add_argument('-r', '--result', required=True, help='Path to the result file')
-    parser.add_argument('-w', '--software', default='default', help='Software format of the result file (e.g., default, kraken2, ganon2)')
-    parser.add_argument('-o', '--output', default='classification_results.csv', help='Output CSV file name')
-    parser.add_argument('-d', '--dataset', required=True, help='Name of the dataset')
-    parser.add_argument('-db', '--database', required=True, help='Name of the database')
-    args = parser.parse_args()
-
-    tax = NcbiTx()
-
+def evaluate_classification(standard_file, result_file, software, output_file, dataset, database, tax=None):
+    if tax is None:
+        tax = NcbiTx()
     # Read standard labels
-    standard_labels = read_standard_file(args.standard)
+    standard_labels = read_standard_file(standard_file)
 
     # Read predicted labels
-    predicted_labels = read_result_file(args.result, standard_labels, software=args.software)
+    predicted_labels = read_result_file(result_file, standard_labels, software=software)
 
     ranks = ['superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species']
 
-    with open(args.output, 'w', newline='', encoding='utf-8') as csvfile:
+    with open(output_file, 'w', newline='', encoding='utf-8') as csvfile:
         fieldnames = ['Dataset Name', 'Database', 'Taxonomic Rank', 'Total Samples', 'True Positives (TP)',
                       'False Positives (FP)', 'False Negatives (FN)', 'Accuracy', 'Precision', 'Recall', 'F1 Score']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -180,8 +192,8 @@ def main():
             TP, FP, FN, accuracy, precision, recall, f1 = compute_metrics_at_rank(standard_labels, predicted_labels,
                                                                                   tax, rank)
             writer.writerow({
-                'Dataset Name': args.dataset,
-                'Database': args.database,
+                'Dataset Name': dataset,
+                'Database': database,
                 'Taxonomic Rank': rank.capitalize(),
                 'Total Samples': len(standard_labels),
                 'True Positives (TP)': TP,
@@ -193,8 +205,28 @@ def main():
                 'F1 Score': f"{f1:.4f}"
             })
 
-    print(f"Evaluation metrics at different taxonomic levels have been saved to {args.output}.")
+    print(f"Evaluation metrics at different taxonomic levels have been saved to {output_file}.")
 
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(
+        description='Compare classification results with a standard and calculate evaluation metrics.')
+    parser.add_argument('-s', '--standard', required=True, help='Path to the standard file')
+    parser.add_argument('-r', '--result', required=True, help='Path to the result file')
+    parser.add_argument('-w', '--software', help='Software format of the result file (e.g., kraken2, ganon2)')
+    parser.add_argument('-o', '--output', default='classification_results.csv', help='Output CSV file name')
+    parser.add_argument('-d', '--dataset', required=True, help='Name of the dataset')
+    parser.add_argument('-db', '--database', required=True, help='Name of the database')
+    args = parser.parse_args(argv)
+
+    evaluate_classification(
+        standard_file=args.standard,
+        result_file=args.result,
+        software=args.software,
+        output_file=args.output,
+        dataset=args.dataset,
+        database=args.database
+    )
 
 if __name__ == '__main__':
     main()

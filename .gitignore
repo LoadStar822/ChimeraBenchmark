@@ -162,3 +162,10 @@ cython_debug/
 #.idea/
 /.idea
 /.vs
+/abundance_analysis.csv
+*.csv
+*.tsv
+*.all
+*.txt
+*.out
+*.bracken
