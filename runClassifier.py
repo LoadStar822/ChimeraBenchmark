@@ -25,28 +25,37 @@ SOFTWARES = {
     'chimera': {
         'name': 'Chimera',
         'conda_env': 'chimera',
-        'command': 'chimera classify -i {seq_path} -d {db_path}DB -t {threads} -s {threshold} -o {output}'
+        'command': 'chimera classify -i {seq_path} -d {db_path}DB -t {threads} {threshold_option} -o {output}',
+        'threshold_format': '-s {threshold}'
     },
     'ganon2': {
         'name': 'Ganon2',
         'conda_env': 'ganon',
-        'command': 'ganon classify -d {db_path} -s {seq_path} -t {threads} -c {threshold} -o {output} --verbose --output-all --output-one'
+        'command': 'ganon classify -d {db_path} -s {seq_path} -t {threads} {threshold_option} -o {output} --verbose --output-all --output-one',
+        'threshold_format': '-c {threshold}'
     },
+
     'ganon': {
         'name': 'Ganon',
         'conda_env': 'ganon',
-        'command': 'ganon classify -d {db_path} -s {seq_path} -t {threads} -c {threshold} -o {output} --verbose --output-all --output-one'
+        'command': 'ganon classify -d {db_path} -s {seq_path} -t {threads} {threshold_option} -o {output} --verbose --output-all --output-one',
+        'threshold_format': '-c {threshold}'
     },
+
     'kraken2': {
         'name': 'Kraken2',
         'conda_env': 'kraken2',
-        'command': 'kraken2 --db {db_path} --threads {threads} --confidence {threshold} --output {output} {extra} {seq_path} --report {report}'
+        'command': 'kraken2 --db {db_path} --threads {threads} {threshold_option} --output {output} {extra} {seq_path} --report {report}',
+        'threshold_format': '--confidence {threshold}'
     },
+
     'taxor': {
         'name': 'Taxor',
         'conda_env': 'taxor',
-        'command': 'taxor search --index-file {db_path}.hixf --query-file {seq_path} --output-file {output} --percentage {threshold} --threads {threads}'
+        'command': 'taxor search --index-file {db_path}.hixf --query-file {seq_path} --output-file {output} {threshold_option} --threads {threads}',
+        'threshold_format': '--percentage {threshold}'
     },
+
     'bracken': {
         'name': 'Bracken',
         'conda_env': 'kraken2',
@@ -87,8 +96,7 @@ def parse_arguments():
     parser.add_argument(
         '-c', '--threshold',
         type=float,
-        default=0.7,
-        help='Classification threshold (0 to 1). Default is 0.7.'
+        help='Classification threshold (0 to 1). If not provided, threshold options will not be used in commands.'
     )
     parser.add_argument(
         '-o', '--output-dir',
@@ -172,7 +180,13 @@ def main():
     threshold = args.threshold
     output_dir = args.output_dir
     results_dir = os.path.join(output_dir, "results")
-    report_file = os.path.join(output_dir, DEFAULT_REPORT_FILE)
+
+    db_name = os.path.basename(db_subpath.rstrip('/'))  # Get the database name from the subpath
+    if args.threshold is not None:
+        report_file_name = f"benchmark_report_{db_name}_threshold_{args.threshold}.csv"
+    else:
+        report_file_name = f"benchmark_report_{db_name}.csv"
+    report_file = os.path.join(output_dir, report_file_name)
 
     # Convert sequence files to absolute paths
     seq_files = [os.path.abspath(f) for f in seq_files]
@@ -188,7 +202,6 @@ def main():
 
     print("Starting initialize NcbiDatabase...")
     tax = NcbiTx()
-
 
     # Prepare output directories
     os.makedirs(results_dir, exist_ok=True)
@@ -248,12 +261,17 @@ def main():
                 else:
                     report_file_kraken = ""
 
+                if args.threshold is not None and 'threshold_format' in software:
+                    threshold_option = software['threshold_format'].format(threshold=args.threshold)
+                else:
+                    threshold_option = ''
+
                 # Build actual command
                 cmd = cmd_template.format(
                     db_path=db_path,
                     seq_path=seq_file,
                     threads=threads,
-                    threshold=threshold,
+                    threshold_option=threshold_option,
                     output=output_file,
                     extra=extra,
                     report=report_file_kraken,
@@ -419,6 +437,7 @@ def main():
                 )
 
         print("Evaluation completed.")
+
 
 if __name__ == "__main__":
     main()
