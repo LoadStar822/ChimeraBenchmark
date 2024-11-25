@@ -162,28 +162,28 @@ This section provides instructions for constructing databases using **Ganon** an
 
 ### 1. Database Construction Commands
 
-#### **CompleteONE Database**
-Constructed using RefSeq data with selected organism groups:
-```bash
-/usr/bin/time -v ganon build --source refseq --organism-group archaea bacteria fungi viral --threads 32 --complete-genomes --genome-updater "-A 'species:1'" --db-prefix completeONE -v ibf
-```
-
 #### **Archaea Database**
 Constructed using RefSeq data, limited to archaea:
 ```bash
 /usr/bin/time -v ganon build --source refseq --organism-group archaea --threads 32 --complete-genomes --db-prefix Archaea -v ibf
 ```
 
-#### **RefSeq Database**
-Comprehensive database using RefSeq with all organism groups:
+#### **CompleteONE Database**
+Constructed using RefSeq data with selected organism groups:
 ```bash
-/usr/bin/time -v ganon build --source refseq --threads 32 --db-prefix refseq --organism-group archaea bacteria fungi human invertebrate metagenomes other plant protozoa vertebrate_mammalian vertebrate_other viral -v ibf
+/usr/bin/time -v ganon build --source refseq --organism-group archaea bacteria fungi viral --threads 32 --complete-genomes --genome-updater "-A 'species:1'" --db-prefix completeONE -v ibf
 ```
 
 #### **Complete Database**
 Constructed using RefSeq data for complete genomes of selected organism groups:
 ```bash
 /usr/bin/time -v ganon build --source refseq --organism-group archaea bacteria fungi viral --threads 32 --complete-genomes --db-prefix complete -v ibf
+```
+
+#### **RefSeq Database**
+Comprehensive database using RefSeq with all organism groups:
+```bash
+/usr/bin/time -v ganon build --source refseq --threads 32 --db-prefix refseq --organism-group archaea bacteria fungi human invertebrate metagenomes other plant protozoa vertebrate_mammalian vertebrate_other viral -v ibf
 ```
 
 ---
