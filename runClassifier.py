@@ -13,7 +13,7 @@ import evaluateAbundance
 
 # Configuration: Base database paths for each software
 BASE_DB_PATHS = {
-    'chimera': '/mnt/sdb/mnt_sda/tianqinzhong/project/chimera',
+    'chimera': '/mnt/sda/tianqinzhong/project/chimera',
     'ganon2': '/mnt/sdb/mnt_sda/tianqinzhong/project/ganon2',
     'ganon': '/mnt/sdb/mnt_sda/tianqinzhong/project/ganon',
     'kraken2': '/mnt/sdb/mnt_sda/tianqinzhong/project/kraken2',
@@ -25,7 +25,7 @@ SOFTWARES = {
     'chimera': {
         'name': 'Chimera',
         'conda_env': 'chimera',
-        'command': 'chimera classify -i {seq_path} -d {db_path}DB -t {threads} {threshold_option} -o {output}',
+        'command': 'chimera classify -i {seq_path} -d {db_path}DB.imcf -t {threads} {threshold_option} -o {output}',
         'threshold_format': '-s {threshold}'
     },
     'ganon2': {
@@ -109,6 +109,9 @@ def parse_arguments():
         nargs='+',
         help='Path(s) to the standard result file(s), corresponding to the sequence files.'
     )
+
+
+
     return parser.parse_args()
 
 
@@ -172,6 +175,16 @@ def parse_time_log(logfile):
 
 def main():
     args = parse_arguments()
+
+    for seq_file in args.seq_files:
+        if not os.path.isfile(seq_file):
+            raise FileNotFoundError(f"Sequence file does not exist: {seq_file}")
+
+    # Check if standard files exist (if provided)
+    if args.standard_files:
+        for std_file in args.standard_files:
+            if not os.path.isfile(std_file):
+                raise FileNotFoundError(f"Standard file does not exist: {std_file}")
 
     selected_softwares = [SOFTWARES[sw] for sw in args.software]
     db_subpath = args.db_subpath

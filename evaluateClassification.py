@@ -21,7 +21,7 @@ def read_standard_file(filepath):
         lines = f.readlines()
 
     # Skip header lines that start with '@'
-    data_lines = [line for line in lines if not line.startswith('@')]
+    data_lines = [line for line in lines if not line.startswith('@') and not line.startswith('#')]
 
     for line in data_lines:
         line = line.strip()
