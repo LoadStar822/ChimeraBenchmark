@@ -203,7 +203,7 @@ To use **Ganon2**, simply remove the `-v ibf` parameter from the above commands.
 - `--organism-group`: Defines the organism groups to include in the database.
 - `--threads 32`: Uses 32 threads for parallel processing.
 - `--complete-genomes`: Limits the database to complete genomes (optional, based on the experiment).
-- `--genome-updater "-A 'species:1'"`: Filters entries to include only species-level classifications.
+- `--genome-updater "-A 'species:1'"`: Restricts entries to include only one sequence file per species.
 - `--db-prefix`: Sets the prefix for the output database files.
 - `-v ibf`: Constructs interleaved Bloom filters (used only in Ganon).
 

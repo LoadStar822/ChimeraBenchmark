@@ -131,31 +131,39 @@ def read_bracken_abundance(filepath, tax, rank):
     """
     abundances = defaultdict(float)
     total_fraction = 0.0
-    with open(filepath, 'r', encoding='utf-8') as f:
-        next(f)  # Skip header line
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            parts = line.split('\t')
-            if len(parts) >= 7:
-                name = parts[0]
-                taxid = parts[1]
-                taxonomy_lvl = parts[2]
-                fraction = float(parts[6])  # fraction_total_reads
-                # Map the taxid to the specified rank
-                try:
-                    lineage = tax.lineage(taxid, ranks=[rank])
-                    rank_taxid = lineage[0] if lineage else None
-                    if rank_taxid:
-                        abundances[rank_taxid] += fraction
-                        total_fraction += fraction
-                except KeyError:
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            try:
+                next(f)  # Skip header line
+            except StopIteration:
+                # The file is empty; return empty abundances
+                return abundances
+            for line in f:
+                line = line.strip()
+                if not line:
                     continue
-    # Normalize abundances
-    if total_fraction > 0:
-        for taxid in abundances:
-            abundances[taxid] /= total_fraction
+                parts = line.split('\t')
+                if len(parts) >= 7:
+                    name = parts[0]
+                    taxid = parts[1]
+                    taxonomy_lvl = parts[2]
+                    fraction = float(parts[6])  # fraction_total_reads
+                    # Map the taxid to the specified rank
+                    try:
+                        lineage = tax.lineage(taxid, ranks=[rank])
+                        rank_taxid = lineage[0] if lineage else None
+                        if rank_taxid:
+                            abundances[rank_taxid] += fraction
+                            total_fraction += fraction
+                    except KeyError:
+                        continue
+        # Normalize abundances
+        if total_fraction > 0:
+            for taxid in abundances:
+                abundances[taxid] /= total_fraction
+    except FileNotFoundError:
+        # The file does not exist; return empty abundances
+        return abundances
     return abundances
 
 
