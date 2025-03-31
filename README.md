@@ -2,7 +2,7 @@
 
 ### 1. Project Overview
 
-**ChimeraBenchmark** is a dedicated benchmarking project developed to support and evaluate the performance of **Chimera**, a high-speed metagenomic classification tool created by Qinzhong Tian. This project is designed to streamline the process of running experiments, analyzing results, and visualizing data, making it easier for researchers to understand the capabilities and efficiency of Chimera in comparison to other metagenomic tools.
+**ChimeraBenchmark** is a dedicated benchmarking project developed to support and evaluate the performance of **[Chimera](https://github.com/LoadStar822/Chimera)**, a high-speed metagenomic classification tool created by Qinzhong Tian. This project is designed to streamline the process of running experiments, analyzing results, and visualizing data, making it easier for researchers to understand the capabilities and efficiency of Chimera in comparison to other metagenomic tools.
 
 **Key Features**:
 - **Automated Software Pipeline**: ChimeraBenchmark can automatically run a series of popular metagenomic classification tools, including **Kraken2**, **Ganon**, **Ganon2**, **Taxor**, **Bracken**, and **Chimera**, given the necessary databases and test files. This automation simplifies the benchmarking process, enabling efficient and consistent testing across various tools.
