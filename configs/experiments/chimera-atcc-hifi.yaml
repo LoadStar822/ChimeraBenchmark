@@ -1,0 +1,6 @@
+name: chimera-atcc-hifi
+tool: chimera
+dataset: atcc-hifi
+db: /mnt/sda/tianqinzhong/code/Chimera/bench/DB/active.imcf
+threads: 192
+tool_args: []

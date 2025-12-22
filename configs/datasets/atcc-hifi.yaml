@@ -1,0 +1,6 @@
+name: atcc-hifi
+group: atcc
+platform: pacbio-hifi
+reads:
+  - /mnt/sda/CommonData/TaxonomyDataset/mock/PacBioHifi-ATCC-MSA-1003.fastq
+truth: /mnt/sda/tianqinzhong/code/Chimera/bench/mock_ground_truth.md

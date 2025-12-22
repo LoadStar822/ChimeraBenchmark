@@ -1,0 +1,6 @@
+name: chimera-zymo-gridion-even
+tool: chimera
+dataset: zymo-gridion-even
+db: /mnt/sda/tianqinzhong/code/Chimera/bench/DB/active.imcf
+threads: 192
+tool_args: []

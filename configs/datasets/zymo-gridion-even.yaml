@@ -1,0 +1,7 @@
+name: zymo-gridion-even
+group: zymo
+platform: nanopore
+type: even
+reads:
+  - /mnt/sda/CommonData/TaxonomyDataset/mock/Zymo-GridION-EVEN-BB-SN.fq
+truth: /mnt/sda/tianqinzhong/code/Chimera/bench/mock_ground_truth.md

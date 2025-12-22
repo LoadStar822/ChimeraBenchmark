@@ -1,0 +1,7 @@
+name: zymo-promethion-log
+group: zymo
+platform: nanopore
+type: log
+reads:
+  - /mnt/sda/CommonData/TaxonomyDataset/mock/Zymo-PromethION-LOG-BB-SN.fq
+truth: /mnt/sda/tianqinzhong/code/Chimera/bench/mock_ground_truth.md

@@ -1,0 +1,6 @@
+name: chimera-zymo-gridion-log
+tool: chimera
+dataset: zymo-gridion-log
+db: /mnt/sda/tianqinzhong/code/Chimera/bench/DB/active.imcf
+threads: 192
+tool_args: []

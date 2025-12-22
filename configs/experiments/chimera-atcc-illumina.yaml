@@ -1,0 +1,6 @@
+name: chimera-atcc-illumina
+tool: chimera
+dataset: atcc-illumina
+db: /mnt/sda/tianqinzhong/code/Chimera/bench/DB/active.imcf
+threads: 192
+tool_args: []

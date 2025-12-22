@@ -1,0 +1,6 @@
+name: chimera-cami2-marine-long
+tool: chimera
+dataset: cami2-marine-long
+db: /mnt/sda/tianqinzhong/code/Chimera/bench/DB/active.imcf
+threads: 192
+tool_args: []
