@@ -1,0 +1,6 @@
+name: example
+tool: chimera
+dataset: example
+db: /path/to/ChimeraDB
+threads: 192
+tool_args: []

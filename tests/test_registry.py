@@ -15,3 +15,11 @@ def test_registry_duplicate_raises():
         assert False, "expected ValueError"
     except ValueError:
         pass
+
+from chimera_bench.registry import TOOLS
+from chimera_bench.tools.chimera import ChimeraTool
+
+
+def test_registry_has_chimera():
+    tool = TOOLS.get("chimera")
+    assert isinstance(tool, ChimeraTool)
