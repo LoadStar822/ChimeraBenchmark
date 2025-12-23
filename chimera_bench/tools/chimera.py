@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Tuple
 
 class ChimeraTool:
     name = "chimera"
+    output_basename = "ChimeraClassify"
 
     def __init__(self, config: Dict[str, Any] | None = None) -> None:
         self.config = config or {}

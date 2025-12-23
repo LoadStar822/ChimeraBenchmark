@@ -18,8 +18,14 @@ def test_registry_duplicate_raises():
 
 from chimera_bench.registry import TOOLS
 from chimera_bench.tools.chimera import ChimeraTool
+from chimera_bench.tools.ganon import GanonTool
 
 
 def test_registry_has_chimera():
     tool = TOOLS.get("chimera")
-    assert isinstance(tool, ChimeraTool)
+    assert tool is ChimeraTool
+
+
+def test_registry_has_ganon():
+    tool = TOOLS.get("ganon")
+    assert tool is GanonTool

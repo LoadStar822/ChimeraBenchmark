@@ -8,7 +8,7 @@ import subprocess
 from .config import load_yaml_dir
 from .core.runner import Runner
 from .core.reporter import write_summary
-from .tools.chimera import ChimeraTool
+from .registry import TOOLS
 
 
 def _executor(cmd, cwd, stdout_path, stderr_path):
@@ -42,9 +42,17 @@ def run_cmd(args) -> None:
     exps = load_yaml_dir(cfg_root / "experiments")
     exp = dict(exps[args.exp])
     exp["name"] = exp.get("name", args.exp)
+    tool_name = exp.get("tool", "chimera")
+    tool_cls = TOOLS.get(tool_name)
+    tool_config = dict(exp.get("tool_config", {}))
+    if tool_name == "chimera":
+        tool_config.setdefault("bin", args.chimera_bin)
+    if tool_name == "ganon":
+        tool_config.setdefault("bin", args.ganon_bin)
+        tool_config.setdefault("env", args.ganon_env)
 
     runner = Runner(Path(args.runs))
-    tool = ChimeraTool({"bin": args.chimera_bin})
+    tool = tool_cls(tool_config)
 
     if args.dry_run:
         Path(args.runs).mkdir(parents=True, exist_ok=True)
@@ -88,6 +96,8 @@ def main() -> None:
     run_p.add_argument("--config", default="configs")
     run_p.add_argument("--runs", default="runs")
     run_p.add_argument("--chimera-bin", default="Chimera")
+    run_p.add_argument("--ganon-bin", default="ganon")
+    run_p.add_argument("--ganon-env", default="ganon")
     run_p.add_argument("--dry-run", action="store_true")
     run_p.add_argument("--dataset", action="append", default=[])
     run_p.set_defaults(func=run_cmd)
