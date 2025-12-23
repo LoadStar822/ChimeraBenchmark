@@ -11,6 +11,8 @@ from .core.build_runner import BuildRunner
 from .core.reporter import write_summary
 from .registry import TOOLS
 
+DEFAULT_THREADS = 64
+
 
 def _executor(cmd, cwd, stdout_path, stderr_path, resource_path):
     timed_cmd = cmd
@@ -47,6 +49,7 @@ def run_cmd(args) -> None:
     exps = load_yaml_dir(cfg_root / "experiments")
     exp = dict(exps[args.exp])
     exp["name"] = exp.get("name", args.exp)
+    exp["threads"] = DEFAULT_THREADS
     tool_name = exp.get("tool", "chimera")
     tool_cls = TOOLS.get(tool_name)
     tool_config = dict(exp.get("tool_config", {}))
@@ -102,6 +105,7 @@ def build_cmd(args) -> None:
     builds = load_yaml_dir(cfg_root / "build")
     build = dict(builds[args.build])
     build["name"] = build.get("name", args.build)
+    build["threads"] = DEFAULT_THREADS
     tool_name = build.get("tool", "ganon")
     tool_cls = TOOLS.get(tool_name)
     tool_config = dict(build.get("tool_config", {}))
