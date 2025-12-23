@@ -1,0 +1,15 @@
+name: ganon-local
+tool: ganon
+db_prefix: DB/ganon/local
+threads: 192
+tool_config:
+  env: ganon
+  bin: ganon
+build:
+  mode: custom
+  input: []
+  input_file: ""
+  input_target: sequence
+  level: species
+  taxonomy_files: []
+  args: []

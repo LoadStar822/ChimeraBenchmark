@@ -4,30 +4,23 @@ import json
 import time
 from pathlib import Path
 
-from .evaluator import summarize_classify_tsv
 from .resources import aggregate_resources, parse_time_log
 from ..io.layout import ensure_run_dirs, make_run_id
 
 
-class Runner:
+class BuildRunner:
     def __init__(self, runs_root: Path) -> None:
         self.runs_root = runs_root
 
-    def run(self, *, exp: dict, dataset: dict, tool, executor) -> dict:
-        exp_name = exp.get("name", "exp")
-        dataset_name = dataset.get("name", "dataset")
-        run_id = make_run_id(exp_name, tool.name, dataset_name)
-        run_dir = ensure_run_dirs(self.runs_root, exp_name, tool.name, dataset_name, run_id)
-        basename = getattr(tool, "output_basename", tool.name)
-        out_prefix = str(run_dir / "outputs" / basename)
+    def run(self, *, build: dict, tool, executor) -> dict:
+        build_name = build.get("name", "build")
+        run_id = make_run_id(build_name, tool.name, "build")
+        run_dir = ensure_run_dirs(self.runs_root, build_name, tool.name, "build", run_id)
 
-        steps = None
-        build_steps = getattr(tool, "build_steps", None)
-        if callable(build_steps):
-            steps = build_steps(dataset=dataset, exp=exp, out_prefix=out_prefix)
-        if steps is None:
-            cmd, outputs = tool.build_cmd(dataset=dataset, exp=exp, out_prefix=out_prefix)
-            steps = [{"name": "run", "cmd": cmd, "outputs": outputs}]
+        build_steps = getattr(tool, "build_db_steps", None)
+        if not callable(build_steps):
+            raise ValueError(f"tool {tool.name} does not support build")
+        steps = build_steps(build=build, out_dir=str(run_dir))
 
         outputs_all = {}
         step_records = []
@@ -65,8 +58,7 @@ class Runner:
 
         total_elapsed = time.time() - total_start
         meta = {
-            "exp": exp_name,
-            "dataset": dataset_name,
+            "build": build_name,
             "tool": tool.name,
             "steps": step_records,
             "return_code": step_records[-1]["return_code"] if step_records else None,
@@ -76,12 +68,4 @@ class Runner:
         }
         (run_dir / "meta.json").write_text(json.dumps(meta, indent=2))
 
-        metrics = {}
-        classify_path_str = outputs_all.get("classify_tsv")
-        if classify_path_str:
-            classify_path = Path(classify_path_str)
-            if classify_path.exists():
-                metrics = summarize_classify_tsv(classify_path)
-        (run_dir / "metrics.json").write_text(json.dumps(metrics, indent=2))
-
-        return {"run_dir": str(run_dir), "metrics": metrics, "meta": meta}
+        return {"run_dir": str(run_dir), "meta": meta}

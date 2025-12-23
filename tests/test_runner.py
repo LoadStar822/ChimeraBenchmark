@@ -16,9 +16,10 @@ def test_runner_creates_run_dir_and_meta(tmp_path: Path):
     dataset = {"reads": ["/r1.fq"]}
     exp = {"name": "exp1", "db": "/db", "threads": 1}
 
-    def exec_stub(cmd, cwd, stdout_path, stderr_path):
+    def exec_stub(cmd, cwd, stdout_path, stderr_path, resource_path):
         Path(stdout_path).write_text("ok")
         Path(stderr_path).write_text("")
+        Path(resource_path).write_text("User time (seconds): 0.10\nSystem time (seconds): 0.05\n")
         out_tsv = Path(cwd) / "outputs" / "ChimeraClassify.tsv"
         out_tsv.write_text("r1\t123:1\n")
         return 0
@@ -48,10 +49,11 @@ def test_runner_supports_build_steps(tmp_path: Path):
                 },
             ]
 
-    def exec_stub(cmd, cwd, stdout_path, stderr_path):
+    def exec_stub(cmd, cwd, stdout_path, stderr_path, resource_path):
         calls.append((cmd, stdout_path, stderr_path))
         Path(stdout_path).write_text("ok")
         Path(stderr_path).write_text("")
+        Path(resource_path).write_text("")
         return 0
 
     result = runner.run(exp=exp, dataset=dataset, tool=StepTool(), executor=exec_stub)

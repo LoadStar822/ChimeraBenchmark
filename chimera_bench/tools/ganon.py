@@ -89,3 +89,79 @@ class GanonTool:
                 "outputs": {"report_abundance_tre": f"{abundance_prefix}.tre"},
             },
         ]
+
+    def build_db_steps(self, *, build: Dict[str, Any], out_dir: str):
+        db_prefix = build.get("db_prefix") or build.get("db")
+        if not db_prefix:
+            raise ValueError("ganon build requires db_prefix")
+        threads = str(build.get("threads", 192))
+        build_cfg = build.get("build", {})
+        mode = build_cfg.get("mode", "custom")
+        extra_args = list(build_cfg.get("args", []))
+
+        if mode == "custom":
+            cmd = self._base_cmd() + [
+                "build-custom",
+                "--db-prefix",
+                db_prefix,
+                "--threads",
+                threads,
+            ]
+            inputs = build_cfg.get("input") or build_cfg.get("inputs")
+            input_file = build_cfg.get("input_file")
+            if inputs and input_file:
+                raise ValueError("ganon build-custom expects input or input_file, not both")
+            if inputs:
+                if isinstance(inputs, str):
+                    inputs = [inputs]
+                cmd += ["--input", *inputs]
+            elif input_file:
+                cmd += ["--input-file", input_file]
+            else:
+                raise ValueError("ganon build-custom requires input or input_file")
+            input_target = build_cfg.get("input_target")
+            if input_target:
+                cmd += ["--input-target", input_target]
+            level = build_cfg.get("level")
+            if level:
+                cmd += ["--level", level]
+            taxonomy_files = build_cfg.get("taxonomy_files")
+            if taxonomy_files:
+                if isinstance(taxonomy_files, str):
+                    taxonomy_files = [taxonomy_files]
+                cmd += ["--taxonomy-files", *taxonomy_files]
+            cmd += extra_args
+        elif mode == "build":
+            cmd = self._base_cmd() + [
+                "build",
+                "--db-prefix",
+                db_prefix,
+                "--threads",
+                threads,
+            ]
+            source = build_cfg.get("source")
+            if source:
+                cmd += ["--source", source]
+            if build_cfg.get("complete_genomes"):
+                cmd += ["--complete-genomes"]
+            organism_group = build_cfg.get("organism_group")
+            if organism_group:
+                cmd += ["--organism-group", organism_group]
+            taxid = build_cfg.get("taxid")
+            if taxid:
+                cmd += ["--taxid", str(taxid)]
+            taxonomy = build_cfg.get("taxonomy")
+            if taxonomy:
+                cmd += ["--taxonomy", taxonomy]
+            cmd += extra_args
+        else:
+            raise ValueError(f"ganon build mode not supported: {mode}")
+
+        outputs = {"db_prefix": db_prefix}
+        return [
+            {
+                "name": "build_db",
+                "cmd": cmd,
+                "outputs": outputs,
+            }
+        ]

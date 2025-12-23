@@ -7,13 +7,17 @@ import subprocess
 
 from .config import load_yaml_dir
 from .core.runner import Runner
+from .core.build_runner import BuildRunner
 from .core.reporter import write_summary
 from .registry import TOOLS
 
 
-def _executor(cmd, cwd, stdout_path, stderr_path):
+def _executor(cmd, cwd, stdout_path, stderr_path, resource_path):
+    timed_cmd = cmd
+    if resource_path:
+        timed_cmd = ["/usr/bin/time", "-v", "-o", str(resource_path)] + cmd
     with open(stdout_path, "w") as out, open(stderr_path, "w") as err:
-        proc = subprocess.run(cmd, cwd=cwd, stdout=out, stderr=err)
+        proc = subprocess.run(timed_cmd, cwd=cwd, stdout=out, stderr=err)
     return proc.returncode
 
 
@@ -70,6 +74,11 @@ def report_cmd(args) -> None:
         meta = json.loads(meta_path.read_text())
         metrics_path = meta_path.parent / "metrics.json"
         metrics = json.loads(metrics_path.read_text()) if metrics_path.exists() else {}
+        resource = meta.get("resource", {})
+        if meta.get("elapsed_seconds") is not None:
+            metrics["run_elapsed_seconds"] = meta.get("elapsed_seconds")
+        for key, value in resource.items():
+            metrics[f"resource_{key}"] = value
         run_records.append(
             {
                 "exp": meta.get("exp"),
@@ -85,6 +94,28 @@ def report_cmd(args) -> None:
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     write_summary(run_records, out)
+
+
+def build_cmd(args) -> None:
+    cfg_root = Path(args.config)
+    builds = load_yaml_dir(cfg_root / "build")
+    build = dict(builds[args.build])
+    build["name"] = build.get("name", args.build)
+    tool_name = build.get("tool", "ganon")
+    tool_cls = TOOLS.get(tool_name)
+    tool_config = dict(build.get("tool_config", {}))
+    if tool_name == "ganon":
+        tool_config.setdefault("bin", args.ganon_bin)
+        tool_config.setdefault("env", args.ganon_env)
+
+    runner = BuildRunner(Path(args.runs))
+    tool = tool_cls(tool_config)
+
+    if args.dry_run:
+        Path(args.runs).mkdir(parents=True, exist_ok=True)
+        return
+
+    runner.run(build=build, tool=tool, executor=_executor)
 
 
 def main() -> None:
@@ -108,6 +139,15 @@ def main() -> None:
     report_p.add_argument("--out", default="reports/summary.tsv")
     report_p.add_argument("--dataset", action="append", default=[])
     report_p.set_defaults(func=report_cmd)
+
+    build_p = sub.add_parser("build")
+    build_p.add_argument("--build", required=True)
+    build_p.add_argument("--config", default="configs")
+    build_p.add_argument("--runs", default="builds")
+    build_p.add_argument("--ganon-bin", default="ganon")
+    build_p.add_argument("--ganon-env", default="ganon")
+    build_p.add_argument("--dry-run", action="store_true")
+    build_p.set_defaults(func=build_cmd)
 
     args = p.parse_args()
     args.func(args)

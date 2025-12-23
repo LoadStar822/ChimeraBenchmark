@@ -30,3 +30,41 @@ def test_ganon_build_steps_single_reads():
 
     assert steps[1]["outputs"]["report_reads_tre"].endswith("_reads.tre")
     assert steps[2]["outputs"]["report_abundance_tre"].endswith("_abundance.tre")
+
+
+def test_ganon_build_db_custom():
+    tool = GanonTool({"env": "ganon", "bin": "ganon"})
+    steps = tool.build_db_steps(
+        build={
+            "db_prefix": "/db/prefix",
+            "threads": 4,
+            "build": {
+                "mode": "custom",
+                "input": ["/ref1.fa", "/ref2.fa"],
+                "input_target": "sequence",
+                "level": "species",
+                "taxonomy_files": ["/tax/nodes.dmp", "/tax/names.dmp"],
+                "args": ["--min-length", "100"],
+            },
+        },
+        out_dir="/tmp/out",
+    )
+    cmd = steps[0]["cmd"]
+    assert cmd[:6] == ["conda", "run", "-n", "ganon", "ganon", "build-custom"]
+    assert "--db-prefix" in cmd
+    assert "/db/prefix" in cmd
+    assert "--threads" in cmd
+    assert "4" in cmd
+    assert "--input" in cmd
+    assert "/ref1.fa" in cmd
+    assert "/ref2.fa" in cmd
+    assert "--input-target" in cmd
+    assert "sequence" in cmd
+    assert "--level" in cmd
+    assert "species" in cmd
+    assert "--taxonomy-files" in cmd
+    assert "/tax/nodes.dmp" in cmd
+    assert "/tax/names.dmp" in cmd
+    assert "--min-length" in cmd
+    assert "100" in cmd
+    assert steps[0]["outputs"]["db_prefix"] == "/db/prefix"
