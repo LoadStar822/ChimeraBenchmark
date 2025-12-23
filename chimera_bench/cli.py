@@ -15,6 +15,7 @@ from .registry import TOOLS
 def _executor(cmd, cwd, stdout_path, stderr_path, resource_path):
     timed_cmd = cmd
     if resource_path:
+        resource_path = Path(resource_path).resolve()
         timed_cmd = ["/usr/bin/time", "-v", "-o", str(resource_path)] + cmd
     with open(stdout_path, "w") as out, open(stderr_path, "w") as err:
         proc = subprocess.run(timed_cmd, cwd=cwd, stdout=out, stderr=err)

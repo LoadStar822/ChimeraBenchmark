@@ -1,0 +1,20 @@
+name: ganon-cami-refseq
+tool: ganon
+db_prefix: DB/ganon/cami_refseq
+threads: 192
+tool_config:
+  env: ganon
+  bin: ganon
+build:
+  mode: custom
+  input:
+    - /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/RefSeq_genomic_20190108
+  input_target: file
+  taxonomy_files:
+    - /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/ncbi_taxonomy/nodes.dmp
+    - /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/ncbi_taxonomy/names.dmp
+    - /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/ncbi_taxonomy/merged.dmp
+    - /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/ncbi_taxonomy/delnodes.dmp
+  args:
+    - --ncbi-file-info
+    - /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/assembly_summary_refseq.txt
