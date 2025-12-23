@@ -17,14 +17,31 @@ def _executor(cmd, cwd, stdout_path, stderr_path):
     return proc.returncode
 
 
+def _resolve_datasets(exp: dict, datasets: dict, selected: list[str]) -> list[dict]:
+    exp_datasets = exp.get("datasets")
+    if exp_datasets is None:
+        exp_dataset = exp.get("dataset")
+        if not exp_dataset:
+            raise ValueError("experiment must define dataset or datasets")
+        exp_datasets = [exp_dataset]
+    if selected:
+        exp_datasets = [name for name in exp_datasets if name in set(selected)]
+    resolved = []
+    for name in exp_datasets:
+        if name not in datasets:
+            raise KeyError(f"dataset not found: {name}")
+        data = dict(datasets[name])
+        data["name"] = data.get("name", name)
+        resolved.append(data)
+    return resolved
+
+
 def run_cmd(args) -> None:
     cfg_root = Path(args.config)
     datasets = load_yaml_dir(cfg_root / "datasets")
     exps = load_yaml_dir(cfg_root / "experiments")
-    exp = exps[args.exp]
-    dataset = datasets[exp["dataset"]]
+    exp = dict(exps[args.exp])
     exp["name"] = exp.get("name", args.exp)
-    dataset["name"] = dataset.get("name", exp["dataset"])
 
     runner = Runner(Path(args.runs))
     tool = ChimeraTool({"bin": args.chimera_bin})
@@ -33,7 +50,9 @@ def run_cmd(args) -> None:
         Path(args.runs).mkdir(parents=True, exist_ok=True)
         return
 
-    runner.run(exp=exp, dataset=dataset, tool=tool, executor=_executor)
+    selected = args.dataset or []
+    for dataset in _resolve_datasets(exp, datasets, selected):
+        runner.run(exp=exp, dataset=dataset, tool=tool, executor=_executor)
 
 
 def report_cmd(args) -> None:
@@ -52,6 +71,9 @@ def report_cmd(args) -> None:
                 "metrics": metrics,
             }
         )
+    if args.dataset:
+        allowed = set(args.dataset)
+        run_records = [r for r in run_records if r.get("dataset") in allowed]
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     write_summary(run_records, out)
@@ -67,12 +89,14 @@ def main() -> None:
     run_p.add_argument("--runs", default="runs")
     run_p.add_argument("--chimera-bin", default="Chimera")
     run_p.add_argument("--dry-run", action="store_true")
+    run_p.add_argument("--dataset", action="append", default=[])
     run_p.set_defaults(func=run_cmd)
 
     report_p = sub.add_parser("report")
     report_p.add_argument("--exp", required=True)
     report_p.add_argument("--runs", default="runs")
     report_p.add_argument("--out", default="reports/summary.tsv")
+    report_p.add_argument("--dataset", action="append", default=[])
     report_p.set_defaults(func=report_cmd)
 
     args = p.parse_args()

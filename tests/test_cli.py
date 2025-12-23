@@ -8,7 +8,9 @@ def test_cli_run_dry(tmp_path, monkeypatch):
     (cfg / "datasets").mkdir(parents=True)
     (cfg / "experiments").mkdir(parents=True)
     (cfg / "datasets" / "d.yaml").write_text("name: d\nreads: [/r.fq]\n")
-    (cfg / "experiments" / "e.yaml").write_text("name: e\ntool: chimera\ndataset: d\ndb: /db\n")
+    (cfg / "experiments" / "e.yaml").write_text(
+        "name: e\ntool: chimera\ndatasets: [d]\ndb: /db\n"
+    )
 
     out_root = tmp_path / "runs"
     argv = [

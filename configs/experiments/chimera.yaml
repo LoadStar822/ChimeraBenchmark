@@ -1,0 +1,14 @@
+name: chimera
+tool: chimera
+db: /mnt/sda/tianqinzhong/code/Chimera/bench/DB/active.imcf
+threads: 192
+tool_args: []
+datasets:
+  - atcc-hifi
+  - atcc-illumina
+  - zymo-gridion-log
+  - zymo-gridion-even
+  - zymo-promethion-log
+  - zymo-promethion-even
+  - cami2-marine-long
+  - cami2-marine-short

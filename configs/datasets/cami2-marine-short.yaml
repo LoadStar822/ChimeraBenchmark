@@ -1,0 +1,15 @@
+name: cami2-marine-short
+group: cami2-marine
+platform: short-read-contigs
+reads:
+  - /mnt/sda/tianqinzhong/project/chimeraBench/dataset/CAMIMARINE_SHORT/output_dir/marmgCAMI2_sample_0_contigs_simulation_short_read_2018.08.15_09.49.32_sample_0_contigs_anonymous_gsa.fasta
+  - /mnt/sda/tianqinzhong/project/chimeraBench/dataset/CAMIMARINE_SHORT/output_dir/marmgCAMI2_sample_1_contigs_simulation_short_read_2018.08.15_09.49.32_sample_1_contigs_anonymous_gsa.fasta
+  - /mnt/sda/tianqinzhong/project/chimeraBench/dataset/CAMIMARINE_SHORT/output_dir/marmgCAMI2_sample_2_contigs_simulation_short_read_2018.08.15_09.49.32_sample_2_contigs_anonymous_gsa.fasta
+  - /mnt/sda/tianqinzhong/project/chimeraBench/dataset/CAMIMARINE_SHORT/output_dir/marmgCAMI2_sample_3_contigs_simulation_short_read_2018.08.15_09.49.32_sample_3_contigs_anonymous_gsa.fasta
+  - /mnt/sda/tianqinzhong/project/chimeraBench/dataset/CAMIMARINE_SHORT/output_dir/marmgCAMI2_sample_4_contigs_simulation_short_read_2018.08.15_09.49.32_sample_4_contigs_anonymous_gsa.fasta
+  - /mnt/sda/tianqinzhong/project/chimeraBench/dataset/CAMIMARINE_SHORT/output_dir/marmgCAMI2_sample_5_contigs_simulation_short_read_2018.08.15_09.49.32_sample_5_contigs_anonymous_gsa.fasta
+  - /mnt/sda/tianqinzhong/project/chimeraBench/dataset/CAMIMARINE_SHORT/output_dir/marmgCAMI2_sample_6_contigs_simulation_short_read_2018.08.15_09.49.32_sample_6_contigs_anonymous_gsa.fasta
+  - /mnt/sda/tianqinzhong/project/chimeraBench/dataset/CAMIMARINE_SHORT/output_dir/marmgCAMI2_sample_7_contigs_simulation_short_read_2018.08.15_09.49.32_sample_7_contigs_anonymous_gsa.fasta
+  - /mnt/sda/tianqinzhong/project/chimeraBench/dataset/CAMIMARINE_SHORT/output_dir/marmgCAMI2_sample_8_contigs_simulation_short_read_2018.08.15_09.49.32_sample_8_contigs_anonymous_gsa.fasta
+  - /mnt/sda/tianqinzhong/project/chimeraBench/dataset/CAMIMARINE_SHORT/output_dir/marmgCAMI2_sample_9_contigs_simulation_short_read_2018.08.15_09.49.32_sample_9_contigs_anonymous_gsa.fasta
+truth_dir: /mnt/sda/tianqinzhong/project/chimeraBench/dataset/CAMIMARINE_SHORT/output_dir
