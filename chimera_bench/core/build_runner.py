@@ -5,7 +5,7 @@ import time
 from pathlib import Path
 
 from .resources import aggregate_resources, parse_time_log
-from ..io.layout import ensure_run_dirs, make_run_id
+from ..io.layout import ensure_build_dirs, make_run_id
 
 
 class BuildRunner:
@@ -14,8 +14,15 @@ class BuildRunner:
 
     def run(self, *, build: dict, tool, executor) -> dict:
         build_name = build.get("name", "build")
-        run_id = make_run_id(build_name, tool.name, "build")
-        run_dir = ensure_run_dirs(self.runs_root, build_name, tool.name, "build", run_id)
+        db_prefix = build.get("db_prefix") or build.get("db")
+        db_name = build.get("db_name")
+        if not db_name:
+            if db_prefix:
+                db_name = Path(db_prefix).name
+            else:
+                db_name = build_name
+        run_id = make_run_id(build_name, tool.name, db_name)
+        run_dir = ensure_build_dirs(self.runs_root, tool.name, db_name, run_id)
 
         build_steps = getattr(tool, "build_db_steps", None)
         if not callable(build_steps):
@@ -60,6 +67,8 @@ class BuildRunner:
         meta = {
             "build": build_name,
             "tool": tool.name,
+            "db_name": db_name,
+            "db_prefix": db_prefix,
             "steps": step_records,
             "return_code": step_records[-1]["return_code"] if step_records else None,
             "elapsed_seconds": total_elapsed,
