@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import time
+from datetime import datetime
 from pathlib import Path
 
 from .resources import aggregate_resources, parse_time_log
@@ -30,6 +31,7 @@ class BuildRunner:
 
         outputs_all = {}
         step_records = []
+        started_at = datetime.now().astimezone()
         total_start = time.time()
         for idx, step in enumerate(steps):
             name = step.get("name") or f"step{idx + 1}"
@@ -63,11 +65,14 @@ class BuildRunner:
                 break
 
         total_elapsed = time.time() - total_start
+        finished_at = datetime.now().astimezone()
         meta = {
             "build": build_name,
             "tool": tool.name,
             "db_name": db_name,
             "db_prefix": db_prefix,
+            "started_at": started_at.isoformat(timespec="seconds"),
+            "finished_at": finished_at.isoformat(timespec="seconds"),
             "steps": step_records,
             "return_code": step_records[-1]["return_code"] if step_records else None,
             "elapsed_seconds": total_elapsed,
