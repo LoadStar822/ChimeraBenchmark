@@ -4,7 +4,7 @@ import json
 import time
 from pathlib import Path
 
-from .evaluator import summarize_classify_tsv
+from .evaluator import summarize_classify_tsv, summarize_ganon_tre
 from .resources import aggregate_resources, parse_time_log
 from ..io.layout import ensure_profile_dirs, ensure_run_dirs
 
@@ -19,12 +19,12 @@ class Runner:
         dataset_name = dataset.get("name", "dataset")
         run_dir = ensure_run_dirs(self.runs_root, exp_name, tool.name, dataset_name)
         basename = getattr(tool, "output_basename", tool.name)
-        out_prefix = str(run_dir / "outputs" / basename)
+        out_prefix = str((run_dir / "outputs" / basename).resolve())
         profile_dir = None
         profile_out_prefix = None
         if self.profile_root is not None:
             profile_dir = ensure_profile_dirs(self.profile_root, exp_name, tool.name, dataset_name)
-            profile_out_prefix = str(profile_dir / "outputs" / f"{basename}_abundance")
+            profile_out_prefix = str((profile_dir / "outputs" / f"{basename}_abundance").resolve())
 
         steps = None
         build_steps = getattr(tool, "build_steps", None)
@@ -106,6 +106,12 @@ class Runner:
             classify_path = Path(classify_path_str)
             if classify_path.exists():
                 metrics = summarize_classify_tsv(classify_path)
+        else:
+            tre_path_str = outputs_all.get("report_reads_tre") or outputs_all.get("reads_tre")
+            if tre_path_str:
+                tre_path = Path(tre_path_str)
+                if tre_path.exists():
+                    metrics = summarize_ganon_tre(tre_path)
         (run_dir / "metrics.json").write_text(json.dumps(metrics, indent=2))
 
         return {"run_dir": str(run_dir), "metrics": metrics, "meta": meta}
