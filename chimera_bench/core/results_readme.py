@@ -65,6 +65,7 @@ def _collect_runs(root: Path) -> List[Dict]:
                 "exp": meta.get("exp"),
                 "tool": meta.get("tool"),
                 "dataset": meta.get("dataset"),
+                "db_name": meta.get("db_name"),
                 "metrics": metrics,
             }
         )
@@ -74,12 +75,12 @@ def _collect_runs(root: Path) -> List[Dict]:
 def _append_table(lines: list[str], title: str, records: list[Dict], columns: list[tuple[str, str]]):
     lines.append(f"### {title}")
     lines.append("")
-    header = ["Tool"] + [label for label, _ in columns]
+    header = ["Tool", "DB"] + [label for label, _ in columns]
     lines.append("| " + " | ".join(header) + " |")
     lines.append("| " + " | ".join(["---"] * len(header)) + " |")
     for rec in sorted(records, key=lambda r: r.get("tool") or ""):
         metrics = rec.get("metrics", {})
-        row = [rec.get("tool") or ""]
+        row = [rec.get("tool") or "", rec.get("db_name") or ""]
         row += [_format_value(metrics.get(key)) for _, key in columns]
         lines.append("| " + " | ".join(row) + " |")
     lines.append("")

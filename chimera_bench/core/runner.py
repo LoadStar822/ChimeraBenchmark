@@ -89,10 +89,16 @@ class Runner:
                 break
 
         total_elapsed = time.time() - total_start
+        db_path = exp.get("db") or exp.get("db_prefix")
+        db_name = None
+        if db_path:
+            db_name = Path(db_path).name
         meta = {
             "exp": exp_name,
             "dataset": dataset_name,
             "tool": tool.name,
+            "db": db_path,
+            "db_name": db_name,
             "profile_dir": str(profile_dir) if profile_dir else None,
             "steps": step_records,
             "return_code": step_records[-1]["return_code"] if step_records else None,
