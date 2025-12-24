@@ -22,5 +22,5 @@ def test_build_runner_uses_tool_db_layout(tmp_path: Path):
 
     result = runner.run(build=build, tool=FakeBuildTool(), executor=exec_stub)
     run_dir = Path(result["run_dir"])
-    assert run_dir.parts[-3] == "ganon"
-    assert run_dir.parts[-2] == "cami_refseq"
+    assert run_dir.parts[-2] == "ganon"
+    assert run_dir.parts[-1] == "cami_refseq"

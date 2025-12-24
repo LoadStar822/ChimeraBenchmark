@@ -19,8 +19,8 @@ def ensure_run_dirs(root: Path, exp: str, tool: str, dataset: str, run_id: str) 
     return run_dir
 
 
-def ensure_build_dirs(root: Path, tool: str, db_name: str, run_id: str) -> Path:
-    run_dir = root / tool / db_name / run_id
+def ensure_build_dirs(root: Path, tool: str, db_name: str) -> Path:
+    run_dir = root / tool / db_name
     (run_dir / "logs").mkdir(parents=True, exist_ok=True)
     (run_dir / "outputs").mkdir(parents=True, exist_ok=True)
     return run_dir

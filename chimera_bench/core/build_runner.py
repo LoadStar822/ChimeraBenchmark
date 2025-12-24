@@ -5,7 +5,7 @@ import time
 from pathlib import Path
 
 from .resources import aggregate_resources, parse_time_log
-from ..io.layout import ensure_build_dirs, make_run_id
+from ..io.layout import ensure_build_dirs
 
 
 class BuildRunner:
@@ -21,8 +21,7 @@ class BuildRunner:
                 db_name = Path(db_prefix).name
             else:
                 db_name = build_name
-        run_id = make_run_id(build_name, tool.name, db_name)
-        run_dir = ensure_build_dirs(self.runs_root, tool.name, db_name, run_id)
+        run_dir = ensure_build_dirs(self.runs_root, tool.name, db_name)
 
         build_steps = getattr(tool, "build_db_steps", None)
         if not callable(build_steps):
