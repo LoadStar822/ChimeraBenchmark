@@ -59,7 +59,7 @@ def run_cmd(args) -> None:
         tool_config.setdefault("bin", args.ganon_bin)
         tool_config.setdefault("env", args.ganon_env)
 
-    runner = Runner(Path(args.runs))
+    runner = Runner(Path(args.runs), Path(args.profile) if args.profile else None)
     tool = tool_cls(tool_config)
 
     if args.dry_run:
@@ -130,7 +130,8 @@ def main() -> None:
     run_p = sub.add_parser("run")
     run_p.add_argument("--exp", required=True)
     run_p.add_argument("--config", default="configs")
-    run_p.add_argument("--runs", default="runs")
+    run_p.add_argument("--runs", default="classify")
+    run_p.add_argument("--profile", default="profile")
     run_p.add_argument("--chimera-bin", default="Chimera")
     run_p.add_argument("--ganon-bin", default="ganon")
     run_p.add_argument("--ganon-env", default="ganon")
@@ -140,7 +141,7 @@ def main() -> None:
 
     report_p = sub.add_parser("report")
     report_p.add_argument("--exp", required=True)
-    report_p.add_argument("--runs", default="runs")
+    report_p.add_argument("--runs", default="classify")
     report_p.add_argument("--out", default="reports/summary.tsv")
     report_p.add_argument("--dataset", action="append", default=[])
     report_p.set_defaults(func=report_cmd)

@@ -1,7 +1,9 @@
 __pycache__/
 .pytest_cache/
 *.pyc
-runs/
-reports/
+classify/
+profile/
 builds/
+reports/
+runs/
 DB/

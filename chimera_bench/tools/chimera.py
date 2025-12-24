@@ -11,7 +11,13 @@ class ChimeraTool:
         self.config = config or {}
 
     def build_cmd(
-        self, *, dataset: Dict[str, Any], exp: Dict[str, Any], out_prefix: str
+        self,
+        *,
+        dataset: Dict[str, Any],
+        exp: Dict[str, Any],
+        out_prefix: str,
+        profile_dir: str | None = None,
+        profile_out_prefix: str | None = None,
     ) -> Tuple[List[str], Dict[str, str]]:
         bin_path = self.config.get("bin", "Chimera")
         db = exp["db"]

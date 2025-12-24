@@ -1,0 +1,10 @@
+name: ganon
+tool: ganon
+datasets:
+  - cami-long-0
+db: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/ganon/cami_refseq/DB/ganon/cami_refseq
+threads: 64
+tool_config:
+  env: ganon
+  bin: ganon
+tool_args: []

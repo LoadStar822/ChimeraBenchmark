@@ -15,7 +15,15 @@ class GanonTool:
         bin_path = self.config.get("bin", "ganon")
         return ["conda", "run", "-n", env, bin_path]
 
-    def build_steps(self, *, dataset: Dict[str, Any], exp: Dict[str, Any], out_prefix: str):
+    def build_steps(
+        self,
+        *,
+        dataset: Dict[str, Any],
+        exp: Dict[str, Any],
+        out_prefix: str,
+        profile_dir: str | None = None,
+        profile_out_prefix: str | None = None,
+    ):
         db_prefix = exp.get("db") or exp.get("db_prefix")
         if not db_prefix:
             raise ValueError("ganon requires db prefix in experiment config")
@@ -42,7 +50,7 @@ class GanonTool:
 
         rep_path = f"{out_prefix}.rep"
         reads_prefix = f"{out_prefix}_reads"
-        abundance_prefix = f"{out_prefix}_abundance"
+        abundance_prefix = profile_out_prefix or f"{out_prefix}_abundance"
 
         report_reads_cmd = self._base_cmd() + [
             "report",
