@@ -14,8 +14,9 @@ def _open_text(path: Path):
     return path.open("r", encoding="utf-8", errors="ignore")
 
 
-def load_taxonomy(path: Path) -> Dict[int, Tuple[int, str]]:
+def load_taxonomy(path: Path) -> tuple[Dict[int, Tuple[int, str]], Dict[str, int]]:
     taxonomy: Dict[int, Tuple[int, str]] = {}
+    file_to_taxid: Dict[str, int] = {}
     with _open_text(path) as fh:
         for raw in fh:
             line = raw.strip()
@@ -24,14 +25,21 @@ def load_taxonomy(path: Path) -> Dict[int, Tuple[int, str]]:
             parts = line.split("\t")
             if len(parts) < 3:
                 continue
+            rank = parts[2]
+            if rank == "file":
+                if parts[0] and not parts[0].isdigit():
+                    try:
+                        file_to_taxid[parts[0]] = int(parts[1])
+                    except ValueError:
+                        continue
+                continue
             try:
                 taxid = int(parts[0])
                 parent = int(parts[1])
             except ValueError:
                 continue
-            rank = parts[2]
             taxonomy[taxid] = (parent, rank)
-    return taxonomy
+    return taxonomy, file_to_taxid
 
 
 def taxid_to_rank(taxid: int | None, rank: str, taxonomy: Dict[int, Tuple[int, str]]):
@@ -77,7 +85,7 @@ def parse_classify_tsv(path: Path) -> Dict[str, int | None]:
     return preds
 
 
-def parse_ganon_one(path: Path) -> Dict[str, int]:
+def parse_ganon_one(path: Path, file_to_taxid: Dict[str, int] | None = None) -> Dict[str, int | None]:
     preds: Dict[str, int] = {}
     with _open_text(path) as fh:
         for raw in fh:
@@ -87,20 +95,21 @@ def parse_ganon_one(path: Path) -> Dict[str, int]:
             parts = line.split("\t")
             if len(parts) < 2:
                 continue
-            read_id = None
-            tokens: list[str]
+            read_id = parts[0]
+            ref_id = parts[1] if len(parts) > 1 else None
             if parts[0].startswith("H") and len(parts) >= 3:
                 read_id = parts[1]
-                tokens = parts[2:]
-            else:
-                read_id = parts[0]
-                tokens = parts[1:]
+                ref_id = parts[2]
             taxid = None
-            for tok in tokens:
-                tok = tok.split(":", 1)[0]
-                if tok.isdigit():
-                    taxid = int(tok)
-                    break
+            if ref_id and file_to_taxid:
+                taxid = file_to_taxid.get(ref_id)
+            if taxid is None:
+                tokens = parts[2:] if len(parts) > 2 else parts[1:]
+                for tok in tokens:
+                    tok = tok.split(":", 1)[0]
+                    if tok.isdigit():
+                        taxid = int(tok)
+                        break
             if read_id and taxid is not None:
                 preds[read_id] = taxid
     return preds
@@ -315,7 +324,7 @@ def evaluate_with_truth(exp: dict, dataset: dict, outputs: dict) -> Dict[str, fl
     taxonomy_path = _resolve_taxonomy(exp)
     if taxonomy_path is None:
         return {}
-    taxonomy = load_taxonomy(taxonomy_path)
+    taxonomy, file_to_taxid = load_taxonomy(taxonomy_path)
     truth_reads, truth_abundance = load_cami_mapping(mapping_paths)
 
     metrics: Dict[str, float] = {}
@@ -327,7 +336,7 @@ def evaluate_with_truth(exp: dict, dataset: dict, outputs: dict) -> Dict[str, fl
     else:
         classify_one = outputs.get("classify_one")
         if classify_one:
-            preds = parse_ganon_one(Path(classify_one))
+            preds = parse_ganon_one(Path(classify_one), file_to_taxid)
     if preds is not None:
         metrics.update(compute_per_read_metrics(truth_reads, preds, taxonomy, ranks))
 

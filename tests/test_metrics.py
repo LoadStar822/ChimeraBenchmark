@@ -1,7 +1,7 @@
 from math import isclose
 from pathlib import Path
 
-from chimera_bench.core.metrics import evaluate_with_truth
+from chimera_bench.core.metrics import evaluate_with_truth, parse_ganon_one, load_taxonomy
 
 
 def test_evaluate_with_truth_per_read_and_abundance(tmp_path: Path):
@@ -57,3 +57,26 @@ def test_evaluate_with_truth_per_read_and_abundance(tmp_path: Path):
     assert isclose(metrics["abundance_bc_species"], 0.1333333333, rel_tol=1e-6)
     assert isclose(metrics["presence_precision_species"], 1.0, rel_tol=1e-6)
     assert isclose(metrics["presence_recall_species"], 1.0, rel_tol=1e-6)
+
+
+def test_parse_ganon_one_uses_file_mapping(tmp_path: Path):
+    tax = tmp_path / "test.tax"
+    tax.write_text(
+        "\n".join(
+            [
+                "1\t1\tno rank\troot\t0",
+                "2\t1\tgenus\tGenusA\t0",
+                "3\t2\tspecies\tSpeciesA\t0",
+                "GCF_000001.1\t3\tfile\tGCF_000001.1\t123",
+            ]
+        )
+        + "\n"
+    )
+    taxonomy, file_map = load_taxonomy(tax)
+
+    one = tmp_path / "pred.one"
+    one.write_text("r1\tGCF_000001.1\t42\n")
+
+    preds = parse_ganon_one(one, file_map)
+
+    assert preds["r1"] == 3
