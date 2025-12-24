@@ -5,6 +5,7 @@ import time
 from pathlib import Path
 
 from .evaluator import summarize_classify_tsv, summarize_ganon_tre
+from .metrics import evaluate_with_truth
 from .resources import aggregate_resources, parse_time_log
 from ..io.layout import ensure_profile_dirs, ensure_run_dirs
 
@@ -112,6 +113,10 @@ class Runner:
                 tre_path = Path(tre_path_str)
                 if tre_path.exists():
                     metrics = summarize_ganon_tre(tre_path)
+
+        truth_metrics = evaluate_with_truth(exp, dataset, outputs_all)
+        if truth_metrics:
+            metrics.update(truth_metrics)
         (run_dir / "metrics.json").write_text(json.dumps(metrics, indent=2))
 
         return {"run_dir": str(run_dir), "metrics": metrics, "meta": meta}
