@@ -4,4 +4,4 @@ platform: nanopore
 type: log
 reads:
   - /mnt/sda/CommonData/TaxonomyDataset/mock/Zymo-PromethION-LOG-BB-SN.fq
-truth: /mnt/sda/tianqinzhong/code/Chimera/bench/mock_ground_truth.md
+truth_profile: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/configs/truth/zymo_d6331.tsv

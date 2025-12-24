@@ -72,7 +72,7 @@ def test_parse_ganon_one_uses_file_mapping(tmp_path: Path):
         )
         + "\n"
     )
-    taxonomy, file_map = load_taxonomy(tax)
+    taxonomy, file_map, _ = load_taxonomy(tax)
 
     one = tmp_path / "pred.one"
     one.write_text("r1\tGCF_000001.1\t42\n")
@@ -80,3 +80,42 @@ def test_parse_ganon_one_uses_file_mapping(tmp_path: Path):
     preds = parse_ganon_one(one, file_map)
 
     assert preds["r1"] == 3
+
+
+def test_evaluate_with_truth_profile_only(tmp_path: Path):
+    tax = tmp_path / "test.tax"
+    tax.write_text(
+        "\n".join(
+            [
+                "1\t1\tno rank\troot\t0",
+                "2\t1\tgenus\tGenusA\t0",
+                "3\t2\tspecies\tSpeciesA\t0",
+                "4\t1\tgenus\tGenusB\t0",
+                "5\t4\tspecies\tSpeciesB\t0",
+            ]
+        )
+        + "\n"
+    )
+
+    profile = tmp_path / "truth.tsv"
+    profile.write_text("species\tpercent\nSpeciesA\t80\nSpeciesB\t20\n")
+
+    tre = tmp_path / "pred.tre"
+    tre.write_text(
+        "\n".join(
+            [
+                "species\t3\t1|2|3\tSpeciesA\t0\t0\t12\t12\t80.0",
+                "species\t5\t1|4|5\tSpeciesB\t0\t0\t3\t3\t20.0",
+            ]
+        )
+        + "\n"
+    )
+
+    exp = {"taxonomy": str(tax)}
+    dataset = {"truth_profile": str(profile)}
+    outputs = {"report_abundance_tre": str(tre)}
+
+    metrics = evaluate_with_truth(exp, dataset, outputs)
+
+    assert isclose(metrics["presence_precision_species"], 1.0, rel_tol=1e-6)
+    assert metrics.get("per_read_precision_species") is None

@@ -14,9 +14,12 @@ def _open_text(path: Path):
     return path.open("r", encoding="utf-8", errors="ignore")
 
 
-def load_taxonomy(path: Path) -> tuple[Dict[int, Tuple[int, str]], Dict[str, int]]:
+def load_taxonomy(
+    path: Path,
+) -> tuple[Dict[int, Tuple[int, str]], Dict[str, int], Dict[tuple[str, str], int]]:
     taxonomy: Dict[int, Tuple[int, str]] = {}
     file_to_taxid: Dict[str, int] = {}
+    name_to_taxid: Dict[tuple[str, str], int] = {}
     with _open_text(path) as fh:
         for raw in fh:
             line = raw.strip()
@@ -33,13 +36,18 @@ def load_taxonomy(path: Path) -> tuple[Dict[int, Tuple[int, str]], Dict[str, int
                     except ValueError:
                         continue
                 continue
+            name = parts[3] if len(parts) > 3 else ""
             try:
                 taxid = int(parts[0])
                 parent = int(parts[1])
             except ValueError:
                 continue
             taxonomy[taxid] = (parent, rank)
-    return taxonomy, file_to_taxid
+            if name:
+                key = (rank, name)
+                if key not in name_to_taxid:
+                    name_to_taxid[key] = taxid
+    return taxonomy, file_to_taxid, name_to_taxid
 
 
 def taxid_to_rank(taxid: int | None, rank: str, taxonomy: Dict[int, Tuple[int, str]]):
@@ -113,6 +121,74 @@ def parse_ganon_one(path: Path, file_to_taxid: Dict[str, int] | None = None) -> 
             if read_id and taxid is not None:
                 preds[read_id] = taxid
     return preds
+
+
+def parse_truth_profile(path: Path) -> Dict[str, float]:
+    entries: Dict[str, float] = {}
+    header = None
+    with _open_text(path) as fh:
+        for raw in fh:
+            line = raw.strip()
+            if not line or line.startswith("#"):
+                continue
+            parts = line.split("\t")
+            if header is None:
+                if any(token.lower() in {"species", "taxon", "name"} for token in parts):
+                    header = [p.lower() for p in parts]
+                    continue
+                header = []
+            if len(parts) < 2:
+                continue
+            if header:
+                try:
+                    name_idx = header.index("species")
+                except ValueError:
+                    name_idx = 0
+                value_idx = 1 if name_idx == 0 else 0
+                name = parts[name_idx].strip()
+                value_text = parts[value_idx].strip()
+            else:
+                name = parts[0].strip()
+                value_text = parts[1].strip()
+            if not name:
+                continue
+            try:
+                value = float(value_text)
+            except ValueError:
+                continue
+            entries[name] = entries.get(name, 0.0) + value
+    if not entries:
+        return {}
+    total = sum(entries.values())
+    if total > 1.5:
+        return {k: v / 100.0 for k, v in entries.items()}
+    return entries
+
+
+def map_species_profile(
+    profile: Dict[str, float],
+    taxonomy: Dict[int, Tuple[int, str]],
+    name_to_taxid: Dict[tuple[str, str], int],
+    ranks: Iterable[str],
+):
+    mapped_species: Dict[int, float] = {}
+    unmapped = 0
+    for name, value in profile.items():
+        taxid = name_to_taxid.get(("species", name))
+        if taxid is None:
+            unmapped += 1
+            continue
+        mapped_species[taxid] = mapped_species.get(taxid, 0.0) + value
+
+    truth_by_rank: Dict[str, Dict[int, float]] = {r: {} for r in ranks}
+    for taxid, value in mapped_species.items():
+        for rank in ranks:
+            mapped = taxid_to_rank(taxid, rank, taxonomy)
+            if mapped is None:
+                continue
+            bucket = truth_by_rank.setdefault(rank, {})
+            bucket[mapped] = bucket.get(mapped, 0.0) + value
+    return truth_by_rank, unmapped
 
 
 def load_cami_mapping(paths: Iterable[Path]):
@@ -217,8 +293,8 @@ def compute_per_read_metrics(
 
 
 def compute_abundance_metrics(
-    truth: Dict[str, Dict[int, int]],
-    preds: Dict[str, Dict[int, int]],
+    truth: Dict[str, Dict[int, float]],
+    preds: Dict[str, Dict[int, float]],
     ranks: Iterable[str],
     presence_tau: float = 0.0,
 ):
@@ -318,36 +394,53 @@ def _resolve_mapping_paths(dataset: dict) -> list[Path]:
 
 def evaluate_with_truth(exp: dict, dataset: dict, outputs: dict) -> Dict[str, float]:
     ranks = tuple(exp.get("ranks", RANKS_DEFAULT))
-    mapping_paths = _resolve_mapping_paths(dataset)
-    if not mapping_paths:
-        return {}
     taxonomy_path = _resolve_taxonomy(exp)
     if taxonomy_path is None:
         return {}
-    taxonomy, file_to_taxid = load_taxonomy(taxonomy_path)
-    truth_reads, truth_abundance = load_cami_mapping(mapping_paths)
+    taxonomy, file_to_taxid, name_to_taxid = load_taxonomy(taxonomy_path)
 
     metrics: Dict[str, float] = {}
 
-    classify_path = outputs.get("classify_tsv")
-    preds = None
-    if classify_path:
-        preds = parse_classify_tsv(Path(classify_path))
-    else:
-        classify_one = outputs.get("classify_one")
-        if classify_one:
-            preds = parse_ganon_one(Path(classify_one), file_to_taxid)
-    if preds is not None:
-        metrics.update(compute_per_read_metrics(truth_reads, preds, taxonomy, ranks))
+    mapping_paths = _resolve_mapping_paths(dataset)
+    truth_reads: Dict[str, int] = {}
+    truth_abundance: Dict[int, int] = {}
+    if mapping_paths:
+        truth_reads, truth_abundance = load_cami_mapping(mapping_paths)
 
-    truth_by_rank: Dict[str, Dict[int, int]] = {r: {} for r in ranks}
-    for taxid, count in truth_abundance.items():
-        for rank in ranks:
-            mapped = taxid_to_rank(taxid, rank, taxonomy)
-            if mapped is None:
-                continue
-            bucket = truth_by_rank.setdefault(rank, {})
-            bucket[mapped] = bucket.get(mapped, 0) + count
+        classify_path = outputs.get("classify_tsv")
+        preds = None
+        if classify_path:
+            preds = parse_classify_tsv(Path(classify_path))
+        else:
+            classify_one = outputs.get("classify_one")
+            if classify_one:
+                preds = parse_ganon_one(Path(classify_one), file_to_taxid)
+        if preds is not None:
+            metrics.update(compute_per_read_metrics(truth_reads, preds, taxonomy, ranks))
+
+    truth_by_rank: Dict[str, Dict[int, float]] = {r: {} for r in ranks}
+    truth_profile_path = dataset.get("truth_profile") or dataset.get("truth_profile_path")
+    if not truth_profile_path:
+        truth_candidate = dataset.get("truth")
+        if truth_candidate and str(truth_candidate).endswith(".tsv"):
+            truth_profile_path = truth_candidate
+
+    unmapped = None
+    if truth_profile_path:
+        profile = parse_truth_profile(Path(truth_profile_path))
+        if profile:
+            truth_by_rank, unmapped = map_species_profile(profile, taxonomy, name_to_taxid, ranks)
+            metrics["truth_profile_species_total"] = len(profile)
+            metrics["truth_profile_species_unmapped"] = unmapped
+            metrics["truth_profile_species_mapped"] = len(profile) - unmapped
+    elif truth_abundance:
+        for taxid, count in truth_abundance.items():
+            for rank in ranks:
+                mapped = taxid_to_rank(taxid, rank, taxonomy)
+                if mapped is None:
+                    continue
+                bucket = truth_by_rank.setdefault(rank, {})
+                bucket[mapped] = bucket.get(mapped, 0.0) + count
 
     pred_source = None
     if outputs.get("report_abundance_tre"):
@@ -356,6 +449,8 @@ def evaluate_with_truth(exp: dict, dataset: dict, outputs: dict) -> Dict[str, fl
         pred_source = Path(outputs["report_reads_tre"])
     if pred_source and pred_source.exists():
         pred_by_rank = parse_tre_counts(pred_source, ranks)
-        metrics.update(compute_abundance_metrics(truth_by_rank, pred_by_rank, ranks))
+        has_truth = any(truth_by_rank.get(rank) for rank in ranks)
+        if has_truth:
+            metrics.update(compute_abundance_metrics(truth_by_rank, pred_by_rank, ranks))
 
     return metrics
