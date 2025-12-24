@@ -7,3 +7,5 @@ builds/
 reports/
 runs/
 DB/
+results/*
+!results/README.md
