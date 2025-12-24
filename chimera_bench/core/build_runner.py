@@ -6,6 +6,7 @@ from datetime import datetime
 from pathlib import Path
 
 from .resources import aggregate_resources, parse_time_log
+from .results_readme import write_builds_readme
 from ..io.layout import ensure_build_dirs
 
 
@@ -80,5 +81,7 @@ class BuildRunner:
             "outputs": outputs_all,
         }
         (run_dir / "meta.json").write_text(json.dumps(meta, indent=2))
+
+        write_builds_readme(self.runs_root)
 
         return {"run_dir": str(run_dir), "meta": meta}

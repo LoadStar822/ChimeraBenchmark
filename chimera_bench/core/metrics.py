@@ -77,6 +77,35 @@ def parse_classify_tsv(path: Path) -> Dict[str, int | None]:
     return preds
 
 
+def parse_ganon_one(path: Path) -> Dict[str, int]:
+    preds: Dict[str, int] = {}
+    with _open_text(path) as fh:
+        for raw in fh:
+            line = raw.strip()
+            if not line or line.startswith("#"):
+                continue
+            parts = line.split("\t")
+            if len(parts) < 2:
+                continue
+            read_id = None
+            tokens: list[str]
+            if parts[0].startswith("H") and len(parts) >= 3:
+                read_id = parts[1]
+                tokens = parts[2:]
+            else:
+                read_id = parts[0]
+                tokens = parts[1:]
+            taxid = None
+            for tok in tokens:
+                tok = tok.split(":", 1)[0]
+                if tok.isdigit():
+                    taxid = int(tok)
+                    break
+            if read_id and taxid is not None:
+                preds[read_id] = taxid
+    return preds
+
+
 def load_cami_mapping(paths: Iterable[Path]):
     truth_map: Dict[str, int] = {}
     abundance: Dict[int, int] = {}
@@ -292,8 +321,14 @@ def evaluate_with_truth(exp: dict, dataset: dict, outputs: dict) -> Dict[str, fl
     metrics: Dict[str, float] = {}
 
     classify_path = outputs.get("classify_tsv")
+    preds = None
     if classify_path:
         preds = parse_classify_tsv(Path(classify_path))
+    else:
+        classify_one = outputs.get("classify_one")
+        if classify_one:
+            preds = parse_ganon_one(Path(classify_one))
+    if preds is not None:
         metrics.update(compute_per_read_metrics(truth_reads, preds, taxonomy, ranks))
 
     truth_by_rank: Dict[str, Dict[int, int]] = {r: {} for r in ranks}

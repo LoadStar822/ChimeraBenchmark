@@ -38,6 +38,9 @@ class GanonTool:
             out_prefix,
             "--threads",
             threads,
+            "--output-one",
+            "--output-all",
+            "--output-unclassified",
             "--skip-report",
         ]
         if "reads" in dataset:
@@ -49,6 +52,9 @@ class GanonTool:
         classify_cmd += tool_args
 
         rep_path = f"{out_prefix}.rep"
+        one_path = f"{out_prefix}.one"
+        all_path = f"{out_prefix}.all"
+        unc_path = f"{out_prefix}.unc"
         reads_prefix = f"{out_prefix}_reads"
         abundance_prefix = profile_out_prefix or f"{out_prefix}_abundance"
 
@@ -84,7 +90,12 @@ class GanonTool:
             {
                 "name": "classify",
                 "cmd": classify_cmd,
-                "outputs": {"rep": rep_path},
+                "outputs": {
+                    "rep": rep_path,
+                    "classify_one": one_path,
+                    "classify_all": all_path,
+                    "classify_unc": unc_path,
+                },
             },
             {
                 "name": "report_reads",

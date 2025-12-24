@@ -6,6 +6,7 @@ from pathlib import Path
 
 from .evaluator import summarize_classify_tsv, summarize_ganon_tre
 from .metrics import evaluate_with_truth
+from .results_readme import write_classify_readme, write_profile_readme
 from .resources import aggregate_resources, parse_time_log
 from ..io.layout import ensure_profile_dirs, ensure_run_dirs
 
@@ -118,5 +119,9 @@ class Runner:
         if truth_metrics:
             metrics.update(truth_metrics)
         (run_dir / "metrics.json").write_text(json.dumps(metrics, indent=2))
+
+        write_classify_readme(self.runs_root)
+        if self.profile_root is not None:
+            write_profile_readme(self.profile_root, self.runs_root)
 
         return {"run_dir": str(run_dir), "metrics": metrics, "meta": meta}
