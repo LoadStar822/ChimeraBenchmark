@@ -9,7 +9,6 @@ def test_write_summary(tmp_path: Path):
             "exp": "e",
             "tool": "chimera",
             "dataset": "d",
-            "run_id": "r",
             "metrics": {"total_reads": 2},
         },
     ]

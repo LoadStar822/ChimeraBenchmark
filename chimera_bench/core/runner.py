@@ -6,7 +6,7 @@ from pathlib import Path
 
 from .evaluator import summarize_classify_tsv
 from .resources import aggregate_resources, parse_time_log
-from ..io.layout import ensure_profile_dirs, ensure_run_dirs, make_run_id
+from ..io.layout import ensure_profile_dirs, ensure_run_dirs
 
 
 class Runner:
@@ -17,16 +17,13 @@ class Runner:
     def run(self, *, exp: dict, dataset: dict, tool, executor) -> dict:
         exp_name = exp.get("name", "exp")
         dataset_name = dataset.get("name", "dataset")
-        run_id = make_run_id(exp_name, tool.name, dataset_name)
-        run_dir = ensure_run_dirs(self.runs_root, exp_name, tool.name, dataset_name, run_id)
+        run_dir = ensure_run_dirs(self.runs_root, exp_name, tool.name, dataset_name)
         basename = getattr(tool, "output_basename", tool.name)
         out_prefix = str(run_dir / "outputs" / basename)
         profile_dir = None
         profile_out_prefix = None
         if self.profile_root is not None:
-            profile_dir = ensure_profile_dirs(
-                self.profile_root, exp_name, tool.name, dataset_name, run_id
-            )
+            profile_dir = ensure_profile_dirs(self.profile_root, exp_name, tool.name, dataset_name)
             profile_out_prefix = str(profile_dir / "outputs" / f"{basename}_abundance")
 
         steps = None

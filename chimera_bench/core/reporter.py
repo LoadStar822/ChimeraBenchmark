@@ -7,7 +7,7 @@ def write_summary(runs: list[dict], path: Path) -> None:
     if not runs:
         path.write_text("")
         return
-    keys = ["exp", "tool", "dataset", "run_id"]
+    keys = ["exp", "tool", "dataset"]
     metric_keys = sorted({k for r in runs for k in r.get("metrics", {}).keys()})
     header = keys + metric_keys
     lines = ["\t".join(header)]

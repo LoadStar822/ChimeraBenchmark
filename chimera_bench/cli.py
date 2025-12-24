@@ -88,7 +88,6 @@ def report_cmd(args) -> None:
                 "exp": meta.get("exp"),
                 "tool": meta.get("tool"),
                 "dataset": meta.get("dataset"),
-                "run_id": meta_path.parent.name,
                 "metrics": metrics,
             }
         )
