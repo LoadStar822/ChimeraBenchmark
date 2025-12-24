@@ -1,38 +1,37 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
 
 
-CLASSIFY_COLUMNS = [
-    "total_reads",
-    "classified_reads",
-    "unclassified_reads",
-    "per_read_classified_rate",
-    "per_read_unclassified_rate",
-    "per_read_precision_species",
-    "per_read_recall_species",
-    "per_read_f1_species",
-    "per_read_precision_genus",
-    "per_read_recall_genus",
-    "per_read_f1_genus",
+PER_READ_COLUMNS = [
+    ("Total Reads", "total_reads"),
+    ("Classified Reads", "classified_reads"),
+    ("Unclassified Reads", "unclassified_reads"),
+    ("Classified Rate", "per_read_classified_rate"),
+    ("Unclassified Rate", "per_read_unclassified_rate"),
+    ("Precision (species)", "per_read_precision_species"),
+    ("Recall (species)", "per_read_recall_species"),
+    ("F1 (species)", "per_read_f1_species"),
+    ("Precision (genus)", "per_read_precision_genus"),
+    ("Recall (genus)", "per_read_recall_genus"),
+    ("F1 (genus)", "per_read_f1_genus"),
 ]
 
-PROFILE_COLUMNS = [
-    "presence_precision_species",
-    "presence_recall_species",
-    "presence_f1_species",
-    "abundance_l1_species",
-    "abundance_tv_species",
-    "abundance_bc_species",
-    "presence_precision_genus",
-    "presence_recall_genus",
-    "presence_f1_genus",
-    "abundance_l1_genus",
-    "abundance_tv_genus",
-    "abundance_bc_genus",
+ABUNDANCE_COLUMNS = [
+    ("Presence Precision (species)", "presence_precision_species"),
+    ("Presence Recall (species)", "presence_recall_species"),
+    ("Presence F1 (species)", "presence_f1_species"),
+    ("L1 (species)", "abundance_l1_species"),
+    ("TV (species)", "abundance_tv_species"),
+    ("Bray-Curtis (species)", "abundance_bc_species"),
+    ("Presence Precision (genus)", "presence_precision_genus"),
+    ("Presence Recall (genus)", "presence_recall_genus"),
+    ("Presence F1 (genus)", "presence_f1_genus"),
+    ("L1 (genus)", "abundance_l1_genus"),
+    ("TV (genus)", "abundance_tv_genus"),
+    ("Bray-Curtis (genus)", "abundance_bc_genus"),
 ]
 
 
@@ -40,7 +39,8 @@ def _format_value(value):
     if value is None:
         return ""
     if isinstance(value, float):
-        return f"{value:.6g}"
+        text = f"{value:.6f}"
+        return text.rstrip("0").rstrip(".")
     return str(value)
 
 
@@ -71,6 +71,20 @@ def _collect_runs(root: Path) -> List[Dict]:
     return records
 
 
+def _append_table(lines: list[str], title: str, records: list[Dict], columns: list[tuple[str, str]]):
+    lines.append(f"### {title}")
+    lines.append("")
+    header = ["Tool"] + [label for label, _ in columns]
+    lines.append("| " + " | ".join(header) + " |")
+    lines.append("| " + " | ".join(["---"] * len(header)) + " |")
+    for rec in sorted(records, key=lambda r: r.get("tool") or ""):
+        metrics = rec.get("metrics", {})
+        row = [rec.get("tool") or ""]
+        row += [_format_value(metrics.get(key)) for _, key in columns]
+        lines.append("| " + " | ".join(row) + " |")
+    lines.append("")
+
+
 def write_classify_readme(root: Path) -> None:
     records = _collect_runs(root)
     lines = ["# Classify Results", "", "Auto-generated. Do not edit.", ""]
@@ -85,16 +99,7 @@ def write_classify_readme(root: Path) -> None:
     for dataset in sorted(grouped.keys()):
         lines.append(f"## Dataset: {dataset}")
         lines.append("")
-        header = ["tool"] + CLASSIFY_COLUMNS
-        lines.append("| " + " | ".join(header) + " |")
-        lines.append("| " + " | ".join(["---"] * len(header)) + " |")
-        for rec in sorted(grouped[dataset], key=lambda r: r.get("tool") or ""):
-            metrics = rec.get("metrics", {})
-            row = [rec.get("tool") or ""]
-            row += [_format_value(metrics.get(col)) for col in CLASSIFY_COLUMNS]
-            lines.append("| " + " | ".join(row) + " |")
-        lines.append("")
-
+        _append_table(lines, "Per-read Metrics", grouped[dataset], PER_READ_COLUMNS)
     (root / "README.md").write_text("\n".join(lines) + "\n")
 
 
@@ -112,16 +117,7 @@ def write_profile_readme(profile_root: Path, runs_root: Path) -> None:
     for dataset in sorted(grouped.keys()):
         lines.append(f"## Dataset: {dataset}")
         lines.append("")
-        header = ["tool"] + PROFILE_COLUMNS
-        lines.append("| " + " | ".join(header) + " |")
-        lines.append("| " + " | ".join(["---"] * len(header)) + " |")
-        for rec in sorted(grouped[dataset], key=lambda r: r.get("tool") or ""):
-            metrics = rec.get("metrics", {})
-            row = [rec.get("tool") or ""]
-            row += [_format_value(metrics.get(col)) for col in PROFILE_COLUMNS]
-            lines.append("| " + " | ".join(row) + " |")
-        lines.append("")
-
+        _append_table(lines, "Abundance Metrics", grouped[dataset], ABUNDANCE_COLUMNS)
     (profile_root / "README.md").write_text("\n".join(lines) + "\n")
 
 
@@ -149,14 +145,19 @@ def write_builds_readme(root: Path) -> None:
             }
         )
 
-    header = ["tool", "db_name", "elapsed_seconds", "max_rss_kb", "started_at", "finished_at"]
+    build_columns = [
+        ("Tool", "tool"),
+        ("DB Name", "db_name"),
+        ("Elapsed Seconds", "elapsed_seconds"),
+        ("Max RSS (KB)", "max_rss_kb"),
+        ("Started At", "started_at"),
+        ("Finished At", "finished_at"),
+    ]
+    header = ["Tool"] + [label for label, _ in build_columns[1:]]
     lines.append("| " + " | ".join(header) + " |")
     lines.append("| " + " | ".join(["---"] * len(header)) + " |")
     for row in sorted(rows, key=lambda r: (r.get("tool") or "", r.get("db_name") or "")):
-        lines.append(
-            "| "
-            + " | ".join(_format_value(row.get(col)) for col in header)
-            + " |"
-        )
+        values = [_format_value(row.get(key)) for _, key in build_columns]
+        lines.append("| " + " | ".join(values) + " |")
 
     (root / "README.md").write_text("\n".join(lines) + "\n")

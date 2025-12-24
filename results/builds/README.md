@@ -2,6 +2,6 @@
 
 Auto-generated. Do not edit.
 
-| tool | db_name | elapsed_seconds | max_rss_kb | started_at | finished_at |
+| Tool | DB Name | Elapsed Seconds | Max RSS (KB) | Started At | Finished At |
 | --- | --- | --- | --- | --- | --- |
-| ganon | cami_refseq | 29415.4 | 232697868 | 2025-12-23 17:27:31 | 2025-12-24 01:37:46 |
+| ganon | cami_refseq | 29415.423547 | 232697868 | 2025-12-23 17:27:31 | 2025-12-24 01:37:46 |

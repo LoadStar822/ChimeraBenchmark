@@ -1,6 +1,12 @@
 __pycache__/
 .pytest_cache/
 *.pyc
+*.log
+*.stdout.log
+*.stderr.log
+*.time.log
+logs/
+**/logs/
 classify/
 profile/
 builds/
@@ -10,10 +16,14 @@ DB/
 results/*
 !results/README.md
 !results/builds/
+results/builds/*
 !results/builds/README.md
 !results/classify/
+results/classify/*
 !results/classify/README.md
 !results/profile/
+results/profile/*
 !results/profile/README.md
 !results/reports/
+results/reports/*
 !results/reports/README.md
