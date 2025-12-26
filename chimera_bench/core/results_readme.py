@@ -6,6 +6,8 @@ from typing import Dict, List
 
 
 PER_READ_COLUMNS = [
+    ("Elapsed (s)", "run_elapsed_seconds"),
+    ("Max RSS (GB)", "resource_max_rss_gb"),
     ("Total Reads", "total_reads"),
     ("Classified Reads", "classified_reads"),
     ("Unclassified Reads", "unclassified_reads"),
@@ -20,6 +22,8 @@ PER_READ_COLUMNS = [
 ]
 
 ABUNDANCE_COLUMNS = [
+    ("Elapsed (s)", "run_elapsed_seconds"),
+    ("Max RSS (GB)", "resource_max_rss_gb"),
     ("Presence Precision (species)", "presence_precision_species"),
     ("Presence Recall (species)", "presence_recall_species"),
     ("Presence F1 (species)", "presence_f1_species"),
@@ -60,6 +64,12 @@ def _collect_runs(root: Path) -> List[Dict]:
                 metrics = json.loads(metrics_path.read_text())
             except json.JSONDecodeError:
                 metrics = {}
+        if meta.get("elapsed_seconds") is not None:
+            metrics.setdefault("run_elapsed_seconds", meta.get("elapsed_seconds"))
+        resource = meta.get("resource", {})
+        max_rss_kb = resource.get("max_rss_kb")
+        if max_rss_kb:
+            metrics.setdefault("resource_max_rss_gb", max_rss_kb / (1024 * 1024))
         records.append(
             {
                 "exp": meta.get("exp"),

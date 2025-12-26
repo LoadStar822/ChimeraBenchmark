@@ -29,6 +29,11 @@ class GanonTool:
             raise ValueError("ganon requires db prefix in experiment config")
         threads = str(exp.get("threads", 192))
         tool_args = list(exp.get("tool_args", []))
+        output_one = self.config.get("output_one", True)
+        output_all = self.config.get("output_all", False)
+        output_unclassified = self.config.get("output_unclassified", True)
+        skip_report = self.config.get("skip_report", True)
+        multiple_matches = self.config.get("multiple_matches")
 
         classify_cmd = self._base_cmd() + [
             "classify",
@@ -38,11 +43,17 @@ class GanonTool:
             out_prefix,
             "--threads",
             threads,
-            "--output-one",
-            "--output-all",
-            "--output-unclassified",
-            "--skip-report",
         ]
+        if output_one:
+            classify_cmd.append("--output-one")
+        if output_all:
+            classify_cmd.append("--output-all")
+        if output_unclassified:
+            classify_cmd.append("--output-unclassified")
+        if skip_report:
+            classify_cmd.append("--skip-report")
+        if multiple_matches:
+            classify_cmd += ["--multiple-matches", str(multiple_matches)]
         if "reads" in dataset:
             classify_cmd += ["--single-reads", *dataset["reads"]]
         elif "paired" in dataset:
@@ -92,9 +103,9 @@ class GanonTool:
                 "cmd": classify_cmd,
                 "outputs": {
                     "rep": rep_path,
-                    "classify_one": one_path,
-                    "classify_all": all_path,
-                    "classify_unc": unc_path,
+                    **({"classify_one": one_path} if output_one else {}),
+                    **({"classify_all": all_path} if output_all else {}),
+                    **({"classify_unc": unc_path} if output_unclassified else {}),
                 },
             },
             {

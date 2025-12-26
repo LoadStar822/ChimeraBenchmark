@@ -9,7 +9,7 @@ def test_load_yaml_dir_uses_name_or_filename(tmp_path: Path):
     d.mkdir()
     (d / "cami.yaml").write_text(
         """
-name: cami-long-0
+name: cami-test
 reads:
   - /tmp/a.fq
 """
@@ -23,6 +23,6 @@ reads:
 
     out = config.load_yaml_dir(d)
 
-    assert "cami-long-0" in out
+    assert "cami-test" in out
     assert "atcc" in out
-    assert out["cami-long-0"]["reads"] == ["/tmp/a.fq"]
+    assert out["cami-test"]["reads"] == ["/tmp/a.fq"]

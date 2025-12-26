@@ -1,10 +1,19 @@
 name: ganon
 tool: ganon
 datasets:
-  - cami-long-sample0
-db: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/ganon/cami_refseq/DB/ganon/cami_refseq
+  - cami2-marine-long-sample0
+  - atcc-illumina
+  - cami2-marine-long
+  - cami2-marine-short
+  - atcc-hifi
+  - zymo-gridion-even
+  - zymo-gridion-log
+  - zymo-promethion-even
+  - zymo-promethion-log
+db: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/ganon/cami_refseq/DB/cami_refseq
 threads: 64
 tool_config:
   env: ganon
   bin: ganon
+  output_all: false
 tool_args: []

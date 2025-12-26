@@ -12,4 +12,4 @@ reads:
   - /mnt/sda/tianqinzhong/project/chimeraBench/dataset/CAMIMARINE_LONG/fasta/marmgCAMI2_sample_7_contigs_anonymous_gsa.fasta
   - /mnt/sda/tianqinzhong/project/chimeraBench/dataset/CAMIMARINE_LONG/fasta/marmgCAMI2_sample_8_contigs_anonymous_gsa.fasta
   - /mnt/sda/tianqinzhong/project/chimeraBench/dataset/CAMIMARINE_LONG/fasta/marmgCAMI2_sample_9_contigs_anonymous_gsa.fasta
-truth_dir: /mnt/sda/tianqinzhong/project/chimeraBench/dataset/CAMIMARINE_SHORT/output_dir
+truth_dir: /mnt/sda/tianqinzhong/project/chimeraBench/dataset/CAMIMARINE_LONG/mapping
