@@ -58,6 +58,9 @@ def run_cmd(args) -> None:
     if tool_name == "ganon":
         tool_config.setdefault("bin", args.ganon_bin)
         tool_config.setdefault("env", args.ganon_env)
+    if tool_name == "sylph":
+        tool_config.setdefault("bin", args.sylph_bin)
+        tool_config.setdefault("env", args.sylph_env)
 
     runner = Runner(Path(args.runs), Path(args.profile) if args.profile else None)
     tool = tool_cls(tool_config)
@@ -111,6 +114,9 @@ def build_cmd(args) -> None:
     if tool_name == "ganon":
         tool_config.setdefault("bin", args.ganon_bin)
         tool_config.setdefault("env", args.ganon_env)
+    if tool_name == "sylph":
+        tool_config.setdefault("bin", args.sylph_bin)
+        tool_config.setdefault("env", args.sylph_env)
 
     runner = BuildRunner(Path(args.runs))
     tool = tool_cls(tool_config)
@@ -134,6 +140,8 @@ def main() -> None:
     run_p.add_argument("--chimera-bin", default="Chimera")
     run_p.add_argument("--ganon-bin", default="ganon")
     run_p.add_argument("--ganon-env", default="ganon")
+    run_p.add_argument("--sylph-bin", default="sylph")
+    run_p.add_argument("--sylph-env", default="sylph")
     run_p.add_argument("--dry-run", action="store_true")
     run_p.add_argument("--dataset", action="append", default=[])
     run_p.set_defaults(func=run_cmd)
@@ -151,6 +159,8 @@ def main() -> None:
     build_p.add_argument("--runs", default="results/builds")
     build_p.add_argument("--ganon-bin", default="ganon")
     build_p.add_argument("--ganon-env", default="ganon")
+    build_p.add_argument("--sylph-bin", default="sylph")
+    build_p.add_argument("--sylph-env", default="sylph")
     build_p.add_argument("--dry-run", action="store_true")
     build_p.set_defaults(func=build_cmd)
 

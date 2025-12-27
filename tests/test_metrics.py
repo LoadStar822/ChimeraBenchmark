@@ -119,3 +119,38 @@ def test_evaluate_with_truth_profile_only(tmp_path: Path):
 
     assert isclose(metrics["presence_precision_species"], 1.0, rel_tol=1e-6)
     assert metrics.get("per_read_precision_species") is None
+
+
+def test_descendant_per_read_penalizes_ancestor(tmp_path: Path):
+    tax = tmp_path / "test.tax"
+    tax.write_text(
+        "\n".join(
+            [
+                "1\t1\tno rank\troot\t0",
+                "2\t1\tgenus\tGenusA\t0",
+                "3\t2\tspecies\tSpeciesA\t0",
+            ]
+        )
+        + "\n"
+    )
+
+    mapping = tmp_path / "mapping.tsv"
+    mapping.write_text(
+        "#anonymous_contig_id\tgenome_id\ttax_id\tcontig_id\tnumber_reads\tstart_position\tend_position\n"
+        "c1\tOtu1\t3\tX\t10\t0\t0\n"
+        "c2\tOtu2\t3\tY\t5\t0\t0\n"
+    )
+
+    classify = tmp_path / "pred.tsv"
+    classify.write_text("c1\t3:1\n" "c2\t2:1\n")
+
+    exp = {"taxonomy": str(tax)}
+    dataset = {"truth_map": str(mapping)}
+    outputs = {"classify_tsv": str(classify)}
+
+    metrics = evaluate_with_truth(exp, dataset, outputs)
+
+    assert isclose(metrics["per_read_precision_species"], 0.5, rel_tol=1e-6)
+    assert isclose(metrics["per_read_recall_species"], 0.5, rel_tol=1e-6)
+    assert isclose(metrics["exact_per_read_precision_species"], 1.0, rel_tol=1e-6)
+    assert isclose(metrics["exact_per_read_recall_species"], 0.5, rel_tol=1e-6)

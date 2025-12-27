@@ -13,23 +13,42 @@ PER_READ_COLUMNS = [
     ("Unclassified Reads", "unclassified_reads"),
     ("Classified Rate", "per_read_classified_rate"),
     ("Unclassified Rate", "per_read_unclassified_rate"),
+    ("Truth Mapped Rate (species)", "per_read_truth_mapped_rate_species"),
+    ("Pred Mapped Rate (species)", "per_read_pred_mapped_rate_species"),
     ("Precision (species)", "per_read_precision_species"),
     ("Recall (species)", "per_read_recall_species"),
     ("F1 (species)", "per_read_f1_species"),
+    ("Truth Mapped Rate (genus)", "per_read_truth_mapped_rate_genus"),
+    ("Pred Mapped Rate (genus)", "per_read_pred_mapped_rate_genus"),
     ("Precision (genus)", "per_read_precision_genus"),
     ("Recall (genus)", "per_read_recall_genus"),
     ("F1 (genus)", "per_read_f1_genus"),
 ]
 
+PER_READ_UNK_COLUMNS = [
+    ("Elapsed (s)", "run_elapsed_seconds"),
+    ("Max RSS (GB)", "resource_max_rss_gb"),
+    ("Precision (species, UNK)", "per_read_precision_species_unk"),
+    ("Recall (species, UNK)", "per_read_recall_species_unk"),
+    ("F1 (species, UNK)", "per_read_f1_species_unk"),
+    ("Precision (genus, UNK)", "per_read_precision_genus_unk"),
+    ("Recall (genus, UNK)", "per_read_recall_genus_unk"),
+    ("F1 (genus, UNK)", "per_read_f1_genus_unk"),
+]
+
 ABUNDANCE_COLUMNS = [
     ("Elapsed (s)", "run_elapsed_seconds"),
     ("Max RSS (GB)", "resource_max_rss_gb"),
+    ("Truth Mapped Rate (species)", "truth_mapped_mass_rate_species"),
+    ("Pred Mapped Rate (species)", "pred_mapped_mass_rate_species"),
     ("Presence Precision (species)", "presence_precision_species"),
     ("Presence Recall (species)", "presence_recall_species"),
     ("Presence F1 (species)", "presence_f1_species"),
     ("L1 (species)", "abundance_l1_species"),
     ("TV (species)", "abundance_tv_species"),
     ("Bray-Curtis (species)", "abundance_bc_species"),
+    ("Truth Mapped Rate (genus)", "truth_mapped_mass_rate_genus"),
+    ("Pred Mapped Rate (genus)", "pred_mapped_mass_rate_genus"),
     ("Presence Precision (genus)", "presence_precision_genus"),
     ("Presence Recall (genus)", "presence_recall_genus"),
     ("Presence F1 (genus)", "presence_f1_genus"),
@@ -38,6 +57,22 @@ ABUNDANCE_COLUMNS = [
     ("Bray-Curtis (genus)", "abundance_bc_genus"),
 ]
 
+ABUNDANCE_UNK_COLUMNS = [
+    ("Elapsed (s)", "run_elapsed_seconds"),
+    ("Max RSS (GB)", "resource_max_rss_gb"),
+    ("Presence Precision (species, UNK)", "presence_precision_species_unk"),
+    ("Presence Recall (species, UNK)", "presence_recall_species_unk"),
+    ("Presence F1 (species, UNK)", "presence_f1_species_unk"),
+    ("L1 (species, UNK)", "abundance_l1_species_unk"),
+    ("TV (species, UNK)", "abundance_tv_species_unk"),
+    ("Bray-Curtis (species, UNK)", "abundance_bc_species_unk"),
+    ("Presence Precision (genus, UNK)", "presence_precision_genus_unk"),
+    ("Presence Recall (genus, UNK)", "presence_recall_genus_unk"),
+    ("Presence F1 (genus, UNK)", "presence_f1_genus_unk"),
+    ("L1 (genus, UNK)", "abundance_l1_genus_unk"),
+    ("TV (genus, UNK)", "abundance_tv_genus_unk"),
+    ("Bray-Curtis (genus, UNK)", "abundance_bc_genus_unk"),
+]
 
 def _format_value(value):
     if value is None:
@@ -82,6 +117,13 @@ def _collect_runs(root: Path) -> List[Dict]:
     return records
 
 
+def _has_per_read_metrics(metrics: dict) -> bool:
+    for key in metrics.keys():
+        if key.startswith("per_read_"):
+            return True
+    return False
+
+
 def _append_table(lines: list[str], title: str, records: list[Dict], columns: list[tuple[str, str]]):
     lines.append(f"### {title}")
     lines.append("")
@@ -97,7 +139,7 @@ def _append_table(lines: list[str], title: str, records: list[Dict], columns: li
 
 
 def write_classify_readme(root: Path) -> None:
-    records = _collect_runs(root)
+    records = [r for r in _collect_runs(root) if _has_per_read_metrics(r.get("metrics", {}))]
     lines = ["# Classify Results", "", "Auto-generated. Do not edit.", ""]
     if not records:
         (root / "README.md").write_text("\n".join(lines) + "\n")
@@ -110,7 +152,7 @@ def write_classify_readme(root: Path) -> None:
     for dataset in sorted(grouped.keys()):
         lines.append(f"## Dataset: {dataset}")
         lines.append("")
-        _append_table(lines, "Per-read Metrics", grouped[dataset], PER_READ_COLUMNS)
+        _append_table(lines, "Per-read Metrics (UNK)", grouped[dataset], PER_READ_UNK_COLUMNS)
     (root / "README.md").write_text("\n".join(lines) + "\n")
 
 
@@ -128,7 +170,7 @@ def write_profile_readme(profile_root: Path, runs_root: Path) -> None:
     for dataset in sorted(grouped.keys()):
         lines.append(f"## Dataset: {dataset}")
         lines.append("")
-        _append_table(lines, "Abundance Metrics", grouped[dataset], ABUNDANCE_COLUMNS)
+        _append_table(lines, "Abundance Metrics (UNK)", grouped[dataset], ABUNDANCE_UNK_COLUMNS)
     (profile_root / "README.md").write_text("\n".join(lines) + "\n")
 
 

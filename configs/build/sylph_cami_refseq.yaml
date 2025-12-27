@@ -1,0 +1,14 @@
+name: sylph-cami-refseq
+tool: sylph
+db_prefix: DB/cami_refseq
+threads: 64
+tool_config:
+  env: sylph
+  bin: sylph
+build:
+  mode: sketch
+  target_tsv: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/target.tsv
+  target_col: 0
+  allow_missing: false
+  taxonomy_source: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/ganon/cami_refseq/DB/cami_refseq.tax
+  args: []
