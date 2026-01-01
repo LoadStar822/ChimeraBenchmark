@@ -1,7 +1,7 @@
 name: ganon-cami-refseq
 tool: ganon
 db_prefix: DB/cami_refseq
-threads: 64
+threads: 32
 tool_config:
   env: ganon
   bin: ganon

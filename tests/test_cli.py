@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from chimera_bench.cli import main
+from chimera_bench.cli import DEFAULT_THREADS
 
 
 def test_cli_run_dry(tmp_path, monkeypatch):
@@ -64,3 +65,7 @@ def test_cli_build_dry(tmp_path, monkeypatch):
 
     main()
     assert out_root.exists()
+
+
+def test_default_threads_is_32():
+    assert DEFAULT_THREADS == 32

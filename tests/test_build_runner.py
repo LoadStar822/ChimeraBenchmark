@@ -12,7 +12,7 @@ class FakeBuildTool:
 
 def test_build_runner_uses_tool_db_layout(tmp_path: Path):
     runner = BuildRunner(tmp_path / "builds")
-    build = {"name": "cami", "db_prefix": "DB/ganon/cami_refseq"}
+    build = {"name": "cami", "db_prefix": "DB/cami_refseq"}
 
     def exec_stub(cmd, cwd, stdout_path, stderr_path, resource_path):
         Path(stdout_path).write_text("ok")

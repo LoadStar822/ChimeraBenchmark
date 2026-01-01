@@ -19,6 +19,7 @@ def test_registry_duplicate_raises():
 from chimera_bench.registry import TOOLS
 from chimera_bench.tools.chimera import ChimeraTool
 from chimera_bench.tools.ganon import GanonTool
+from chimera_bench.tools.taxor import TaxorTool
 
 
 def test_registry_has_chimera():
@@ -29,3 +30,8 @@ def test_registry_has_chimera():
 def test_registry_has_ganon():
     tool = TOOLS.get("ganon")
     assert tool is GanonTool
+
+
+def test_registry_has_taxor():
+    tool = TOOLS.get("taxor")
+    assert tool is TaxorTool

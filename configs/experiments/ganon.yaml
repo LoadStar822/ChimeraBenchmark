@@ -11,7 +11,7 @@ datasets:
   - zymo-promethion-even
   - zymo-promethion-log
 db: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/ganon/cami_refseq/DB/cami_refseq
-threads: 64
+threads: 32
 coverage_target_tsv: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/target.tsv
 coverage_nodes_dmp: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/ncbi_taxonomy/nodes.dmp
 tool_config:

@@ -1,0 +1,16 @@
+name: taxor-cami-refseq
+tool: taxor
+db_prefix: DB/cami_refseq
+threads: 32
+tool_config:
+  env: taxor
+  bin: taxor
+build:
+  assembly_summary: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/assembly_summary_refseq.txt
+  target_tsv: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/target.tsv
+  input_sequence_dir: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/RefSeq_genomic_20190108
+  kmer_size: 22
+  syncmer_size: 12
+  use_syncmer: true
+  args: []
+
