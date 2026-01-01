@@ -1,7 +1,7 @@
 name: chimera
 tool: chimera
 db: /mnt/sda/tianqinzhong/code/Chimera/bench/DB/active.imcf
-threads: 64
+threads: 32
 tool_args: []
 datasets:
   - atcc-hifi

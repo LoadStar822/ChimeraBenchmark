@@ -11,7 +11,7 @@ from .core.build_runner import BuildRunner
 from .core.reporter import write_summary
 from .registry import TOOLS
 
-DEFAULT_THREADS = 64
+DEFAULT_THREADS = 32
 
 
 def _executor(cmd, cwd, stdout_path, stderr_path, resource_path):

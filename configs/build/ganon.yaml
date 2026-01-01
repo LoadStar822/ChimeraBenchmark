@@ -1,7 +1,7 @@
 name: ganon-local
 tool: ganon
-db_prefix: DB/ganon/local
-threads: 64
+db_prefix: DB/local
+threads: 32
 tool_config:
   env: ganon
   bin: ganon
