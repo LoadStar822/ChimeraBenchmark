@@ -38,7 +38,8 @@ class BuildRunner:
             name = step.get("name") or f"step{idx + 1}"
             stdout_path = run_dir / "logs" / f"{name}.stdout.log"
             stderr_path = run_dir / "logs" / f"{name}.stderr.log"
-            resource_path = run_dir / "logs" / f"{name}.time.log"
+            resource_path = run_dir / "DB" / f"{name}.time.log"
+            resource_path.parent.mkdir(parents=True, exist_ok=True)
             start = time.time()
             rc = executor(
                 step["cmd"],
