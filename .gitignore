@@ -10,6 +10,7 @@ DB/
 results/*
 !results/README.md
 !results/builds/
+results/builds/*
 !results/builds/README.md
 !results/classify/
 !results/classify/README.md
