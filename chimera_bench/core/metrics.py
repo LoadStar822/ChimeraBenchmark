@@ -3,10 +3,22 @@ from __future__ import annotations
 import gzip
 import re
 from pathlib import Path
-from typing import Dict, Iterable, Tuple
+from typing import Dict, Iterable, Tuple, Union
 
 RANKS_DEFAULT = ("species", "genus")
-UNK_TAXID = -1
+
+TaxKey = Union[int, str]
+
+NAME_CLASSES = {
+    "synonym",
+    "authority",
+    "equivalent name",
+    "genbank synonym",
+    "genbank anamorph",
+    "genbank common name",
+    "common name",
+    "includes",
+}
 
 
 def _open_text(path: Path):
@@ -69,6 +81,69 @@ def load_nodes_taxonomy(path: Path) -> Dict[int, Tuple[int, str]]:
             rank = parts[2]
             taxonomy[taxid] = (parent, rank)
     return taxonomy
+
+
+def build_name_maps(names_path: Path):
+    """
+    Build taxid->scientific name and synonym->scientific name mappings from NCBI `names.dmp`.
+
+    Mirrors `bench/scripts/eval_abundance.py` logic to mitigate naming drift.
+    """
+    sci_for_taxid: Dict[int, str] = {}
+    raw_syn: Dict[str, int] = {}
+    with names_path.open("r", encoding="utf-8", errors="ignore") as fh:
+        for raw in fh:
+            parts = [p.strip() for p in raw.split("|")]
+            if len(parts) < 4:
+                continue
+            try:
+                taxid = int(parts[0])
+            except ValueError:
+                continue
+            name = parts[1]
+            cls = parts[3]
+            if not name:
+                continue
+            if cls == "scientific name":
+                sci_for_taxid[taxid] = name
+                continue
+            if cls in NAME_CLASSES:
+                raw_syn.setdefault(name, taxid)
+                alt = re.sub(r"\s+\(.*?\)$", "", name)
+                if alt and alt != name:
+                    raw_syn.setdefault(alt, taxid)
+                if "(" in name or ")" in name:
+                    words = name.split()
+                    if len(words) >= 2:
+                        alt2 = " ".join(words[:2])
+                        raw_syn.setdefault(alt2, taxid)
+    syn_to_sci = {syn: sci_for_taxid[taxid] for syn, taxid in raw_syn.items() if taxid in sci_for_taxid}
+    sci_names = set(sci_for_taxid.values())
+    return sci_for_taxid, syn_to_sci, sci_names
+
+
+def build_name_taxid_maps(sci_for_taxid: Dict[int, str]) -> Dict[str, int]:
+    return {name: taxid for taxid, name in sci_for_taxid.items() if name}
+
+
+def normalize_name(name: str, syn_to_sci: Dict[str, str], sci_names: set[str]) -> str:
+    key = name.strip()
+    if key in sci_names:
+        return key
+    return syn_to_sci.get(key, key)
+
+
+def taxid_for_name(
+    name: str,
+    name_to_taxid: Dict[str, int],
+    syn_to_sci: Dict[str, str],
+    sci_names: set[str],
+) -> int | None:
+    taxid = name_to_taxid.get(name)
+    if taxid is not None:
+        return taxid
+    sci = normalize_name(name, syn_to_sci, sci_names)
+    return name_to_taxid.get(sci)
 
 
 def build_coverage_sets(
@@ -136,16 +211,16 @@ def is_descendant(taxid: int | None, ancestor: int, taxonomy: Dict[int, Tuple[in
 
 
 def collapse_pred_to_truth(
-    pred: Dict[int, float],
-    truth: Dict[int, float],
+    pred: Dict[TaxKey, float],
+    truth: Dict[TaxKey, float],
     taxonomy: Dict[int, Tuple[int, str]],
-) -> Dict[int, float]:
+) -> Dict[TaxKey, float]:
     if not truth:
         return dict(pred)
     truth_set = set(truth.keys())
-    out: Dict[int, float] = {}
+    out: Dict[TaxKey, float] = {}
     for taxid, value in pred.items():
-        if taxid == UNK_TAXID:
+        if not isinstance(taxid, int):
             out[taxid] = out.get(taxid, 0.0) + value
             continue
         current = taxid
@@ -344,34 +419,40 @@ def parse_sylph_profile(
 def map_species_profile(
     profile: Dict[str, float],
     taxonomy: Dict[int, Tuple[int, str]],
-    name_to_taxid: Dict[tuple[str, str], int],
+    name_to_taxid: Dict[str, int],
+    syn_to_sci: Dict[str, str],
+    sci_names: set[str],
     ranks: Iterable[str],
     covered_by_rank: Dict[str, set[int]] | None = None,
 ):
-    truth_by_rank: Dict[str, Dict[int, float]] = {r: {} for r in ranks}
-    rank_unmapped_mass: Dict[str, float] = {r: 0.0 for r in ranks}
+    mapped_by_rank: Dict[str, Dict[TaxKey, float]] = {r: {} for r in ranks}
+    full_by_rank: Dict[str, Dict[TaxKey, float]] = {r: {} for r in ranks}
     unmapped_count = 0
     unmapped_mass = 0.0
 
     for name, value in profile.items():
-        taxid = name_to_taxid.get(("species", name))
+        taxid = taxid_for_name(name, name_to_taxid, syn_to_sci, sci_names)
         if taxid is None:
             unmapped_count += 1
             unmapped_mass += value
+            key = normalize_name(name, syn_to_sci, sci_names)
             for rank in ranks:
-                rank_unmapped_mass[rank] += value
+                bucket = full_by_rank.setdefault(rank, {})
+                bucket[key] = bucket.get(key, 0.0) + value
             continue
         for rank in ranks:
             mapped = taxid_to_rank(taxid, rank, taxonomy)
-            if mapped is None:
-                rank_unmapped_mass[rank] += value
+            if mapped is None or (
+                covered_by_rank is not None and mapped not in covered_by_rank.get(rank, set())
+            ):
+                bucket = full_by_rank.setdefault(rank, {})
+                bucket[taxid] = bucket.get(taxid, 0.0) + value
                 continue
-            if covered_by_rank is not None and mapped not in covered_by_rank.get(rank, set()):
-                rank_unmapped_mass[rank] += value
-                continue
-            bucket = truth_by_rank.setdefault(rank, {})
-            bucket[mapped] = bucket.get(mapped, 0.0) + value
-    return truth_by_rank, unmapped_count, unmapped_mass, rank_unmapped_mass
+            bucket_full = full_by_rank.setdefault(rank, {})
+            bucket_full[mapped] = bucket_full.get(mapped, 0.0) + value
+            bucket_mapped = mapped_by_rank.setdefault(rank, {})
+            bucket_mapped[mapped] = bucket_mapped.get(mapped, 0.0) + value
+    return mapped_by_rank, full_by_rank, unmapped_count, unmapped_mass
 
 
 def map_taxid_profile_to_rank(
@@ -379,21 +460,23 @@ def map_taxid_profile_to_rank(
     taxonomy: Dict[int, Tuple[int, str]],
     ranks: Iterable[str],
     covered_by_rank: Dict[str, set[int]] | None = None,
-) -> tuple[Dict[str, Dict[int, float]], Dict[str, float]]:
-    truth_by_rank: Dict[str, Dict[int, float]] = {r: {} for r in ranks}
-    rank_unmapped_mass: Dict[str, float] = {r: 0.0 for r in ranks}
+) -> tuple[Dict[str, Dict[TaxKey, float]], Dict[str, Dict[TaxKey, float]]]:
+    mapped_by_rank: Dict[str, Dict[TaxKey, float]] = {r: {} for r in ranks}
+    full_by_rank: Dict[str, Dict[TaxKey, float]] = {r: {} for r in ranks}
     for taxid, value in profile.items():
         for rank in ranks:
             mapped = taxid_to_rank(taxid, rank, taxonomy)
-            if mapped is None:
-                rank_unmapped_mass[rank] += value
+            if mapped is None or (
+                covered_by_rank is not None and mapped not in covered_by_rank.get(rank, set())
+            ):
+                bucket = full_by_rank.setdefault(rank, {})
+                bucket[taxid] = bucket.get(taxid, 0.0) + value
                 continue
-            if covered_by_rank is not None and mapped not in covered_by_rank.get(rank, set()):
-                rank_unmapped_mass[rank] += value
-                continue
-            bucket = truth_by_rank.setdefault(rank, {})
-            bucket[mapped] = bucket.get(mapped, 0.0) + value
-    return truth_by_rank, rank_unmapped_mass
+            bucket_full = full_by_rank.setdefault(rank, {})
+            bucket_full[mapped] = bucket_full.get(mapped, 0.0) + value
+            bucket_mapped = mapped_by_rank.setdefault(rank, {})
+            bucket_mapped[mapped] = bucket_mapped.get(mapped, 0.0) + value
+    return mapped_by_rank, full_by_rank
 
 
 def load_cami_mapping(paths: Iterable[Path]):
@@ -543,7 +626,11 @@ def compute_per_read_metrics_exact(
             if not true_is_mapped:
                 continue
             truth_mapped += 1
+            if pred_taxid is None:
+                fn += 1
+                continue
             if not pred_is_mapped:
+                fp += 1
                 fn += 1
                 continue
             if pred_rank is not None and true_rank is not None and pred_rank == true_rank:
@@ -562,77 +649,9 @@ def compute_per_read_metrics_exact(
     return metrics
 
 
-def compute_per_read_metrics_unk(
-    truth: Dict[str, int],
-    preds: Dict[str, int | None],
-    taxonomy: Dict[int, Tuple[int, str]],
-    ranks: Iterable[str],
-    covered_by_rank: Dict[str, set[int]] | None = None,
-):
-    metrics: Dict[str, float] = {}
-    for rank in ranks:
-        tp = fp = fn = 0
-        covered = covered_by_rank.get(rank) if covered_by_rank is not None else None
-        for read_id, true_taxid in truth.items():
-            true_rank = taxid_to_rank(true_taxid, rank, taxonomy)
-            if true_rank is None or (covered is not None and true_rank not in covered):
-                true_rank = UNK_TAXID
-            pred_taxid = preds.get(read_id)
-            if pred_taxid is None:
-                pred_rank = UNK_TAXID
-            else:
-                if true_rank != UNK_TAXID and is_descendant(pred_taxid, true_rank, taxonomy):
-                    pred_rank = true_rank
-                else:
-                    pred_rank = taxid_to_rank(pred_taxid, rank, taxonomy)
-                    if pred_rank is None or (covered is not None and pred_rank not in covered):
-                        pred_rank = UNK_TAXID
-            if pred_rank == true_rank:
-                tp += 1
-            else:
-                fp += 1
-                fn += 1
-        precision, recall, f1 = _safe_prf(tp, fp, fn)
-        metrics[f"per_read_precision_{rank}_unk"] = precision
-        metrics[f"per_read_recall_{rank}_unk"] = recall
-        metrics[f"per_read_f1_{rank}_unk"] = f1
-    return metrics
-
-
-def compute_per_read_metrics_unk_exact(
-    truth: Dict[str, int],
-    preds: Dict[str, int | None],
-    taxonomy: Dict[int, Tuple[int, str]],
-    ranks: Iterable[str],
-    covered_by_rank: Dict[str, set[int]] | None = None,
-):
-    metrics: Dict[str, float] = {}
-    for rank in ranks:
-        tp = fp = fn = 0
-        covered = covered_by_rank.get(rank) if covered_by_rank is not None else None
-        for read_id, true_taxid in truth.items():
-            true_rank = taxid_to_rank(true_taxid, rank, taxonomy)
-            pred_taxid = preds.get(read_id)
-            pred_rank = taxid_to_rank(pred_taxid, rank, taxonomy) if pred_taxid is not None else None
-            if true_rank is None or (covered is not None and true_rank not in covered):
-                true_rank = UNK_TAXID
-            if pred_rank is None or (covered is not None and pred_rank not in covered):
-                pred_rank = UNK_TAXID
-            if pred_rank == true_rank:
-                tp += 1
-            else:
-                fp += 1
-                fn += 1
-        precision, recall, f1 = _safe_prf(tp, fp, fn)
-        metrics[f"per_read_precision_{rank}_unk"] = precision
-        metrics[f"per_read_recall_{rank}_unk"] = recall
-        metrics[f"per_read_f1_{rank}_unk"] = f1
-    return metrics
-
-
 def compute_abundance_metrics(
-    truth: Dict[str, Dict[int, float]],
-    preds: Dict[str, Dict[int, float]],
+    truth: Dict[str, Dict[TaxKey, float]],
+    preds: Dict[str, Dict[TaxKey, float]],
     ranks: Iterable[str],
     presence_tau: float = 0.0,
 ):
@@ -647,23 +666,26 @@ def compute_abundance_metrics(
         truth_total = sum(truth_vec.values())
         pred_total = sum(pred_vec.values())
         if truth_total > 0:
-            truth_norm = {k: v / truth_total for k, v in truth_vec.items()}
+            truth_pct = {k: 100.0 * v / truth_total for k, v in truth_vec.items()}
         else:
-            truth_norm = {}
+            truth_pct = {}
         if pred_total > 0:
-            pred_norm = {k: v / pred_total for k, v in pred_vec.items()}
+            pred_pct = {k: 100.0 * v / pred_total for k, v in pred_vec.items()}
         else:
-            pred_norm = {}
-        keys = set(truth_norm) | set(pred_norm)
-        l1 = sum(abs(pred_norm.get(k, 0.0) - truth_norm.get(k, 0.0)) for k in keys)
-        metrics[f"abundance_l1_{rank}"] = l1
-        metrics[f"abundance_tv_{rank}"] = 0.5 * l1
-        metrics[f"abundance_bc_{rank}"] = 0.5 * l1
+            pred_pct = {}
+        keys = set(truth_pct) | set(pred_pct)
+        # Match Chimera/bench convention:
+        # - L1 is reported in "percentage points" (0..200) after renormalization
+        # - Bray-Curtis = L1 / 200, which equals total variation distance under this normalization
+        l1_pct = sum(abs(pred_pct.get(k, 0.0) - truth_pct.get(k, 0.0)) for k in keys)
+        metrics[f"abundance_l1_{rank}"] = l1_pct
+        metrics[f"abundance_tv_{rank}"] = l1_pct / 200.0
+        metrics[f"abundance_bc_{rank}"] = l1_pct / 200.0
 
         tp = fp = fn = 0
         for k in keys:
-            t_val = truth_norm.get(k, 0.0)
-            p_val = pred_norm.get(k, 0.0)
+            t_val = truth_pct.get(k, 0.0)
+            p_val = pred_pct.get(k, 0.0)
             t_present = t_val > presence_tau
             p_present = p_val > presence_tau
             if t_present and p_present:
@@ -680,12 +702,12 @@ def compute_abundance_metrics(
 
 
 def collapse_pred_by_rank(
-    pred_by_rank: Dict[str, Dict[int, float]],
-    truth_by_rank: Dict[str, Dict[int, float]],
+    pred_by_rank: Dict[str, Dict[TaxKey, float]],
+    truth_by_rank: Dict[str, Dict[TaxKey, float]],
     taxonomy: Dict[int, Tuple[int, str]],
     ranks: Iterable[str],
-) -> Dict[str, Dict[int, float]]:
-    out: Dict[str, Dict[int, float]] = {}
+) -> Dict[str, Dict[TaxKey, float]]:
+    out: Dict[str, Dict[TaxKey, float]] = {}
     for rank in ranks:
         pred_rank = pred_by_rank.get(rank, {})
         truth_rank = truth_by_rank.get(rank, {})
@@ -709,10 +731,10 @@ def _resolve_taxonomy(exp: dict) -> Path | None:
 
 def _resolve_nodes_path(exp: dict) -> Path | None:
     for key in (
-        "coverage_nodes_dmp",
         "taxonomy_nodes_dmp",
         "nodes_dmp",
         "taxonomy_nodes",
+        "coverage_nodes_dmp",
     ):
         value = exp.get(key)
         if value:
@@ -722,6 +744,30 @@ def _resolve_nodes_path(exp: dict) -> Path | None:
     tax_dir = exp.get("coverage_taxonomy_dir")
     if tax_dir:
         path = Path(tax_dir) / "nodes.dmp"
+        if path.exists():
+            return path
+    return None
+
+
+def _resolve_names_path(exp: dict, nodes_path: Path | None = None) -> Path | None:
+    for key in (
+        "taxonomy_names_dmp",
+        "names_dmp",
+        "taxonomy_names",
+        "coverage_names_dmp",
+    ):
+        value = exp.get(key)
+        if value:
+            path = Path(value)
+            if path.exists():
+                return path
+    tax_dir = exp.get("coverage_taxonomy_dir")
+    if tax_dir:
+        path = Path(tax_dir) / "names.dmp"
+        if path.exists():
+            return path
+    if nodes_path is not None:
+        path = nodes_path.parent / "names.dmp"
         if path.exists():
             return path
     return None
@@ -779,16 +825,29 @@ def evaluate_with_truth(exp: dict, dataset: dict, outputs: dict) -> Dict[str, fl
     taxonomy_path = _resolve_taxonomy(exp)
     if taxonomy_path is None:
         return {}
-    taxonomy_db, file_to_taxid, name_to_taxid = load_taxonomy(taxonomy_path)
+    taxonomy_db, file_to_taxid, _name_to_taxid = load_taxonomy(taxonomy_path)
     nodes_path = _resolve_nodes_path(exp)
     taxonomy = taxonomy_db
     if nodes_path is not None:
         taxonomy = load_nodes_taxonomy(nodes_path)
 
     covered_by_rank = None
-    target_tsv = _resolve_coverage_target(exp)
-    if target_tsv is not None:
-        covered_by_rank = build_coverage_sets(target_tsv, taxonomy, ranks)
+    use_coverage_filter = bool(exp.get("use_coverage_filter") or exp.get("coverage_filter"))
+    if use_coverage_filter:
+        target_tsv = _resolve_coverage_target(exp)
+        if target_tsv is not None:
+            covered_by_rank = build_coverage_sets(target_tsv, taxonomy, ranks)
+
+    names_path = _resolve_names_path(exp, nodes_path)
+    name_to_taxid: Dict[str, int] = {}
+    syn_to_sci: Dict[str, str] = {}
+    sci_names: set[str] = set()
+    if names_path is not None:
+        sci_for_taxid, syn_to_sci, sci_names = build_name_maps(names_path)
+        name_to_taxid = build_name_taxid_maps(sci_for_taxid)
+    else:
+        # Fallback: use DB `.tax` names directly (no synonym collapse).
+        name_to_taxid = {name: taxid for (rank, name), taxid in _name_to_taxid.items() if rank == "species"}
 
     metrics: Dict[str, float] = {}
 
@@ -813,14 +872,8 @@ def evaluate_with_truth(exp: dict, dataset: dict, outputs: dict) -> Dict[str, fl
             for key, value in exact_metrics.items():
                 metrics[f"exact_{key}"] = value
 
-            desc_unk = compute_per_read_metrics_unk(truth_reads, preds, taxonomy, ranks, covered_by_rank)
-            exact_unk = compute_per_read_metrics_unk_exact(truth_reads, preds, taxonomy, ranks, covered_by_rank)
-            metrics.update(desc_unk)
-            for key, value in exact_unk.items():
-                metrics[f"exact_{key}"] = value
-
-    truth_by_rank: Dict[str, Dict[int, float]] = {r: {} for r in ranks}
-    truth_unmapped_mass: Dict[str, float] = {r: 0.0 for r in ranks}
+    truth_by_rank_mapped: Dict[str, Dict[TaxKey, float]] = {r: {} for r in ranks}
+    truth_by_rank_full: Dict[str, Dict[TaxKey, float]] = {r: {} for r in ranks}
     truth_profile_path = dataset.get("truth_profile") or dataset.get("truth_profile_path")
     if not truth_profile_path:
         truth_candidate = dataset.get("truth")
@@ -831,12 +884,15 @@ def evaluate_with_truth(exp: dict, dataset: dict, outputs: dict) -> Dict[str, fl
     if truth_profile_path:
         profile = parse_truth_profile(Path(truth_profile_path))
         if profile:
-            (
-                truth_by_rank,
-                unmapped,
-                unmapped_mass,
-                truth_unmapped_mass,
-            ) = map_species_profile(profile, taxonomy, name_to_taxid, ranks, covered_by_rank)
+            truth_by_rank_mapped, truth_by_rank_full, unmapped, unmapped_mass = map_species_profile(
+                profile,
+                taxonomy,
+                name_to_taxid,
+                syn_to_sci,
+                sci_names,
+                ranks,
+                covered_by_rank,
+            )
             total_species = len(profile)
             metrics["truth_profile_species_total"] = total_species
             metrics["truth_profile_species_unmapped"] = unmapped
@@ -850,7 +906,7 @@ def evaluate_with_truth(exp: dict, dataset: dict, outputs: dict) -> Dict[str, fl
             if total_mass > 0:
                 metrics["truth_profile_mass_mapped_rate"] = (total_mass - unmapped_mass) / total_mass
     elif truth_abundance:
-        truth_by_rank, truth_unmapped_mass = map_taxid_profile_to_rank(
+        truth_by_rank_mapped, truth_by_rank_full = map_taxid_profile_to_rank(
             {k: float(v) for k, v in truth_abundance.items()},
             taxonomy,
             ranks,
@@ -862,89 +918,60 @@ def evaluate_with_truth(exp: dict, dataset: dict, outputs: dict) -> Dict[str, fl
         pred_source = Path(outputs["report_abundance_tre"])
     elif outputs.get("report_reads_tre"):
         pred_source = Path(outputs["report_reads_tre"])
-    pred_by_rank: Dict[str, Dict[int, float]] | None = None
-    pred_unmapped_mass: Dict[str, float] = {r: 0.0 for r in ranks}
+    pred_by_rank_mapped: Dict[str, Dict[TaxKey, float]] | None = None
+    pred_by_rank_full: Dict[str, Dict[TaxKey, float]] | None = None
     if pred_source and pred_source.exists():
-        pred_by_rank = {r: {} for r in ranks}
+        pred_by_rank_mapped = {r: {} for r in ranks}
+        pred_by_rank_full = {r: {} for r in ranks}
         raw_pred = parse_tre_counts(pred_source, ranks)
         for rank, bucket in raw_pred.items():
             for taxid, value in bucket.items():
                 mapped = taxid_to_rank(taxid, rank, taxonomy)
-                if mapped is None:
-                    pred_unmapped_mass[rank] += float(value)
+                if mapped is None or (
+                    covered_by_rank is not None and mapped not in covered_by_rank.get(rank, set())
+                ):
+                    key: TaxKey = taxid
+                    pred_by_rank_full[rank][key] = pred_by_rank_full[rank].get(key, 0.0) + float(value)
                     continue
-                if covered_by_rank is not None and mapped not in covered_by_rank.get(rank, set()):
-                    pred_unmapped_mass[rank] += float(value)
-                    continue
-                pred_by_rank[rank][mapped] = pred_by_rank[rank].get(mapped, 0.0) + float(value)
-    elif outputs.get("profile_tsv"):
-        profile_path = Path(outputs["profile_tsv"])
-        if profile_path.exists():
-            pred_species, unmapped_mass, _unmapped_count = parse_sylph_profile(
-                profile_path, file_to_taxid
-            )
-            if pred_species or unmapped_mass > 0:
-                pred_by_rank = {r: {} for r in ranks}
-                for rank in ranks:
-                    pred_unmapped_mass[rank] += unmapped_mass
-                for taxid, value in pred_species.items():
-                    for rank in ranks:
-                        mapped = taxid_to_rank(taxid, rank, taxonomy)
-                        if mapped is None:
-                            pred_unmapped_mass[rank] += value
-                            continue
-                        if covered_by_rank is not None and mapped not in covered_by_rank.get(rank, set()):
-                            pred_unmapped_mass[rank] += value
-                            continue
-                        bucket = pred_by_rank.setdefault(rank, {})
-                        bucket[mapped] = bucket.get(mapped, 0.0) + value
+                pred_by_rank_full[rank][mapped] = pred_by_rank_full[rank].get(mapped, 0.0) + float(value)
+                pred_by_rank_mapped[rank][mapped] = pred_by_rank_mapped[rank].get(mapped, 0.0) + float(value)
+    else:
+        profile_path_str = outputs.get("profile_tsv") or outputs.get("sylph_profile_tsv")
+        if profile_path_str:
+            profile_path = Path(profile_path_str)
+            if profile_path.exists():
+                pred_species, unmapped_mass, _unmapped_count = parse_sylph_profile(
+                    profile_path, file_to_taxid
+                )
+                if pred_species or unmapped_mass > 0:
+                    pred_by_rank_mapped = {r: {} for r in ranks}
+                    pred_by_rank_full = {r: {} for r in ranks}
+                    if unmapped_mass > 0:
+                        for rank in ranks:
+                            pred_by_rank_full[rank]["unmapped"] = pred_by_rank_full[rank].get("unmapped", 0.0) + unmapped_mass
+                    for taxid, value in pred_species.items():
+                        for rank in ranks:
+                            mapped = taxid_to_rank(taxid, rank, taxonomy)
+                            if mapped is None or (
+                                covered_by_rank is not None and mapped not in covered_by_rank.get(rank, set())
+                            ):
+                                key = taxid
+                                pred_by_rank_full[rank][key] = pred_by_rank_full[rank].get(key, 0.0) + value
+                                continue
+                            pred_by_rank_full[rank][mapped] = pred_by_rank_full[rank].get(mapped, 0.0) + value
+                            pred_by_rank_mapped[rank][mapped] = pred_by_rank_mapped[rank].get(mapped, 0.0) + value
 
-    if truth_by_rank or any(v > 0 for v in truth_unmapped_mass.values()):
-        for rank in ranks:
-            mapped_mass = sum(truth_by_rank.get(rank, {}).values())
-            unmapped_mass = truth_unmapped_mass.get(rank, 0.0)
-            total_mass = mapped_mass + unmapped_mass
-            metrics[f"truth_mapped_mass_{rank}"] = mapped_mass
-            metrics[f"truth_unmapped_mass_{rank}"] = unmapped_mass
-            if total_mass > 0:
-                metrics[f"truth_mapped_mass_rate_{rank}"] = mapped_mass / total_mass
-
-    if pred_by_rank is not None:
-        for rank in ranks:
-            mapped_mass = sum(pred_by_rank.get(rank, {}).values())
-            unmapped_mass = pred_unmapped_mass.get(rank, 0.0)
-            total_mass = mapped_mass + unmapped_mass
-            metrics[f"pred_mapped_mass_{rank}"] = mapped_mass
-            metrics[f"pred_unmapped_mass_{rank}"] = unmapped_mass
-            if total_mass > 0:
-                metrics[f"pred_mapped_mass_rate_{rank}"] = mapped_mass / total_mass
-
-    if pred_by_rank is not None:
-        has_truth_mapped = any(truth_by_rank.get(rank) for rank in ranks)
-        desc_pred_by_rank = collapse_pred_by_rank(pred_by_rank, truth_by_rank, taxonomy, ranks)
-        if has_truth_mapped:
-            desc_metrics = compute_abundance_metrics(truth_by_rank, desc_pred_by_rank, ranks)
-            exact_metrics = compute_abundance_metrics(truth_by_rank, pred_by_rank, ranks)
+    if pred_by_rank_full is not None:
+        has_truth = any(truth_by_rank_full.get(rank) for rank in ranks)
+        if has_truth:
+            desc_pred_by_rank = collapse_pred_by_rank(pred_by_rank_full, truth_by_rank_full, taxonomy, ranks)
+            desc_metrics = compute_abundance_metrics(truth_by_rank_full, desc_pred_by_rank, ranks)
             metrics.update(desc_metrics)
+
+        if pred_by_rank_mapped is not None and any(truth_by_rank_mapped.get(rank) for rank in ranks):
+            exact_metrics = compute_abundance_metrics(truth_by_rank_mapped, pred_by_rank_mapped, ranks)
             for key, value in exact_metrics.items():
                 metrics[f"exact_{key}"] = value
-        if has_truth_mapped or any(v > 0 for v in truth_unmapped_mass.values()):
-            truth_unk = {r: dict(truth_by_rank.get(r, {})) for r in ranks}
-            pred_unk = {r: dict(pred_by_rank.get(r, {})) for r in ranks}
-            for rank in ranks:
-                unk_mass = truth_unmapped_mass.get(rank, 0.0)
-                if unk_mass > 0:
-                    truth_unk[rank][UNK_TAXID] = truth_unk[rank].get(UNK_TAXID, 0.0) + unk_mass
-                pred_unk_mass = pred_unmapped_mass.get(rank, 0.0)
-                if pred_unk_mass > 0:
-                    pred_unk[rank][UNK_TAXID] = pred_unk[rank].get(UNK_TAXID, 0.0) + pred_unk_mass
-            desc_pred_unk = collapse_pred_by_rank(pred_unk, truth_unk, taxonomy, ranks)
-            desc_unk_metrics = compute_abundance_metrics(truth_unk, desc_pred_unk, ranks)
-            exact_unk_metrics = compute_abundance_metrics(truth_unk, pred_unk, ranks)
-            for key, value in desc_unk_metrics.items():
-                metrics[f"{key}_unk"] = value
-            for key, value in exact_unk_metrics.items():
-                metrics[f"exact_{key}_unk"] = value
 
     if metrics:
         metrics.setdefault("metric_version", "descendant-aware-v1")
