@@ -68,3 +68,25 @@ def test_ganon_build_db_custom():
     assert "--min-length" in cmd
     assert "100" in cmd
     assert steps[0]["outputs"]["db_prefix"] == "/db/prefix"
+
+
+def test_ganon_output_one_auto_disabled_without_truth_mapping():
+    tool = GanonTool({"env": "ganon", "bin": "ganon"})
+    steps = tool.build_steps(
+        dataset={"reads": ["/r1.fq"]},
+        exp={"db": "/db/prefix", "threads": 8, "tool_args": []},
+        out_prefix="/tmp/out/ganon",
+    )
+    assert "--output-one" not in steps[0]["cmd"]
+    assert "classify_one" not in steps[0]["outputs"]
+
+
+def test_ganon_output_one_auto_enabled_with_truth_dir():
+    tool = GanonTool({"env": "ganon", "bin": "ganon"})
+    steps = tool.build_steps(
+        dataset={"reads": ["/r1.fq"], "truth_dir": "/truth"},
+        exp={"db": "/db/prefix", "threads": 8, "tool_args": []},
+        out_prefix="/tmp/out/ganon",
+    )
+    assert "--output-one" in steps[0]["cmd"]
+    assert steps[0]["outputs"]["classify_one"].endswith(".one")

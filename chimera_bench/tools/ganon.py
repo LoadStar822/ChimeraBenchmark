@@ -29,7 +29,19 @@ class GanonTool:
             raise ValueError("ganon requires db prefix in experiment config")
         threads = str(exp.get("threads", 192))
         tool_args = list(exp.get("tool_args", []))
-        output_one = self.config.get("output_one", True)
+        output_one_cfg = self.config.get("output_one")
+        if output_one_cfg is None:
+            output_one = any(
+                dataset.get(key)
+                for key in (
+                    "truth_dir",
+                    "truth_map",
+                    "truth_mapping",
+                    "truth_maps",
+                )
+            )
+        else:
+            output_one = bool(output_one_cfg)
         output_all = self.config.get("output_all", False)
         output_unclassified = self.config.get("output_unclassified", True)
         skip_report = self.config.get("skip_report", True)

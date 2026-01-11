@@ -5,6 +5,11 @@ from pathlib import Path
 from typing import Dict, List
 
 
+TOOL_DISPLAY_NAMES = {
+    # configs/experiments still use "ganon", but the actual software is ganon2.
+    "ganon": "ganon2",
+}
+
 PER_READ_COLUMNS = [
     ("Elapsed (s)", "run_elapsed_seconds"),
     ("Max RSS (GB)", "resource_max_rss_gb"),
@@ -138,10 +143,13 @@ def _collect_runs(root: Path) -> List[Dict]:
             db_path = meta.get("db")
             if db_path:
                 db_name = Path(db_path).name
+        tool = meta.get("tool")
+        if isinstance(tool, str):
+            tool = TOOL_DISPLAY_NAMES.get(tool, tool)
         records.append(
             {
                 "exp": meta.get("exp"),
-                "tool": meta.get("tool"),
+                "tool": tool,
                 "dataset": meta.get("dataset"),
                 "db_name": db_name,
                 "metrics": metrics,

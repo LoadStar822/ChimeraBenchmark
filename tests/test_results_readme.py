@@ -105,3 +105,62 @@ def test_write_classify_readme_clears_when_no_per_read_runs(tmp_path: Path):
     text = (runs_root / "README.md").read_text()
     assert "| ganon | cami_refseq |" not in text
     assert "## Dataset:" not in text
+
+
+def test_results_readmes_display_ganon_as_ganon2(tmp_path: Path):
+    runs_root = tmp_path / "runs"
+    profile_root = tmp_path / "profile"
+    runs_root.mkdir()
+    profile_root.mkdir()
+
+    run_dir = runs_root / "ganon" / "ds1"
+    (run_dir / "logs").mkdir(parents=True)
+    (run_dir / "outputs").mkdir(parents=True)
+    (run_dir / "meta.json").write_text(
+        json.dumps(
+            {
+                "exp": "ganon",
+                "tool": "ganon",
+                "dataset": "ds1",
+                "db": "/tmp/cami_refseq",
+                "db_name": "cami_refseq",
+                "elapsed_seconds": 10.0,
+                "resource": {"max_rss_kb": 1024 * 1024},
+                "outputs": {},
+            }
+        )
+    )
+    (run_dir / "metrics.json").write_text(
+        json.dumps(
+            {
+                "per_read_precision_species": 0.1,
+                "per_read_recall_species": 0.2,
+                "per_read_f1_species": 0.3,
+                "per_read_precision_genus": 0.4,
+                "per_read_recall_genus": 0.5,
+                "per_read_f1_genus": 0.6,
+                "presence_precision_species": 0.5,
+                "presence_recall_species": 0.25,
+                "presence_f1_species": 0.3333333,
+                "abundance_l1_species": 20.0,
+                "abundance_tv_species": 0.1,
+                "abundance_bc_species": 0.1,
+                "presence_precision_genus": 0.6,
+                "presence_recall_genus": 0.3,
+                "presence_f1_genus": 0.4,
+                "abundance_l1_genus": 40.0,
+                "abundance_tv_genus": 0.2,
+                "abundance_bc_genus": 0.2,
+            }
+        )
+    )
+
+    write_classify_readme(runs_root)
+    classify_text = (runs_root / "README.md").read_text()
+    assert "| ganon2 | cami_refseq |" in classify_text
+    assert "| ganon | cami_refseq |" not in classify_text
+
+    write_profile_readme(profile_root, runs_root)
+    profile_text = (profile_root / "README.md").read_text()
+    assert "| ganon2 | cami_refseq |" in profile_text
+    assert "| ganon | cami_refseq |" not in profile_text

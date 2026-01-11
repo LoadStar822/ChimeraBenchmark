@@ -283,3 +283,58 @@ def test_abundance_metrics_penalize_unmapped_taxa_and_no_unk_metrics(tmp_path: P
     assert isclose(metrics["presence_recall_species"], 1.0, rel_tol=1e-6)
     assert isclose(metrics["abundance_l1_species"], 100.0, rel_tol=1e-6)
     assert all("_unk" not in key for key in metrics.keys())
+
+
+def test_evaluate_with_truth_missing_truth_profile_does_not_crash(tmp_path: Path):
+    tax = tmp_path / "test.tax"
+    tax.write_text(
+        "\n".join(
+            [
+                "1\t1\tno rank\troot\t0",
+                "2\t1\tgenus\tGenusA\t0",
+                "3\t2\tspecies\tSpeciesA\t0",
+            ]
+        )
+        + "\n"
+    )
+
+    missing = tmp_path / "missing_truth.tsv"
+
+    exp = {"taxonomy": str(tax)}
+    dataset = {"truth_profile": str(missing)}
+    outputs = {}
+
+    metrics = evaluate_with_truth(exp, dataset, outputs)
+
+    assert metrics.get("truth_profile_missing") == 1
+
+
+def test_evaluate_with_truth_missing_classify_one_does_not_crash(tmp_path: Path):
+    tax = tmp_path / "test.tax"
+    tax.write_text(
+        "\n".join(
+            [
+                "1\t1\tno rank\troot\t0",
+                "2\t1\tgenus\tGenusA\t0",
+                "3\t2\tspecies\tSpeciesA\t0",
+                "GenomeA\t3\tfile\tGenomeA\t0",
+            ]
+        )
+        + "\n"
+    )
+
+    mapping = tmp_path / "mapping.tsv"
+    mapping.write_text(
+        "#anonymous_contig_id\tgenome_id\ttax_id\tcontig_id\tnumber_reads\tstart_position\tend_position\n"
+        "c1\tOtu1\t3\tX\t10\t0\t0\n"
+    )
+
+    missing_one = tmp_path / "pred.one"
+
+    exp = {"taxonomy": str(tax)}
+    dataset = {"truth_map": str(mapping)}
+    outputs = {"classify_one": str(missing_one)}
+
+    metrics = evaluate_with_truth(exp, dataset, outputs)
+
+    assert metrics.get("classify_one_missing") == 1

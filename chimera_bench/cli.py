@@ -15,9 +15,16 @@ DEFAULT_THREADS = 32
 
 
 def _executor(cmd, cwd, stdout_path, stderr_path, resource_path):
+    cwd = Path(cwd)
+    cwd.mkdir(parents=True, exist_ok=True)
+    stdout_path = Path(stdout_path)
+    stderr_path = Path(stderr_path)
+    stdout_path.parent.mkdir(parents=True, exist_ok=True)
+    stderr_path.parent.mkdir(parents=True, exist_ok=True)
     timed_cmd = cmd
     if resource_path:
         resource_path = Path(resource_path).resolve()
+        resource_path.parent.mkdir(parents=True, exist_ok=True)
         timed_cmd = ["/usr/bin/time", "-v", "-o", str(resource_path)] + cmd
     with open(stdout_path, "w") as out, open(stderr_path, "w") as err:
         proc = subprocess.run(timed_cmd, cwd=cwd, stdout=out, stderr=err)

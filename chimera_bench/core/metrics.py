@@ -860,11 +860,19 @@ def evaluate_with_truth(exp: dict, dataset: dict, outputs: dict) -> Dict[str, fl
         classify_path = outputs.get("classify_tsv")
         preds = None
         if classify_path:
-            preds = parse_classify_tsv(Path(classify_path))
+            classify_path = Path(classify_path)
+            if classify_path.exists():
+                preds = parse_classify_tsv(classify_path)
+            else:
+                metrics["classify_tsv_missing"] = 1
         else:
             classify_one = outputs.get("classify_one")
             if classify_one:
-                preds = parse_ganon_one(Path(classify_one), file_to_taxid)
+                classify_one = Path(classify_one)
+                if classify_one.exists():
+                    preds = parse_ganon_one(classify_one, file_to_taxid)
+                else:
+                    metrics["classify_one_missing"] = 1
         if preds is not None:
             desc_metrics = compute_per_read_metrics(truth_reads, preds, taxonomy, ranks, covered_by_rank)
             exact_metrics = compute_per_read_metrics_exact(truth_reads, preds, taxonomy, ranks, covered_by_rank)
@@ -882,29 +890,33 @@ def evaluate_with_truth(exp: dict, dataset: dict, outputs: dict) -> Dict[str, fl
 
     unmapped = None
     if truth_profile_path:
-        profile = parse_truth_profile(Path(truth_profile_path))
-        if profile:
-            truth_by_rank_mapped, truth_by_rank_full, unmapped, unmapped_mass = map_species_profile(
-                profile,
-                taxonomy,
-                name_to_taxid,
-                syn_to_sci,
-                sci_names,
-                ranks,
-                covered_by_rank,
-            )
-            total_species = len(profile)
-            metrics["truth_profile_species_total"] = total_species
-            metrics["truth_profile_species_unmapped"] = unmapped
-            metrics["truth_profile_species_mapped"] = total_species - unmapped
-            if total_species > 0:
-                metrics["truth_profile_species_unmapped_rate"] = unmapped / total_species
-            total_mass = sum(profile.values())
-            metrics["truth_profile_mass_total"] = total_mass
-            metrics["truth_profile_mass_unmapped"] = unmapped_mass
-            metrics["truth_profile_mass_mapped"] = total_mass - unmapped_mass
-            if total_mass > 0:
-                metrics["truth_profile_mass_mapped_rate"] = (total_mass - unmapped_mass) / total_mass
+        truth_profile_path = Path(truth_profile_path)
+        if not truth_profile_path.exists():
+            metrics["truth_profile_missing"] = 1
+        else:
+            profile = parse_truth_profile(truth_profile_path)
+            if profile:
+                truth_by_rank_mapped, truth_by_rank_full, unmapped, unmapped_mass = map_species_profile(
+                    profile,
+                    taxonomy,
+                    name_to_taxid,
+                    syn_to_sci,
+                    sci_names,
+                    ranks,
+                    covered_by_rank,
+                )
+                total_species = len(profile)
+                metrics["truth_profile_species_total"] = total_species
+                metrics["truth_profile_species_unmapped"] = unmapped
+                metrics["truth_profile_species_mapped"] = total_species - unmapped
+                if total_species > 0:
+                    metrics["truth_profile_species_unmapped_rate"] = unmapped / total_species
+                total_mass = sum(profile.values())
+                metrics["truth_profile_mass_total"] = total_mass
+                metrics["truth_profile_mass_unmapped"] = unmapped_mass
+                metrics["truth_profile_mass_mapped"] = total_mass - unmapped_mass
+                if total_mass > 0:
+                    metrics["truth_profile_mass_mapped_rate"] = (total_mass - unmapped_mass) / total_mass
     elif truth_abundance:
         truth_by_rank_mapped, truth_by_rank_full = map_taxid_profile_to_rank(
             {k: float(v) for k, v in truth_abundance.items()},

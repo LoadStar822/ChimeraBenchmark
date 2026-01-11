@@ -18,4 +18,5 @@ tool_config:
   env: ganon
   bin: ganon
   output_all: false
+  multiple_matches: lca
 tool_args: []

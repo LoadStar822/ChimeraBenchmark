@@ -10,12 +10,12 @@ Metrics are computed at ranks: species and genus.
 
 ## 软件版本
 
-- ganon: 2.1.0
+- ganon2: 2.1.0
 - sylph: 0.8.1
 
 ## 结果分区说明
 
-- **classify**：只展示具备 per-read 指标的工具（例如 ganon/Chimera）。像 sylph 这类仅输出丰度的工具不会出现在 classify 表中。
+- **classify**：只展示具备 per-read 指标的工具（例如 ganon2/Chimera）。像 sylph 这类仅输出丰度的工具不会出现在 classify 表中。
 - **profile**：展示丰度/检出类指标（abundance/presence）。像 sylph 这类 profile-only 工具只出现在 profile 表中。
 
 ## 工具类型与指标适配
@@ -23,7 +23,9 @@ Metrics are computed at ranks: species and genus.
 工具大致分三类（示例）：
 - **只输出丰度（profile‑only）**：只能做 abundance/presence 指标，不产生 per-read 指标。示例：**sylph**。
 - **只输出 per-read（per-read‑only）**：有 per-read 指标，但没有直接的 abundance 输出。
-- **两者都有（dual）**：同时产出 per-read 与 abundance。示例：**ganon**、**Chimera**。
+- **两者都有（dual）**：同时产出 per-read 与 abundance。示例：**ganon2**、**Chimera**。
+
+注：本项目配置文件里实验名仍可能写作 `ganon`，但实际运行的软件为 **ganon2**，结果表中统一记作 **ganon2**。
 
 对 per-read‑only 工具，理论上可以把每条 read 的预测按 taxon 汇总成“伪丰度”再计算 abundance 指标，
 但由于读长/覆盖/多重比对等因素，这种转换往往偏差较大，结果**大概率不够好**。

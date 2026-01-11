@@ -1,7 +1,6 @@
 from pathlib import Path
 
-from chimera_bench.cli import main
-from chimera_bench.cli import DEFAULT_THREADS
+from chimera_bench.cli import DEFAULT_THREADS, _executor, main
 
 
 def test_cli_run_dry(tmp_path, monkeypatch):
@@ -69,3 +68,26 @@ def test_cli_build_dry(tmp_path, monkeypatch):
 
 def test_default_threads_is_32():
     assert DEFAULT_THREADS == 32
+
+
+def test_executor_creates_parent_dirs_for_logs(tmp_path: Path):
+    run_dir = tmp_path / "run"
+    run_dir.mkdir()
+
+    stdout_path = tmp_path / "nested" / "logs" / "stdout.log"
+    stderr_path = tmp_path / "nested" / "logs" / "stderr.log"
+    resource_path = tmp_path / "nested" / "logs" / "time.log"
+
+    rc = _executor(
+        ["bash", "-lc", "echo hello"],
+        cwd=run_dir,
+        stdout_path=stdout_path,
+        stderr_path=stderr_path,
+        resource_path=resource_path,
+    )
+
+    assert rc == 0
+    assert stdout_path.exists()
+    assert "hello" in stdout_path.read_text(encoding="utf-8", errors="ignore")
+    assert stderr_path.exists()
+    assert resource_path.exists()
