@@ -9,6 +9,16 @@ Auto-generated. Do not edit.
 | Tool | DB | Elapsed (s) | Max RSS (GB) | Presence Precision (species) | Presence Recall (species) | Presence F1 (species) | L1 (species) | TV (species) | Bray-Curtis (species) | Presence Precision (genus) | Presence Recall (genus) | Presence F1 (genus) | L1 (genus) | TV (genus) | Bray-Curtis (genus) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | ganon2 | cami_refseq | 42249.530233 | 213.392277 | 0.459459 | 0.85 | 0.596491 | 97.258569 | 0.486293 | 0.486293 | 0.555556 | 0.833333 | 0.666667 | 89.322194 | 0.446611 | 0.446611 |
+| sylph | cami_refseq | 154.929078 | 22.302765 | 0.789474 | 0.75 | 0.769231 | 67.02 | 0.3351 | 0.3351 | 0.764706 | 0.722222 | 0.742857 | 67.02 | 0.3351 | 0.3351 |
+
+## Dataset: atcc-illumina
+
+### Abundance Metrics
+
+| Tool | DB | Elapsed (s) | Max RSS (GB) | Presence Precision (species) | Presence Recall (species) | Presence F1 (species) | L1 (species) | TV (species) | Bray-Curtis (species) | Presence Precision (genus) | Presence Recall (genus) | Presence F1 (genus) | L1 (genus) | TV (genus) | Bray-Curtis (genus) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| ganon2 | cami_refseq | 8680.516536 | 210.339127 | 0.053292 | 0.85 | 0.100295 | 90.62553 | 0.453128 | 0.453128 | 0.110294 | 0.833333 | 0.194805 | 76.275651 | 0.381378 | 0.381378 |
+| sylph | cami_refseq | 66.459957 | 22.24855 | 0.777778 | 0.7 | 0.736842 | 48.413858 | 0.242069 | 0.242069 | 0.75 | 0.666667 | 0.705882 | 48.413858 | 0.242069 | 0.242069 |
 
 ## Dataset: cami2-marine-long
 
@@ -17,6 +27,7 @@ Auto-generated. Do not edit.
 | Tool | DB | Elapsed (s) | Max RSS (GB) | Presence Precision (species) | Presence Recall (species) | Presence F1 (species) | L1 (species) | TV (species) | Bray-Curtis (species) | Presence Precision (genus) | Presence Recall (genus) | Presence F1 (genus) | L1 (genus) | TV (genus) | Bray-Curtis (genus) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | ganon2 | cami_refseq | 2736.595358 | 213.020084 | 0.497121 | 0.896194 | 0.639506 | 122.583556 | 0.612918 | 0.612918 | 0.667925 | 0.903061 | 0.767896 | 103.081276 | 0.515406 | 0.515406 |
+| sylph | cami_refseq | 109.573765 | 33.309525 | 0.616505 | 0.878893 | 0.724679 | 136.82828 | 0.684141 | 0.684141 | 0.726141 | 0.892857 | 0.800915 | 119.414058 | 0.59707 | 0.59707 |
 
 ## Dataset: cami2-marine-long-sample0
 
@@ -25,6 +36,7 @@ Auto-generated. Do not edit.
 | Tool | DB | Elapsed (s) | Max RSS (GB) | Presence Precision (species) | Presence Recall (species) | Presence F1 (species) | L1 (species) | TV (species) | Bray-Curtis (species) | Presence Precision (genus) | Presence Recall (genus) | Presence F1 (genus) | L1 (genus) | TV (genus) | Bray-Curtis (genus) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | ganon2 | cami_refseq | 645.867684 | 210.876648 | 0.844595 | 0.865052 | 0.854701 | 134.485964 | 0.67243 | 0.67243 | 0.924324 | 0.872449 | 0.897638 | 108.507855 | 0.542539 | 0.542539 |
+| sylph | cami_refseq | 51.520681 | 23.42767 | 0.94332 | 0.806228 | 0.869403 | 144.057509 | 0.720288 | 0.720288 | 0.994118 | 0.862245 | 0.923497 | 123.20921 | 0.616046 | 0.616046 |
 
 ## Dataset: cami2-marine-short
 
@@ -33,6 +45,7 @@ Auto-generated. Do not edit.
 | Tool | DB | Elapsed (s) | Max RSS (GB) | Presence Precision (species) | Presence Recall (species) | Presence F1 (species) | L1 (species) | TV (species) | Bray-Curtis (species) | Presence Precision (genus) | Presence Recall (genus) | Presence F1 (genus) | L1 (genus) | TV (genus) | Bray-Curtis (genus) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | ganon2 | cami_refseq | 3905.759646 | 210.60994 | 0.339869 | 0.902778 | 0.493827 | 121.663056 | 0.608315 | 0.608315 | 0.553517 | 0.928205 | 0.693487 | 103.870263 | 0.519351 | 0.519351 |
+| sylph | cami_refseq | 112.983479 | 33.121845 | 0.618582 | 0.878472 | 0.725968 | 137.672557 | 0.688363 | 0.688363 | 0.717842 | 0.887179 | 0.793578 | 121.210395 | 0.606052 | 0.606052 |
 
 ## Dataset: zymo-gridion-even
 
@@ -41,6 +54,7 @@ Auto-generated. Do not edit.
 | Tool | DB | Elapsed (s) | Max RSS (GB) | Presence Precision (species) | Presence Recall (species) | Presence F1 (species) | L1 (species) | TV (species) | Bray-Curtis (species) | Presence Precision (genus) | Presence Recall (genus) | Presence F1 (genus) | L1 (genus) | TV (genus) | Bray-Curtis (genus) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | ganon2 | cami_refseq | 5104.420392 | 211.467873 | 0.090909 | 0.4 | 0.148148 | 190.301442 | 0.951507 | 0.951507 | 0.184211 | 0.7 | 0.291667 | 177.85059 | 0.889253 | 0.889253 |
+| sylph | cami_refseq | 105.779297 | 23.316505 | 0.875 | 0.7 | 0.777778 | 56.9232 | 0.284616 | 0.284616 | 0.875 | 0.7 | 0.777778 | 56.9232 | 0.284616 | 0.284616 |
 
 ## Dataset: zymo-gridion-log
 
@@ -49,6 +63,7 @@ Auto-generated. Do not edit.
 | Tool | DB | Elapsed (s) | Max RSS (GB) | Presence Precision (species) | Presence Recall (species) | Presence F1 (species) | L1 (species) | TV (species) | Bray-Curtis (species) | Presence Precision (genus) | Presence Recall (genus) | Presence F1 (genus) | L1 (genus) | TV (genus) | Bray-Curtis (genus) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | ganon2 | cami_refseq | 5116.531988 | 211.691677 | 0.060606 | 0.2 | 0.093023 | 188.578347 | 0.942892 | 0.942892 | 0.178571 | 0.5 | 0.263158 | 182.909089 | 0.914545 | 0.914545 |
+| sylph | cami_refseq | 116.305271 | 23.317101 | 0.833333 | 0.5 | 0.625 | 19.95598 | 0.09978 | 0.09978 | 0.833333 | 0.5 | 0.625 | 19.95598 | 0.09978 | 0.09978 |
 
 ## Dataset: zymo-promethion-even
 
@@ -57,6 +72,7 @@ Auto-generated. Do not edit.
 | Tool | DB | Elapsed (s) | Max RSS (GB) | Presence Precision (species) | Presence Recall (species) | Presence F1 (species) | L1 (species) | TV (species) | Bray-Curtis (species) | Presence Precision (genus) | Presence Recall (genus) | Presence F1 (genus) | L1 (genus) | TV (genus) | Bray-Curtis (genus) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | ganon2 | cami_refseq | 52171.185963 | 211.738628 | 0.005084 | 0.7 | 0.010094 | 175.170246 | 0.875851 | 0.875851 | 0.015385 | 0.8 | 0.030189 | 169.284628 | 0.846423 | 0.846423 |
+| sylph | cami_refseq | 820.419387 | 34.487347 | 0.875 | 0.7 | 0.777778 | 55.336 | 0.27668 | 0.27668 | 0.875 | 0.7 | 0.777778 | 55.336 | 0.27668 | 0.27668 |
 
 ## Dataset: zymo-promethion-log
 
@@ -65,4 +81,5 @@ Auto-generated. Do not edit.
 | Tool | DB | Elapsed (s) | Max RSS (GB) | Presence Precision (species) | Presence Recall (species) | Presence F1 (species) | L1 (species) | TV (species) | Bray-Curtis (species) | Presence Precision (genus) | Presence Recall (genus) | Presence F1 (genus) | L1 (genus) | TV (genus) | Bray-Curtis (genus) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | ganon2 | cami_refseq | 47708.910829 | 211.735104 | 0.007021 | 0.7 | 0.013903 | 199.40333 | 0.997017 | 0.997017 | 0.018391 | 0.8 | 0.035955 | 197.597903 | 0.98799 | 0.98799 |
+| sylph | cami_refseq | 769.728807 | 34.486584 | 0.857143 | 0.6 | 0.705882 | 20.110006 | 0.10055 | 0.10055 | 0.857143 | 0.6 | 0.705882 | 20.110006 | 0.10055 | 0.10055 |
 
