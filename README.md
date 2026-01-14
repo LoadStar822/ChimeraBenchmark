@@ -1,17 +1,16 @@
-# ChimeraBenchmark (Legacy Snapshot)
+# ChimeraBenchmark
 
-This repository currently archives an older benchmarking implementation.
+本仓库用于运行与汇总 Chimera 的基准测试（build / classify / profile）。
 
-- All legacy code and documents live under `legacy/`.
-- New benchmarking code has not been rebuilt yet.
-
-If you are looking for the previous scripts, see `legacy/`.
+- 所有结果统一写入 `results/`（默认不提交原始输出与日志，仅提交聚合后的 README）。
+- 实验与数据集配置在 `configs/` 下。
+- 旧版脚本与文档已移动到 `legacy` 分支（见 `legacy` branch）。
 
 ## 实验公平性与默认参数策略
 
 为保证论文实验公平性，本项目遵循以下原则：
 
-- 统一使用 64 线程运行所有软件。
+- 统一使用相同线程数运行所有软件（默认 **32**，除非另行说明）。
 - 除非软件将 classify 与 profile 完全分离（必须额外生成 profile 输出），否则尽量使用软件默认参数。
 - 仅为**记录评估结果**而增加输出开关（例如 per-read 输出），不改变算法行为与默认推断逻辑。
 
