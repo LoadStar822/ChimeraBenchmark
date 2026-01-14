@@ -50,6 +50,14 @@ Auto-generated. Do not edit.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | ganon2 | cami_refseq | 5116.531988 | 211.691677 | 0.060606 | 0.2 | 0.093023 | 188.578347 | 0.942892 | 0.942892 | 0.178571 | 0.5 | 0.263158 | 182.909089 | 0.914545 | 0.914545 |
 
+## Dataset: zymo-promethion-even
+
+### Abundance Metrics
+
+| Tool | DB | Elapsed (s) | Max RSS (GB) | Presence Precision (species) | Presence Recall (species) | Presence F1 (species) | L1 (species) | TV (species) | Bray-Curtis (species) | Presence Precision (genus) | Presence Recall (genus) | Presence F1 (genus) | L1 (genus) | TV (genus) | Bray-Curtis (genus) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| ganon2 | cami_refseq | 52171.185963 | 211.738628 | 0.005084 | 0.7 | 0.010094 | 175.170246 | 0.875851 | 0.875851 | 0.015385 | 0.8 | 0.030189 | 169.284628 | 0.846423 | 0.846423 |
+
 ## Dataset: zymo-promethion-log
 
 ### Abundance Metrics
