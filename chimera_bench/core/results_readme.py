@@ -383,9 +383,12 @@ def write_builds_readme(root: Path) -> None:
         except json.JSONDecodeError:
             continue
         resource = meta.get("resource", {})
+        tool = meta.get("tool")
+        if isinstance(tool, str):
+            tool = TOOL_DISPLAY_NAMES.get(tool, tool)
         rows.append(
             {
-                "tool": meta.get("tool"),
+                "tool": tool,
                 "db_name": meta.get("db_name") or meta_path.parent.name,
                 "elapsed_seconds": meta.get("elapsed_seconds"),
                 "max_rss_kb": resource.get("max_rss_kb"),
