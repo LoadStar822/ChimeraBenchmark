@@ -50,13 +50,13 @@ class TaxorTool:
             if not assembly_summary or not target_tsv:
                 raise ValueError("taxor build requires build.input_file or (build.assembly_summary and build.target_tsv)")
             input_file_path = str(Path(out_dir) / "outputs" / "taxor_input.tsv")
+            prep_script = str(Path(__file__).resolve().with_name("taxor_prep.py"))
             steps.append(
                 {
                     "name": "prepare_input",
                     "cmd": [
                         "python",
-                        "-m",
-                        "chimera_bench.tools.taxor_prep",
+                        prep_script,
                         "--assembly-summary",
                         str(assembly_summary),
                         "--target-tsv",
@@ -104,4 +104,3 @@ class TaxorTool:
             }
         )
         return steps
-

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from chimera_bench.core.results_readme import write_classify_readme, write_profile_readme
+from chimera_bench.core.results_readme import write_builds_readme, write_classify_readme, write_profile_readme
 
 
 def test_write_profile_readme_overwrites_and_drops_stale_rows(tmp_path: Path):
@@ -164,3 +164,64 @@ def test_results_readmes_display_ganon_as_ganon2(tmp_path: Path):
     profile_text = (profile_root / "README.md").read_text()
     assert "| ganon2 | cami_refseq |" in profile_text
     assert "| ganon | cami_refseq |" not in profile_text
+
+
+def test_write_builds_readme_preserves_existing_rows_and_adds_successful_meta(tmp_path: Path):
+    builds_root = tmp_path / "builds"
+    builds_root.mkdir()
+
+    existing = "\n".join(
+        [
+            "# Build Results",
+            "",
+            "Auto-generated. Do not edit.",
+            "",
+            "| Tool | DB Name | Elapsed Seconds | Max RSS (KB) | Started At | Finished At |",
+            "| --- | --- | --- | --- | --- | --- |",
+            "| ganon | cami_refseq | 1 | 2 | a | b |",
+            "| sylph | cami_refseq | 3 | 4 | c | d |",
+            "",
+        ]
+    )
+    (builds_root / "README.md").write_text(existing + "\n")
+
+    failed_dir = builds_root / "taxor" / "fail_db"
+    failed_dir.mkdir(parents=True)
+    (failed_dir / "meta.json").write_text(
+        json.dumps(
+            {
+                "tool": "taxor",
+                "db_name": "fail_db",
+                "return_code": 1,
+                "elapsed_seconds": 999.0,
+                "resource": {"max_rss_kb": 999},
+                "started_at": "x",
+                "finished_at": "y",
+            }
+        )
+    )
+
+    success_dir = builds_root / "taxor" / "cami_refseq"
+    success_dir.mkdir(parents=True)
+    (success_dir / "meta.json").write_text(
+        json.dumps(
+            {
+                "tool": "taxor",
+                "db_name": "cami_refseq",
+                "return_code": 0,
+                "elapsed_seconds": 10.0,
+                "resource": {"max_rss_kb": 1024},
+                "started_at": "2026-01-01T00:00:00+00:00",
+                "finished_at": "2026-01-01T00:00:10+00:00",
+            }
+        )
+    )
+
+    write_builds_readme(builds_root)
+
+    text = (builds_root / "README.md").read_text()
+    assert "| ganon2 | cami_refseq | 1 | 2 | a | b |" in text
+    assert "| ganon | cami_refseq |" not in text
+    assert "| sylph | cami_refseq | 3 | 4 | c | d |" in text
+    assert "| taxor | cami_refseq | 10 | 1024 | 2026-01-01T00:00:00+00:00 | 2026-01-01T00:00:10+00:00 |" in text
+    assert "fail_db" not in text

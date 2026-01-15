@@ -24,7 +24,8 @@ def test_taxor_build_db_steps_with_prep():
     assert steps[0]["cmd"] == ["mkdir", "-p", "DB"]
 
     prep_cmd = steps[1]["cmd"]
-    assert prep_cmd[:3] == ["python", "-m", "chimera_bench.tools.taxor_prep"]
+    assert prep_cmd[0] == "python"
+    assert prep_cmd[1].endswith("chimera_bench/tools/taxor_prep.py")
     assert "--assembly-summary" in prep_cmd
     assert "/data/assembly_summary.txt" in prep_cmd
     assert "--target-tsv" in prep_cmd
@@ -49,4 +50,3 @@ def test_taxor_build_db_steps_with_prep():
     assert "--syncmer-size" in cmd
     assert "12" in cmd
     assert "--use-syncmer" in cmd
-

@@ -208,6 +208,37 @@ def _parse_readme_rows(readme_path: Path) -> tuple[list[str], dict[str, dict[tup
     return dataset_order, rows_by_dataset
 
 
+def _parse_build_readme_rows(readme_path: Path) -> dict[tuple[str, str], list[str]]:
+    if not readme_path.exists():
+        return {}
+    text = readme_path.read_text(encoding="utf-8", errors="ignore").splitlines()
+    header: list[str] | None = None
+    rows: dict[tuple[str, str], list[str]] = {}
+    for line in text:
+        if line.startswith("| Tool |"):
+            header = _split_md_row(line)
+            continue
+        if header is None:
+            continue
+        if not line.startswith("|"):
+            continue
+        row = _split_md_row(line)
+        if not row or set(row) == {"---"}:
+            continue
+        if len(row) < len(header):
+            row = row + [""] * (len(header) - len(row))
+        elif len(row) > len(header):
+            row = row[: len(header)]
+        tool = row[0].strip() if len(row) > 0 else ""
+        db = row[1].strip() if len(row) > 1 else ""
+        if not tool:
+            continue
+        tool = TOOL_DISPLAY_NAMES.get(tool, tool)
+        row[0] = tool
+        rows[(tool, db)] = row
+    return rows
+
+
 def _format_float(value: float) -> str:
     return _format_value(float(value))
 
@@ -371,45 +402,44 @@ def write_profile_readme(profile_root: Path, runs_root: Path) -> None:
 
 
 def write_builds_readme(root: Path) -> None:
+    readme_path = root / "README.md"
     lines = ["# Build Results", "", "Auto-generated. Do not edit.", ""]
     if not root.exists():
-        (root / "README.md").write_text("\n".join(lines) + "\n")
+        readme_path.write_text("\n".join(lines) + "\n")
         return
 
-    rows = []
+    header = ["Tool", "DB Name", "Elapsed Seconds", "Max RSS (KB)", "Started At", "Finished At"]
+    rows_by_key = _parse_build_readme_rows(readme_path)
     for meta_path in root.rglob("meta.json"):
         try:
             meta = json.loads(meta_path.read_text())
         except json.JSONDecodeError:
             continue
+        if meta.get("return_code") != 0:
+            continue
         resource = meta.get("resource", {})
         tool = meta.get("tool")
         if isinstance(tool, str):
             tool = TOOL_DISPLAY_NAMES.get(tool, tool)
-        rows.append(
-            {
-                "tool": tool,
-                "db_name": meta.get("db_name") or meta_path.parent.name,
-                "elapsed_seconds": meta.get("elapsed_seconds"),
-                "max_rss_kb": resource.get("max_rss_kb"),
-                "started_at": meta.get("started_at"),
-                "finished_at": meta.get("finished_at"),
-            }
-        )
+        if not tool:
+            continue
+        db_name = meta.get("db_name") or meta_path.parent.name
+        rows_by_key[(str(tool), str(db_name))] = [
+            str(tool),
+            str(db_name),
+            _format_value(meta.get("elapsed_seconds")),
+            _format_value(resource.get("max_rss_kb")),
+            _format_value(meta.get("started_at")),
+            _format_value(meta.get("finished_at")),
+        ]
 
-    build_columns = [
-        ("Tool", "tool"),
-        ("DB Name", "db_name"),
-        ("Elapsed Seconds", "elapsed_seconds"),
-        ("Max RSS (KB)", "max_rss_kb"),
-        ("Started At", "started_at"),
-        ("Finished At", "finished_at"),
-    ]
-    header = ["Tool"] + [label for label, _ in build_columns[1:]]
     lines.append("| " + " | ".join(header) + " |")
     lines.append("| " + " | ".join(["---"] * len(header)) + " |")
-    for row in sorted(rows, key=lambda r: (r.get("tool") or "", r.get("db_name") or "")):
-        values = [_format_value(row.get(key)) for _, key in build_columns]
-        lines.append("| " + " | ".join(values) + " |")
+    for _, row in sorted(rows_by_key.items(), key=lambda r: (r[0][0], r[0][1])):
+        if len(row) < len(header):
+            row = row + [""] * (len(header) - len(row))
+        elif len(row) > len(header):
+            row = row[: len(header)]
+        lines.append("| " + " | ".join(row) + " |")
 
-    (root / "README.md").write_text("\n".join(lines) + "\n")
+    readme_path.write_text("\n".join(lines) + "\n")
