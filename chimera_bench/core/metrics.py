@@ -416,6 +416,64 @@ def parse_sylph_profile(
     return entries, unmapped_mass, unmapped_count
 
 
+def parse_cami_profile(path: Path) -> Dict[str, Dict[int, float]]:
+    buckets: Dict[str, Dict[int, float]] = {}
+    taxid_idx = None
+    rank_idx = None
+    perc_idx = None
+    with _open_text(path) as fh:
+        for raw in fh:
+            line = raw.strip()
+            if not line or line.startswith("#"):
+                continue
+            if line.startswith("@@"):
+                tokens = line.lstrip("@").split("\t") if "\t" in line else line.lstrip("@").split()
+                tokens = [t.strip().lstrip("@") for t in tokens if t.strip()]
+                upper = [t.upper() for t in tokens]
+                taxid_idx = upper.index("TAXID") if "TAXID" in upper else None
+                rank_idx = upper.index("RANK") if "RANK" in upper else None
+                perc_idx = upper.index("PERCENTAGE") if "PERCENTAGE" in upper else None
+                continue
+            if line.startswith("@"):
+                continue
+            parts = line.split("\t")
+            if taxid_idx is None or rank_idx is None or perc_idx is None:
+                if len(parts) < 5:
+                    continue
+                taxid_text = parts[0].strip()
+                rank_text = parts[1].strip()
+                perc_text = parts[-1].strip()
+            else:
+                if len(parts) <= max(taxid_idx, rank_idx, perc_idx):
+                    continue
+                taxid_text = parts[taxid_idx].strip()
+                rank_text = parts[rank_idx].strip()
+                perc_text = parts[perc_idx].strip()
+            taxid = taxid_text.split(":", 1)[0].split("|", 1)[0].strip()
+            if not taxid or taxid in {"0", "-", "NA"}:
+                continue
+            if "." in taxid:
+                taxid = taxid.split(".", 1)[0]
+            if not taxid.isdigit():
+                continue
+            try:
+                taxid_int = int(taxid)
+            except ValueError:
+                continue
+            if taxid_int <= 0:
+                continue
+            rank = rank_text.lower()
+            if not rank or rank == "unclassified":
+                continue
+            try:
+                value = float(perc_text)
+            except ValueError:
+                continue
+            bucket = buckets.setdefault(rank, {})
+            bucket[taxid_int] = bucket.get(taxid_int, 0.0) + value
+    return buckets
+
+
 def map_species_profile(
     profile: Dict[str, float],
     taxonomy: Dict[int, Tuple[int, str]],
@@ -972,6 +1030,35 @@ def evaluate_with_truth(exp: dict, dataset: dict, outputs: dict) -> Dict[str, fl
                                 continue
                             pred_by_rank_full[rank][mapped] = pred_by_rank_full[rank].get(mapped, 0.0) + value
                             pred_by_rank_mapped[rank][mapped] = pred_by_rank_mapped[rank].get(mapped, 0.0) + value
+        else:
+            cami_profile_path_str = outputs.get("cami_profile_tsv") or outputs.get("taxor_profile_tsv")
+            if cami_profile_path_str:
+                cami_path = Path(cami_profile_path_str)
+                if cami_path.exists():
+                    cami_by_rank = parse_cami_profile(cami_path)
+                    if cami_by_rank:
+                        pred_by_rank_mapped = {r: {} for r in ranks}
+                        pred_by_rank_full = {r: {} for r in ranks}
+                        for rank in ranks:
+                            if rank == "species":
+                                candidates = ("species", "strain")
+                            elif rank == "genus":
+                                candidates = ("species", "strain", "genus")
+                            else:
+                                candidates = (rank,)
+                            src_rank = next((c for c in candidates if c in cami_by_rank), None)
+                            if src_rank is None:
+                                continue
+                            for taxid, value in cami_by_rank[src_rank].items():
+                                mapped = taxid_to_rank(taxid, rank, taxonomy)
+                                if mapped is None or (
+                                    covered_by_rank is not None and mapped not in covered_by_rank.get(rank, set())
+                                ):
+                                    key: TaxKey = taxid
+                                    pred_by_rank_full[rank][key] = pred_by_rank_full[rank].get(key, 0.0) + float(value)
+                                    continue
+                                pred_by_rank_full[rank][mapped] = pred_by_rank_full[rank].get(mapped, 0.0) + float(value)
+                                pred_by_rank_mapped[rank][mapped] = pred_by_rank_mapped[rank].get(mapped, 0.0) + float(value)
 
     if pred_by_rank_full is not None:
         has_truth = any(truth_by_rank_full.get(rank) for rank in ranks)

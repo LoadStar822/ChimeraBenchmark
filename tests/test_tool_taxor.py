@@ -50,3 +50,31 @@ def test_taxor_build_db_steps_with_prep():
     assert "--syncmer-size" in cmd
     assert "12" in cmd
     assert "--use-syncmer" in cmd
+
+
+def test_taxor_build_steps_includes_fix_search(tmp_path):
+    tool = TaxorTool({"env": "taxor", "bin": "taxor"})
+    nodes = tmp_path / "nodes.dmp"
+    nodes.write_text("1\t|\t1\t|\tno rank\t|\n", encoding="utf-8")
+
+    steps = tool.build_steps(
+        dataset={"name": "sample", "reads": ["reads.fq"]},
+        exp={
+            "db": "DB/cami_refseq",
+            "threads": 8,
+            "coverage_nodes_dmp": str(nodes),
+        },
+        out_prefix="runs/out",
+    )
+
+    assert [s["name"] for s in steps] == ["search", "fix_search", "profile"]
+
+    fix_cmd = steps[1]["cmd"]
+    assert fix_cmd[0] == "python"
+    assert fix_cmd[1].endswith("chimera_bench/tools/taxor_fix_search.py")
+    assert "--search-file" in fix_cmd
+    assert "runs/out_search.tsv" in fix_cmd
+    assert "--nodes-dmp" in fix_cmd
+    assert str(nodes) in fix_cmd
+    assert "--names-dmp" in fix_cmd
+    assert str(tmp_path / "names.dmp") in fix_cmd
