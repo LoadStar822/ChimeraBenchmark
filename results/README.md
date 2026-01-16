@@ -21,6 +21,25 @@
 
 注：本项目配置文件里实验名仍可能写作 `ganon`，但实际运行的软件为 **ganon2**，结果表中统一记作 **ganon2**。
 
+## Taxor 运行限制（资源）
+
+Taxor 在 read 型数据集上生成极大的 `taxor_search.tsv` 中间文件，并触发高内存/磁盘压力（甚至被系统 kill），影响服务器稳定性。
+
+因此目前 Taxor 结果仅在 CAMI contigs 数据集上报告：
+- `cami2-marine-long-sample0`
+- `cami2-marine-long`（包含 sample_0..9 的 contigs，合并为一次 run）
+- `cami2-marine-short`（包含 sample_0..9 的 contigs，合并为一次 run）
+
+由于资源限制，以下数据集暂不运行 Taxor：
+- `atcc-illumina`
+- `atcc-hifi`
+- `zymo-gridion-even`
+- `zymo-gridion-log`
+- `zymo-promethion-even`
+- `zymo-promethion-log`
+
+为保护服务器，同时不将 `taxor_search.tsv` 作为长期结果保留（需要时请重跑 search 步骤）。
+
 ## 评估口径（desc / exact）
 
 本项目的指标口径对齐 `/mnt/sda/tianqinzhong/code/Chimera/bench`：

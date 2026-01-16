@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import resource
 from pathlib import Path
 import subprocess
+import sys
 
 from .config import load_yaml_dir
 from .core.runner import Runner
@@ -12,23 +14,51 @@ from .core.reporter import write_summary
 from .registry import TOOLS
 
 DEFAULT_THREADS = 32
+TAXOR_MAX_INPUT_BYTES = 100 * 1000 * 1000 * 1000
+TAXOR_MAX_FILE_BYTES = 100 * 1000 * 1000 * 1000
 
 
-def _executor(cmd, cwd, stdout_path, stderr_path, resource_path):
-    cwd = Path(cwd)
-    cwd.mkdir(parents=True, exist_ok=True)
-    stdout_path = Path(stdout_path)
-    stderr_path = Path(stderr_path)
-    stdout_path.parent.mkdir(parents=True, exist_ok=True)
-    stderr_path.parent.mkdir(parents=True, exist_ok=True)
-    timed_cmd = cmd
-    if resource_path:
-        resource_path = Path(resource_path).resolve()
-        resource_path.parent.mkdir(parents=True, exist_ok=True)
-        timed_cmd = ["/usr/bin/time", "-v", "-o", str(resource_path)] + cmd
-    with open(stdout_path, "w") as out, open(stderr_path, "w") as err:
-        proc = subprocess.run(timed_cmd, cwd=cwd, stdout=out, stderr=err)
-    return proc.returncode
+def _make_executor(*, max_file_bytes: int | None = None):
+    def _executor(cmd, cwd, stdout_path, stderr_path, resource_path):
+        cwd = Path(cwd)
+        cwd.mkdir(parents=True, exist_ok=True)
+        stdout_path = Path(stdout_path)
+        stderr_path = Path(stderr_path)
+        stdout_path.parent.mkdir(parents=True, exist_ok=True)
+        stderr_path.parent.mkdir(parents=True, exist_ok=True)
+        timed_cmd = cmd
+        if resource_path:
+            resource_path = Path(resource_path).resolve()
+            resource_path.parent.mkdir(parents=True, exist_ok=True)
+            timed_cmd = ["/usr/bin/time", "-v", "-o", str(resource_path)] + cmd
+
+        def _apply_limits():
+            if max_file_bytes is not None:
+                resource.setrlimit(resource.RLIMIT_FSIZE, (max_file_bytes, max_file_bytes))
+
+        preexec_fn = _apply_limits if max_file_bytes is not None else None
+        with open(stdout_path, "w") as out, open(stderr_path, "w") as err:
+            proc = subprocess.run(timed_cmd, cwd=cwd, stdout=out, stderr=err, preexec_fn=preexec_fn)
+        return proc.returncode
+
+    return _executor
+
+
+def _dataset_read_paths(dataset: dict) -> list[Path]:
+    paired = dataset.get("paired")
+    if isinstance(paired, list) and paired:
+        return [Path(p) for p in paired]
+    reads = dataset.get("reads")
+    if isinstance(reads, list) and reads:
+        return [Path(p) for p in reads]
+    raise ValueError("dataset must define reads or paired inputs")
+
+
+def _sum_file_bytes(paths: list[Path]) -> int:
+    total = 0
+    for path in paths:
+        total += path.stat().st_size
+    return total
 
 
 def _resolve_datasets(exp: dict, datasets: dict, selected: list[str]) -> list[dict]:
@@ -71,6 +101,9 @@ def run_cmd(args) -> None:
 
     runner = Runner(Path(args.runs), Path(args.profile) if args.profile else None)
     tool = tool_cls(tool_config)
+    executor = _make_executor()
+    if tool_name == "taxor":
+        executor = _make_executor(max_file_bytes=TAXOR_MAX_FILE_BYTES)
 
     if args.dry_run:
         Path(args.runs).mkdir(parents=True, exist_ok=True)
@@ -78,7 +111,18 @@ def run_cmd(args) -> None:
 
     selected = args.dataset or []
     for dataset in _resolve_datasets(exp, datasets, selected):
-        runner.run(exp=exp, dataset=dataset, tool=tool, executor=_executor)
+        if tool_name == "taxor":
+            dataset_name = dataset.get("name", "dataset")
+            read_paths = _dataset_read_paths(dataset)
+            total_bytes = _sum_file_bytes(read_paths)
+            if total_bytes > TAXOR_MAX_INPUT_BYTES:
+                size_gib = total_bytes / (1024 * 1024 * 1024)
+                print(
+                    f"[skip] taxor dataset={dataset_name} input_size={size_gib:.2f}GiB exceeds 100GB",
+                    file=sys.stderr,
+                )
+                continue
+        runner.run(exp=exp, dataset=dataset, tool=tool, executor=executor)
 
 
 def report_cmd(args) -> None:
@@ -127,12 +171,13 @@ def build_cmd(args) -> None:
 
     runner = BuildRunner(Path(args.runs))
     tool = tool_cls(tool_config)
+    executor = _make_executor()
 
     if args.dry_run:
         Path(args.runs).mkdir(parents=True, exist_ok=True)
         return
 
-    runner.run(build=build, tool=tool, executor=_executor)
+    runner.run(build=build, tool=tool, executor=executor)
 
 
 def main() -> None:
