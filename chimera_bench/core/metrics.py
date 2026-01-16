@@ -540,6 +540,7 @@ def map_taxid_profile_to_rank(
 def load_cami_mapping(paths: Iterable[Path]):
     truth_map: Dict[str, int] = {}
     abundance: Dict[int, int] = {}
+    contig_weight: Dict[str, int] = {}
     for path in paths:
         with _open_text(path) as fh:
             for raw in fh:
@@ -558,9 +559,11 @@ def load_cami_mapping(paths: Iterable[Path]):
                     reads = int(parts[4])
                 except ValueError:
                     reads = 1
+                weight = max(1, reads)
                 truth_map[contig_id] = taxid
-                abundance[taxid] = abundance.get(taxid, 0) + max(1, reads)
-    return truth_map, abundance
+                contig_weight[contig_id] = weight
+                abundance[taxid] = abundance.get(taxid, 0) + weight
+    return truth_map, abundance, contig_weight
 
 
 def parse_tre_counts(path: Path, ranks: Iterable[str]) -> Dict[str, Dict[int, int]]:
@@ -912,31 +915,33 @@ def evaluate_with_truth(exp: dict, dataset: dict, outputs: dict) -> Dict[str, fl
     mapping_paths = _resolve_mapping_paths(dataset)
     truth_reads: Dict[str, int] = {}
     truth_abundance: Dict[int, int] = {}
+    contig_weight: Dict[str, int] = {}
     if mapping_paths:
-        truth_reads, truth_abundance = load_cami_mapping(mapping_paths)
+        truth_reads, truth_abundance, contig_weight = load_cami_mapping(mapping_paths)
 
-        classify_path = outputs.get("classify_tsv")
-        preds = None
-        if classify_path:
-            classify_path = Path(classify_path)
-            if classify_path.exists():
-                preds = parse_classify_tsv(classify_path)
-            else:
-                metrics["classify_tsv_missing"] = 1
+    classify_path = outputs.get("classify_tsv")
+    preds = None
+    if classify_path:
+        classify_path = Path(classify_path)
+        if classify_path.exists():
+            preds = parse_classify_tsv(classify_path)
         else:
-            classify_one = outputs.get("classify_one")
-            if classify_one:
-                classify_one = Path(classify_one)
-                if classify_one.exists():
-                    preds = parse_ganon_one(classify_one, file_to_taxid)
-                else:
-                    metrics["classify_one_missing"] = 1
-        if preds is not None:
-            desc_metrics = compute_per_read_metrics(truth_reads, preds, taxonomy, ranks, covered_by_rank)
-            exact_metrics = compute_per_read_metrics_exact(truth_reads, preds, taxonomy, ranks, covered_by_rank)
-            metrics.update(desc_metrics)
-            for key, value in exact_metrics.items():
-                metrics[f"exact_{key}"] = value
+            metrics["classify_tsv_missing"] = 1
+    else:
+        classify_one = outputs.get("classify_one")
+        if classify_one:
+            classify_one = Path(classify_one)
+            if classify_one.exists():
+                preds = parse_ganon_one(classify_one, file_to_taxid)
+            else:
+                metrics["classify_one_missing"] = 1
+
+    if preds is not None and truth_reads:
+        desc_metrics = compute_per_read_metrics(truth_reads, preds, taxonomy, ranks, covered_by_rank)
+        exact_metrics = compute_per_read_metrics_exact(truth_reads, preds, taxonomy, ranks, covered_by_rank)
+        metrics.update(desc_metrics)
+        for key, value in exact_metrics.items():
+            metrics[f"exact_{key}"] = value
 
     truth_by_rank_mapped: Dict[str, Dict[TaxKey, float]] = {r: {} for r in ranks}
     truth_by_rank_full: Dict[str, Dict[TaxKey, float]] = {r: {} for r in ranks}
@@ -1059,6 +1064,21 @@ def evaluate_with_truth(exp: dict, dataset: dict, outputs: dict) -> Dict[str, fl
                                     continue
                                 pred_by_rank_full[rank][mapped] = pred_by_rank_full[rank].get(mapped, 0.0) + float(value)
                                 pred_by_rank_mapped[rank][mapped] = pred_by_rank_mapped[rank].get(mapped, 0.0) + float(value)
+
+    if pred_by_rank_full is None and preds is not None and truth_by_rank_full:
+        pred_abundance: Dict[int, float] = {}
+        for read_id, pred_taxid in preds.items():
+            if pred_taxid is None:
+                continue
+            weight = float(contig_weight.get(read_id, 1))
+            pred_abundance[pred_taxid] = pred_abundance.get(pred_taxid, 0.0) + weight
+        if pred_abundance:
+            pred_by_rank_mapped, pred_by_rank_full = map_taxid_profile_to_rank(
+                pred_abundance,
+                taxonomy,
+                ranks,
+                covered_by_rank,
+            )
 
     if pred_by_rank_full is not None:
         has_truth = any(truth_by_rank_full.get(rank) for rank in ranks)
