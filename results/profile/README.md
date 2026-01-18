@@ -92,5 +92,6 @@ Auto-generated. Do not edit.
 | Tool | DB | Elapsed (s) | Max RSS (GB) | Presence Precision (species) | Presence Recall (species) | Presence F1 (species) | L1 (species) | TV (species) | Bray-Curtis (species) | Presence Precision (genus) | Presence Recall (genus) | Presence F1 (genus) | L1 (genus) | TV (genus) | Bray-Curtis (genus) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | ganon2 | cami_refseq | 47708.910829 | 211.735104 | 0.007021 | 0.7 | 0.013903 | 199.40333 | 0.997017 | 0.997017 | 0.018391 | 0.8 | 0.035955 | 197.597903 | 0.98799 | 0.98799 |
+| kraken2 | cami_refseq | 5249.200369 | 124.863625 | 0.00041 | 0.8 | 0.00082 | 22.036603 | 0.110183 | 0.110183 | 0.002209 | 0.8 | 0.004406 | 20.887574 | 0.104438 | 0.104438 |
 | sylph | cami_refseq | 769.728807 | 34.486584 | 0.857143 | 0.6 | 0.705882 | 20.110006 | 0.10055 | 0.10055 | 0.857143 | 0.6 | 0.705882 | 20.110006 | 0.10055 | 0.10055 |
 
