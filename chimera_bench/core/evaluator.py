@@ -6,28 +6,33 @@ from pathlib import Path
 def summarize_classify_tsv(path: Path) -> dict:
     total = 0
     unclassified = 0
-    taxids = set()
+    taxids: set[int] = set()
     with path.open("r", encoding="utf-8", errors="ignore") as f:
         for raw in f:
             line = raw.strip()
             if not line:
                 continue
+            if line.startswith("#") or line.startswith("@"):
+                continue
             total += 1
             parts = line.split("\t")
             if len(parts) < 2:
-                unclassified += 1
                 continue
             tokens = [t for t in parts[1:] if t]
-            if not tokens or tokens[0] == "unclassified":
+            if not tokens:
                 unclassified += 1
                 continue
             first = tokens[0]
-            if ":" in first:
-                taxid = first.split(":", 1)[0]
-                if taxid and taxid != "unclassified":
-                    taxids.add(taxid)
-            else:
+            taxid_str = first.split(":", 1)[0].split("|", 1)[0].strip()
+            if taxid_str in {"unclassified", "-", "0", "NA"}:
                 unclassified += 1
+                continue
+            try:
+                taxid = int(taxid_str)
+            except ValueError:
+                unclassified += 1
+                continue
+            taxids.add(taxid)
     return {
         "total_reads": total,
         "unclassified_reads": unclassified,

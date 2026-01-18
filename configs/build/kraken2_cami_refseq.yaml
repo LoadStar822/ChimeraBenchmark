@@ -1,0 +1,13 @@
+name: kraken2-cami-refseq
+tool: kraken2
+db_prefix: DB/cami_refseq
+threads: 32
+tool_config:
+  env: kraken
+  bin: kraken2
+  build_bin: kraken2-build
+build:
+  target_tsv: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/target.tsv
+  taxonomy_dir: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/ncbi_taxonomy
+  taxonomy_tax: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/ganon/cami_refseq/DB/cami_refseq.tax
+

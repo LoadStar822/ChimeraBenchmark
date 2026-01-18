@@ -410,7 +410,8 @@ def write_builds_readme(root: Path) -> None:
 
     header = ["Tool", "DB Name", "Elapsed Seconds", "Max RSS (KB)", "Started At", "Finished At"]
     rows_by_key = _parse_build_readme_rows(readme_path)
-    for meta_path in root.rglob("meta.json"):
+    # Build outputs may contain very large DB directories; avoid a full recursive walk.
+    for meta_path in root.glob("*/*/meta.json"):
         try:
             meta = json.loads(meta_path.read_text())
         except json.JSONDecodeError:

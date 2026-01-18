@@ -1,0 +1,22 @@
+name: kraken2
+tool: kraken2
+datasets:
+  - cami2-marine-long-sample0
+  - atcc-illumina
+  - cami2-marine-long
+  - cami2-marine-short
+  - atcc-hifi
+  - zymo-gridion-even
+  - zymo-gridion-log
+  - zymo-promethion-even
+  - zymo-promethion-log
+db: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/kraken2/cami_refseq/DB/cami_refseq
+taxonomy: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/ganon/cami_refseq/DB/cami_refseq.tax
+threads: 32
+coverage_target_tsv: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/target.tsv
+coverage_nodes_dmp: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/ncbi_taxonomy/nodes.dmp
+tool_config:
+  env: kraken
+  bin: kraken2
+tool_args: []
+
