@@ -1,0 +1,19 @@
+name: bracken
+tool: bracken
+datasets:
+  - cami2-marine-long-sample0
+  - atcc-illumina
+  - cami2-marine-long
+  - cami2-marine-short
+  - atcc-hifi
+  - zymo-gridion-even
+  - zymo-gridion-log
+  - zymo-promethion-even
+  - zymo-promethion-log
+db: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/kraken2/cami_refseq/DB/cami_refseq
+threads: 32
+kraken2_runs: results/classify/kraken2
+tool_config:
+  env: kraken
+  bin: bracken
+

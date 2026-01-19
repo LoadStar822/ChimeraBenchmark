@@ -10,6 +10,8 @@
 
 ## 软件版本
 
+- kraken2: 2.1.3
+- bracken: 2.9
 - ganon2: 2.1.0
 - sylph: 0.8.1
 - taxor: 0.1.3（SeqAn 3.4.0-rc.1）
@@ -20,6 +22,17 @@
 - `profile`：展示 **abundance/presence** 指标；profile-only 工具只出现在该表中。
 
 注：本项目配置文件里实验名仍可能写作 `ganon`，但实际运行的软件为 **ganon2**，结果表中统一记作 **ganon2**。
+
+## Bracken 说明（默认参数 + 复用 Kraken2 report）
+
+Bracken 仅做 abundance 重估（不输出 per-read 分类），因此只出现在 `results/profile/README.md`。
+
+为保证“默认参数”的可比性：
+- Bracken 运行使用其默认参数（read_len=100、level=S、threshold=10；仅线程数用于加速）。
+- Bracken 复用已有 Kraken2 的 `--report` 输出（`results/classify/kraken2/<dataset>/outputs/kraken2.report`），不重复跑 Kraken2 分类步骤。
+
+Bracken 需要在 Kraken2 DB 内生成 `database100mers.kmer_distrib`（通过 `kmer2read_distr` + `generate_kmer_distribution.py`，参数与 bracken 默认一致：k=35、read_len=100）。
+由于我们通常会在 Kraken2 build 完成后清理 DB 中的 fasta 库文件以节省空间，Bracken build 时会临时从 CAMIRefseq 的 `target.tsv` 重新生成 `library/added/library.fna`，生成完分布文件后再删除该 fasta。
 
 ## Taxor 运行限制（资源）
 

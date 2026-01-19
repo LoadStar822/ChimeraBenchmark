@@ -1,0 +1,10 @@
+name: bracken-cami-refseq
+tool: bracken
+db_prefix: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/kraken2/cami_refseq/DB/cami_refseq
+threads: 32
+tool_config:
+  env: kraken
+build:
+  target_tsv: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/target.tsv
+  cleanup_library_fna: true
+
