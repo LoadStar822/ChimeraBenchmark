@@ -1,0 +1,14 @@
+name: centrifuger-cami-refseq
+tool: centrifuger
+db_prefix: DB/cami_refseq/cami_refseq
+threads: 32
+tool_config:
+  bin: /mnt/sda/tianqinzhong/code/centrifuger/centrifuger
+  build_bin: /mnt/sda/tianqinzhong/code/centrifuger/centrifuger-build
+  quant_bin: /mnt/sda/tianqinzhong/code/centrifuger/centrifuger-quant
+build:
+  target_tsv: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/target.tsv
+  taxonomy_dir: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/ncbi_taxonomy
+  # build_mem: 240G
+  args: []
+

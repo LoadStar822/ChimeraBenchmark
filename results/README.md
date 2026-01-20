@@ -12,6 +12,7 @@
 
 - kraken2: 2.1.3
 - bracken: 2.9
+- centrifuger: 1.1.0-r291
 - ganon2: 2.1.0
 - sylph: 0.8.1
 - taxor: 0.1.3（SeqAn 3.4.0-rc.1）
@@ -33,6 +34,11 @@ Bracken 仅做 abundance 重估（不输出 per-read 分类），因此只出现
 
 Bracken 需要在 Kraken2 DB 内生成 `database100mers.kmer_distrib`（通过 `kmer2read_distr` + `generate_kmer_distribution.py`，参数与 bracken 默认一致：k=35、read_len=100）。
 由于我们通常会在 Kraken2 build 完成后清理 DB 中的 fasta 库文件以节省空间，Bracken build 时会临时从 CAMIRefseq 的 `target.tsv` 重新生成 `library/added/library.fna`，生成完分布文件后再删除该 fasta。
+
+## Centrifuger 说明（默认参数 + CAMI profile 输出）
+
+- classify：使用 `centrifuger` 默认参数（`-k 1` 等），仅指定 `-t 32` 与 `-x`（DB 前缀）以及输入 reads。
+- profile：用 `centrifuger-quant` 基于 classify 的输出生成 profile；为便于评估，使用 `--output-format 2` 让其输出 CAMI 格式（不改变算法与数值，仅改变输出格式）。
 
 ## Taxor 运行限制（资源）
 
