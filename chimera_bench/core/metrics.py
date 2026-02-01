@@ -855,29 +855,47 @@ def _resolve_mapping_paths(dataset: dict) -> list[Path]:
     reads = dataset.get("reads") or []
     if truth_dir:
         truth_dir = Path(truth_dir)
-        sample_id = None
+        sample_ids: list[str] = []
         for read_path in reads:
             match = re.search(r"sample_(\d+)", str(read_path))
             if match:
-                sample_id = match.group(1)
-                break
-        if sample_id:
-            candidates = list(truth_dir.rglob(f"*sample_{sample_id}*gsa_mapping.tsv"))
-            if not candidates:
-                candidates = list(truth_dir.rglob(f"*sample_{sample_id}*gsa_mapping.tsv.gz"))
-            if candidates:
-                return candidates
+                sample_ids.append(match.group(1))
+        if sample_ids:
+            # Preserve read-list order while de-duplicating.
+            seen: set[str] = set()
+            ordered = []
+            for sid in sample_ids:
+                if sid in seen:
+                    continue
+                seen.add(sid)
+                ordered.append(sid)
+
+            paths: list[Path] = []
+            for sid in ordered:
+                candidates = list(truth_dir.rglob(f"*sample_{sid}_*gsa_mapping.tsv"))
+                if not candidates:
+                    candidates = list(truth_dir.rglob(f"*sample_{sid}_*gsa_mapping.tsv.gz"))
+                if candidates:
+                    paths.extend(sorted(candidates))
+            if paths:
+                return paths
 
     if reads:
-        read_path = Path(reads[0])
-        if "fasta" in read_path.parts:
+        paths = []
+        for read in reads:
+            read_path = Path(read)
+            if "fasta" not in read_path.parts:
+                continue
             mapping_path = Path(str(read_path).replace("/fasta/", "/mapping/"))
             mapping_path = Path(str(mapping_path).replace("_anonymous_gsa.fasta", "_gsa_mapping.tsv"))
             if mapping_path.exists():
-                return [mapping_path]
+                paths.append(mapping_path)
+                continue
             gz = Path(str(mapping_path) + ".gz")
             if gz.exists():
-                return [gz]
+                paths.append(gz)
+        if paths:
+            return paths
     return []
 
 

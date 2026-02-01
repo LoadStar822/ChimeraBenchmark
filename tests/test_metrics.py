@@ -4,6 +4,30 @@ from pathlib import Path
 from chimera_bench.core.metrics import evaluate_with_truth, parse_ganon_one, load_taxonomy
 
 
+def test_resolve_mapping_paths_collects_all_samples(tmp_path: Path):
+    from chimera_bench.core.metrics import _resolve_mapping_paths
+
+    truth_dir = tmp_path / "truth"
+    truth_dir.mkdir()
+    (truth_dir / "marmgCAMI2_sample_0_contigs_gsa_mapping.tsv").write_text("c0\tOtu\t1\tX\t1\t0\t0\n")
+    (truth_dir / "marmgCAMI2_sample_1_contigs_gsa_mapping.tsv").write_text("c1\tOtu\t1\tX\t1\t0\t0\n")
+
+    dataset = {
+        "truth_dir": str(truth_dir),
+        "reads": [
+            "/data/marmgCAMI2_sample_0_contigs_anonymous_gsa.fasta",
+            "/data/marmgCAMI2_sample_1_contigs_anonymous_gsa.fasta",
+        ],
+    }
+    paths = sorted(_resolve_mapping_paths(dataset))
+    assert paths == sorted(
+        [
+            truth_dir / "marmgCAMI2_sample_0_contigs_gsa_mapping.tsv",
+            truth_dir / "marmgCAMI2_sample_1_contigs_gsa_mapping.tsv",
+        ]
+    )
+
+
 def test_evaluate_with_truth_per_read_and_abundance(tmp_path: Path):
     tax = tmp_path / "test.tax"
     tax.write_text(
