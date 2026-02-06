@@ -1082,6 +1082,24 @@ def evaluate_with_truth(exp: dict, dataset: dict, outputs: dict) -> Dict[str, fl
                                     continue
                                 pred_by_rank_full[rank][mapped] = pred_by_rank_full[rank].get(mapped, 0.0) + float(value)
                                 pred_by_rank_mapped[rank][mapped] = pred_by_rank_mapped[rank].get(mapped, 0.0) + float(value)
+            else:
+                chimera_profile_path_str = outputs.get("chimera_profile_tsv") or outputs.get("chimera_profile")
+                if chimera_profile_path_str:
+                    profile_path = Path(chimera_profile_path_str)
+                    if not profile_path.exists():
+                        metrics["chimera_profile_missing"] = 1
+                    else:
+                        pred_profile = parse_truth_profile(profile_path)
+                        if pred_profile:
+                            pred_by_rank_mapped, pred_by_rank_full, _unmapped, _unmapped_mass = map_species_profile(
+                                pred_profile,
+                                taxonomy,
+                                name_to_taxid,
+                                syn_to_sci,
+                                sci_names,
+                                ranks,
+                                covered_by_rank,
+                            )
 
     if pred_by_rank_full is None and preds is not None and truth_by_rank_full:
         pred_abundance: Dict[int, float] = {}

@@ -1,0 +1,10 @@
+name: chimera-cami-refseq
+tool: chimera
+db_prefix: DB/cami_refseq
+threads: 32
+tool_config:
+  bin: /mnt/sda/tianqinzhong/code/Chimera/build/Chimera
+build:
+  input_tsv: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/target.tsv
+  taxonomy_tax: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/ganon/cami_refseq/DB/cami_refseq.tax
+  args: []

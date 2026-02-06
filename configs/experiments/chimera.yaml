@@ -1,8 +1,11 @@
 name: chimera
 tool: chimera
-db: /mnt/sda/tianqinzhong/code/Chimera/bench/DB/active.imcf
+db: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/chimera/cami_refseq/DB/cami_refseq
+taxonomy: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/chimera/cami_refseq/DB/cami_refseq.tax
 threads: 32
 tool_args: []
+tool_config:
+  bin: /mnt/sda/tianqinzhong/code/Chimera/build/Chimera
 datasets:
   - atcc-hifi
   - atcc-illumina
