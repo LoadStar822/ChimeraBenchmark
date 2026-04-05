@@ -1,0 +1,14 @@
+name: sylph-refseq-complete
+tool: sylph
+db_prefix: DB/refseq_complete
+threads: 32
+tool_config:
+  env: sylph
+  bin: sylph
+build:
+  mode: sketch
+  target_tsv: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/inputs/refseq_complete/target.taxfixed.tsv
+  target_col: 0
+  allow_missing: false
+  taxonomy_source: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/ganon/refseq_complete/DB/refseq_complete.tax
+  args: []

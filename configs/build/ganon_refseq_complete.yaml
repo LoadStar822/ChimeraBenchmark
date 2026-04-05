@@ -1,0 +1,17 @@
+name: ganon-refseq-complete
+tool: ganon
+db_prefix: DB/refseq_complete
+threads: 32
+tool_config:
+  env: ganon
+  bin: ganon
+build:
+  mode: custom
+  input_file: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/inputs/refseq_complete/ganon_input.tsv
+  input_target: file
+  taxonomy_files:
+    - /mnt/sda/CommonData/TaxonomyDataset/complete/ncbi_taxonomy/nodes.dmp
+    - /mnt/sda/CommonData/TaxonomyDataset/complete/ncbi_taxonomy/names.dmp
+    - /mnt/sda/CommonData/TaxonomyDataset/complete/ncbi_taxonomy/merged.dmp
+    - /mnt/sda/CommonData/TaxonomyDataset/complete/ncbi_taxonomy/delnodes.dmp
+  args: []

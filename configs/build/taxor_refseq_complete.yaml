@@ -1,0 +1,15 @@
+name: taxor-refseq-complete
+tool: taxor
+db_prefix: DB/refseq_complete
+threads: 32
+tool_config:
+  env: taxor
+  bin: taxor
+build:
+  assembly_summary: /mnt/sda/CommonData/TaxonomyDataset/complete/assembly_summary.txt
+  target_tsv: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/inputs/refseq_complete/target.taxfixed.tsv
+  input_sequence_dir: /mnt/sda/CommonData/TaxonomyDataset/complete/2024-10-07_16-26-36/files
+  kmer_size: 22
+  syncmer_size: 12
+  use_syncmer: true
+  args: []

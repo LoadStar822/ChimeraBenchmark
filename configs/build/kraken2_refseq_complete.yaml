@@ -1,0 +1,12 @@
+name: kraken2-refseq-complete
+tool: kraken2
+db_prefix: DB/refseq_complete
+threads: 32
+tool_config:
+  env: kraken
+  bin: kraken2
+  build_bin: kraken2-build
+build:
+  target_tsv: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/inputs/refseq_complete/target.taxfixed.tsv
+  taxonomy_dir: /mnt/sda/CommonData/TaxonomyDataset/complete/ncbi_taxonomy
+  taxonomy_tax: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/ganon/refseq_complete/DB/refseq_complete.tax

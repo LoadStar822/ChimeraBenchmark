@@ -203,6 +203,9 @@ def test_write_builds_readme_preserves_existing_rows_and_adds_successful_meta(tm
 
     success_dir = builds_root / "taxor" / "cami_refseq"
     success_dir.mkdir(parents=True)
+    db_dir = success_dir / "DB"
+    db_dir.mkdir(parents=True)
+    (db_dir / "db.bin").write_bytes(b"x" * 2048)
     (success_dir / "meta.json").write_text(
         json.dumps(
             {
@@ -220,8 +223,36 @@ def test_write_builds_readme_preserves_existing_rows_and_adds_successful_meta(tm
     write_builds_readme(builds_root)
 
     text = (builds_root / "README.md").read_text()
-    assert "| ganon2 | cami_refseq | 1 | 2 | a | b |" in text
+    assert "| Tool | DB Name | Elapsed Seconds | Max RSS (KB) | DB Size | Started At | Finished At |" in text
+    assert "| ganon2 | cami_refseq | 1 | 2 |  | a | b |" in text
     assert "| ganon | cami_refseq |" not in text
-    assert "| sylph | cami_refseq | 3 | 4 | c | d |" in text
-    assert "| taxor | cami_refseq | 10 | 1024 | 2026-01-01T00:00:00+00:00 | 2026-01-01T00:00:10+00:00 |" in text
+    assert "| sylph | cami_refseq | 3 | 4 |  | c | d |" in text
+    assert "| taxor | cami_refseq | 10 | 1024 | 2.00 KiB | 2026-01-01T00:00:00+00:00 | 2026-01-01T00:00:10+00:00 |" in text
     assert "fail_db" not in text
+
+
+def test_write_builds_readme_drops_bracken_rows(tmp_path: Path):
+    builds_root = tmp_path / "builds"
+    builds_root.mkdir()
+    (builds_root / "README.md").write_text(
+        "\n".join(
+            [
+                "# Build Results",
+                "",
+                "Auto-generated. Do not edit.",
+                "",
+                "| Tool | DB Name | Elapsed Seconds | Max RSS (KB) | DB Size | Started At | Finished At |",
+                "| --- | --- | --- | --- | --- | --- | --- |",
+                "| bracken | cami_refseq | 1 | 2 | 3 GiB | a | b |",
+                "| sylph | cami_refseq | 3 | 4 | 5 GiB | c | d |",
+                "",
+            ]
+        )
+        + "\n"
+    )
+
+    write_builds_readme(builds_root)
+
+    text = (builds_root / "README.md").read_text()
+    assert "| bracken | cami_refseq |" not in text
+    assert "| sylph | cami_refseq | 3 | 4 | 5 GiB | c | d |" in text

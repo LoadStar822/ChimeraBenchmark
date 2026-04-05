@@ -1,0 +1,12 @@
+name: centrifuger-refseq-complete
+tool: centrifuger
+db_prefix: DB/refseq_complete/refseq_complete
+threads: 32
+tool_config:
+  bin: /mnt/sda/tianqinzhong/code/centrifuger/centrifuger
+  build_bin: /mnt/sda/tianqinzhong/code/centrifuger/centrifuger-build
+  quant_bin: /mnt/sda/tianqinzhong/code/centrifuger/centrifuger-quant
+build:
+  target_tsv: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/inputs/refseq_complete/target.taxfixed.tsv
+  taxonomy_dir: /mnt/sda/CommonData/TaxonomyDataset/complete/ncbi_taxonomy
+  args: []

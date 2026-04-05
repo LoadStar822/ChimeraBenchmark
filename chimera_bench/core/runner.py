@@ -84,7 +84,8 @@ class Runner:
                     "resource": resource,
                 }
             )
-            outputs_all.update(step.get("outputs", {}))
+            if rc == 0:
+                outputs_all.update(step.get("outputs", {}))
             if rc != 0:
                 break
 

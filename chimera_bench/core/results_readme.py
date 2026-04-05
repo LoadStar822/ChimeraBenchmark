@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Dict, List
 
@@ -9,6 +10,21 @@ TOOL_DISPLAY_NAMES = {
     # configs/experiments still use "ganon", but the actual software is ganon2.
     "ganon": "ganon2",
 }
+TOOL_DIR_NAMES = {
+    # reverse mapping for looking up run dirs on disk
+    "ganon2": "ganon",
+}
+BUILD_README_EXCLUDED_TOOLS = {"bracken"}
+
+BUILD_COLUMNS = [
+    "Tool",
+    "DB Name",
+    "Elapsed Seconds",
+    "Max RSS (KB)",
+    "DB Size",
+    "Started At",
+    "Finished At",
+]
 
 PER_READ_COLUMNS = [
     ("Elapsed (s)", "run_elapsed_seconds"),
@@ -125,6 +141,8 @@ def _collect_runs(root: Path) -> List[Dict]:
             meta = json.loads(meta_path.read_text())
         except json.JSONDecodeError:
             continue
+        if meta.get("return_code") not in {None, 0}:
+            continue
         metrics_path = meta_path.parent / "metrics.json"
         metrics = {}
         if metrics_path.exists():
@@ -229,13 +247,24 @@ def _parse_build_readme_rows(readme_path: Path) -> dict[tuple[str, str], list[st
             row = row + [""] * (len(header) - len(row))
         elif len(row) > len(header):
             row = row[: len(header)]
-        tool = row[0].strip() if len(row) > 0 else ""
-        db = row[1].strip() if len(row) > 1 else ""
+        header_map = {header[i].strip(): row[i].strip() for i in range(min(len(header), len(row)))}
+        tool = header_map.get("Tool", row[0].strip() if len(row) > 0 else "")
+        db = header_map.get("DB Name", header_map.get("DB", row[1].strip() if len(row) > 1 else ""))
         if not tool:
             continue
         tool = TOOL_DISPLAY_NAMES.get(tool, tool)
-        row[0] = tool
-        rows[(tool, db)] = row
+        if tool in BUILD_README_EXCLUDED_TOOLS:
+            continue
+        normalized = [
+            tool,
+            db,
+            header_map.get("Elapsed Seconds", ""),
+            header_map.get("Max RSS (KB)", ""),
+            header_map.get("DB Size", header_map.get("DB Size (GiB)", "")),
+            header_map.get("Started At", ""),
+            header_map.get("Finished At", ""),
+        ]
+        rows[(tool, db)] = normalized
     return rows
 
 
@@ -274,6 +303,86 @@ def _normalize_abundance_l1_from_tv(
             tv = _try_float(row[tv_genus])
             if tv is not None:
                 row[l1_genus] = _format_float(200.0 * tv)
+
+
+def _dir_size_bytes(path: Path) -> int:
+    if not path.exists():
+        return 0
+    if path.is_file():
+        try:
+            return path.stat().st_size
+        except OSError:
+            return 0
+    total = 0
+    for root, _dirs, files in os.walk(path, followlinks=False):
+        root_path = Path(root)
+        for name in files:
+            file_path = root_path / name
+            try:
+                total += file_path.stat().st_size
+            except OSError:
+                continue
+    return total
+
+
+def _format_bytes(size_bytes: int | None) -> str:
+    if size_bytes is None or size_bytes < 0:
+        return ""
+    units = ["B", "KiB", "MiB", "GiB", "TiB", "PiB"]
+    value = float(size_bytes)
+    unit = units[0]
+    for candidate in units[1:]:
+        if value < 1024.0:
+            break
+        value /= 1024.0
+        unit = candidate
+    if unit == "B":
+        return f"{int(value)} {unit}"
+    if value >= 100:
+        return f"{value:.0f} {unit}"
+    if value >= 10:
+        return f"{value:.1f} {unit}"
+    return f"{value:.2f} {unit}"
+
+
+def _resolve_build_db_size(meta_path: Path, meta: dict) -> str:
+    run_dir = meta_path.parent
+    size_candidates: list[int] = []
+    db_dir = run_dir / "DB"
+    if db_dir.exists():
+        size_candidates.append(_dir_size_bytes(db_dir))
+
+    outputs = meta.get("outputs", {}) or {}
+    candidates: list[Path] = []
+    for key in ("db_file", "db_prefix"):
+        value = outputs.get(key)
+        if isinstance(value, str) and value.strip():
+            candidates.append(Path(value))
+    db_prefix = meta.get("db_prefix")
+    if isinstance(db_prefix, str) and db_prefix.strip():
+        candidates.append(Path(db_prefix))
+
+    for candidate in candidates:
+        path = candidate if candidate.is_absolute() else (run_dir / candidate)
+        if path.exists():
+            size_candidates.append(_dir_size_bytes(path))
+            continue
+        if path.suffix != ".imcf":
+            imcf_path = path.with_suffix(".imcf")
+            if imcf_path.exists():
+                size_candidates.append(_dir_size_bytes(imcf_path))
+
+    if size_candidates:
+        return _format_bytes(max(size_candidates))
+    return ""
+
+
+def _resolve_build_db_size_from_run_dir(root: Path, tool: str, db_name: str) -> str:
+    tool_dir = TOOL_DIR_NAMES.get(tool, tool)
+    db_dir = root / tool_dir / db_name / "DB"
+    if db_dir.exists():
+        return _format_bytes(_dir_size_bytes(db_dir))
+    return ""
 
 
 def _merge_rows(
@@ -408,7 +517,7 @@ def write_builds_readme(root: Path) -> None:
         readme_path.write_text("\n".join(lines) + "\n")
         return
 
-    header = ["Tool", "DB Name", "Elapsed Seconds", "Max RSS (KB)", "Started At", "Finished At"]
+    header = BUILD_COLUMNS
     rows_by_key = _parse_build_readme_rows(readme_path)
     # Build outputs may contain very large DB directories; avoid a full recursive walk.
     for meta_path in root.glob("*/*/meta.json"):
@@ -424,15 +533,27 @@ def write_builds_readme(root: Path) -> None:
             tool = TOOL_DISPLAY_NAMES.get(tool, tool)
         if not tool:
             continue
+        if tool in BUILD_README_EXCLUDED_TOOLS:
+            continue
         db_name = meta.get("db_name") or meta_path.parent.name
+        db_size = _resolve_build_db_size(meta_path, meta)
         rows_by_key[(str(tool), str(db_name))] = [
             str(tool),
             str(db_name),
             _format_value(meta.get("elapsed_seconds")),
             _format_value(resource.get("max_rss_kb")),
+            db_size,
             _format_value(meta.get("started_at")),
             _format_value(meta.get("finished_at")),
         ]
+
+    # Backfill DB size for preserved rows that don't have current meta.json.
+    for (tool, db_name), row in rows_by_key.items():
+        if len(row) < len(header):
+            row.extend([""] * (len(header) - len(row)))
+        if row[4]:
+            continue
+        row[4] = _resolve_build_db_size_from_run_dir(root, tool, db_name)
 
     lines.append("| " + " | ".join(header) + " |")
     lines.append("| " + " | ".join(["---"] * len(header)) + " |")
