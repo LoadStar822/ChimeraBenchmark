@@ -60,22 +60,13 @@ PER_READ_UNK_COLUMNS = [
 ABUNDANCE_COLUMNS = [
     ("Elapsed (s)", "run_elapsed_seconds"),
     ("Max RSS (GB)", "resource_max_rss_gb"),
-    ("Truth Mapped Rate (species)", "truth_mapped_mass_rate_species"),
-    ("Pred Mapped Rate (species)", "pred_mapped_mass_rate_species"),
-    ("Presence Precision (species)", "presence_precision_species"),
-    ("Presence Recall (species)", "presence_recall_species"),
-    ("Presence F1 (species)", "presence_f1_species"),
-    ("L1 (species)", "abundance_l1_species"),
-    ("TV (species)", "abundance_tv_species"),
-    ("Bray-Curtis (species)", "abundance_bc_species"),
-    ("Truth Mapped Rate (genus)", "truth_mapped_mass_rate_genus"),
-    ("Pred Mapped Rate (genus)", "pred_mapped_mass_rate_genus"),
-    ("Presence Precision (genus)", "presence_precision_genus"),
-    ("Presence Recall (genus)", "presence_recall_genus"),
-    ("Presence F1 (genus)", "presence_f1_genus"),
-    ("L1 (genus)", "abundance_l1_genus"),
-    ("TV (genus)", "abundance_tv_genus"),
-    ("Bray-Curtis (genus)", "abundance_bc_genus"),
+    ("Completeness (species)", "completeness_species"),
+    ("Purity (species)", "purity_species"),
+    ("L1 Norm (species)", "l1_norm_species"),
+    ("Completeness (genus)", "completeness_genus"),
+    ("Purity (genus)", "purity_genus"),
+    ("L1 Norm (genus)", "l1_norm_genus"),
+    ("Weighted UniFrac", "weighted_unifrac"),
 ]
 
 ABUNDANCE_UNK_COLUMNS = [
@@ -98,9 +89,13 @@ ABUNDANCE_UNK_COLUMNS = [
 PER_READ_MAIN_COLUMNS = [
     ("Elapsed (s)", "run_elapsed_seconds"),
     ("Max RSS (GB)", "resource_max_rss_gb"),
+    ("Truth Mapped Rate (species)", "per_read_truth_mapped_rate_species"),
+    ("Pred Mapped Rate (species)", "per_read_pred_mapped_rate_species"),
     ("Precision (species)", "per_read_precision_species"),
     ("Recall (species)", "per_read_recall_species"),
     ("F1 (species)", "per_read_f1_species"),
+    ("Truth Mapped Rate (genus)", "per_read_truth_mapped_rate_genus"),
+    ("Pred Mapped Rate (genus)", "per_read_pred_mapped_rate_genus"),
     ("Precision (genus)", "per_read_precision_genus"),
     ("Recall (genus)", "per_read_recall_genus"),
     ("F1 (genus)", "per_read_f1_genus"),
@@ -109,18 +104,43 @@ PER_READ_MAIN_COLUMNS = [
 ABUNDANCE_MAIN_COLUMNS = [
     ("Elapsed (s)", "run_elapsed_seconds"),
     ("Max RSS (GB)", "resource_max_rss_gb"),
-    ("Presence Precision (species)", "presence_precision_species"),
-    ("Presence Recall (species)", "presence_recall_species"),
-    ("Presence F1 (species)", "presence_f1_species"),
-    ("L1 (species)", "abundance_l1_species"),
-    ("TV (species)", "abundance_tv_species"),
-    ("Bray-Curtis (species)", "abundance_bc_species"),
-    ("Presence Precision (genus)", "presence_precision_genus"),
-    ("Presence Recall (genus)", "presence_recall_genus"),
-    ("Presence F1 (genus)", "presence_f1_genus"),
-    ("L1 (genus)", "abundance_l1_genus"),
-    ("TV (genus)", "abundance_tv_genus"),
-    ("Bray-Curtis (genus)", "abundance_bc_genus"),
+    ("Completeness (species)", "completeness_species"),
+    ("Purity (species)", "purity_species"),
+    ("L1 Norm (species)", "l1_norm_species"),
+    ("Completeness (genus)", "completeness_genus"),
+    ("Purity (genus)", "purity_genus"),
+    ("L1 Norm (genus)", "l1_norm_genus"),
+    ("Weighted UniFrac", "weighted_unifrac"),
+]
+
+PUBLIC_METRIC_ALIASES = {
+    "per_read_classified_rate": "exact_per_read_classified_rate",
+    "per_read_unclassified_rate": "exact_per_read_unclassified_rate",
+    "per_read_truth_mapped_rate_species": "exact_per_read_truth_mapped_rate_species",
+    "per_read_truth_mapped_rate_genus": "exact_per_read_truth_mapped_rate_genus",
+    "per_read_pred_mapped_rate_species": "exact_per_read_pred_mapped_rate_species",
+    "per_read_pred_mapped_rate_genus": "exact_per_read_pred_mapped_rate_genus",
+    "per_read_precision_species": "exact_per_read_precision_species",
+    "per_read_recall_species": "exact_per_read_recall_species",
+    "per_read_f1_species": "exact_per_read_f1_species",
+    "per_read_precision_genus": "exact_per_read_precision_genus",
+    "per_read_recall_genus": "exact_per_read_recall_genus",
+    "per_read_f1_genus": "exact_per_read_f1_genus",
+}
+
+CLASSIFY_PUBLIC_NOTE = [
+    "本表按 `species/genus` 层级判断分类是否正确：先将真值和预测提升到对应层级，再比较是否一致。",
+    "例如：真值为某个 species，预测到该 species 下的 strain 时，`species` 列记为正确。",
+    "原始真值若为 `strain/subspecies/isolate`，只要能提升到对应 rank，就进入该 rank 分母；原始真值若只有 `family/order/class`，则不进入更细层级分母。",
+    "Truth Mapped Rate / Pred Mapped Rate 会同时展示；F1 必须结合映射率一起解读，不能脱离分母单独引用。",
+    "只有满足默认参数合同的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。",
+]
+
+PROFILE_PUBLIC_NOTE = [
+    "本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。",
+    "只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。",
+    "只有满足默认参数合同的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。",
+    "Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。",
 ]
 
 def _format_value(value):
@@ -130,6 +150,15 @@ def _format_value(value):
         text = f"{value:.6f}"
         return text.rstrip("0").rstrip(".")
     return str(value)
+
+
+def _apply_public_metric_aliases(metrics: dict) -> dict:
+    aliased = dict(metrics)
+    for public_key, preferred_key in PUBLIC_METRIC_ALIASES.items():
+        preferred_value = metrics.get(preferred_key)
+        if preferred_value is not None:
+            aliased[public_key] = preferred_value
+    return aliased
 
 
 def _collect_runs(root: Path) -> List[Dict]:
@@ -150,6 +179,7 @@ def _collect_runs(root: Path) -> List[Dict]:
                 metrics = json.loads(metrics_path.read_text())
             except json.JSONDecodeError:
                 metrics = {}
+        metrics = _apply_public_metric_aliases(metrics)
         if meta.get("elapsed_seconds") is not None:
             metrics.setdefault("run_elapsed_seconds", meta.get("elapsed_seconds"))
         resource = meta.get("resource", {})
@@ -436,7 +466,9 @@ def _has_per_read_metrics(metrics: dict) -> bool:
 
 def _has_abundance_metrics(metrics: dict) -> bool:
     for key in metrics.keys():
-        if key.startswith("presence_") or key.startswith("abundance_"):
+        if key.startswith("completeness_") or key.startswith("purity_") or key.startswith("l1_norm_"):
+            return True
+        if key == "weighted_unifrac":
             return True
     return False
 
@@ -471,6 +503,8 @@ def write_classify_readme(root: Path) -> None:
         lines.append("")
         lines.append("### Per-read Metrics")
         lines.append("")
+        lines.extend(CLASSIFY_PUBLIC_NOTE)
+        lines.append("")
         lines.append("| " + " | ".join(header) + " |")
         lines.append("| " + " | ".join(["---"] * len(header)) + " |")
         for rec in sorted(rows, key=lambda r: (r.get("tool") or "", r.get("db_name") or "")):
@@ -498,6 +532,8 @@ def write_profile_readme(profile_root: Path, runs_root: Path) -> None:
         lines.append(f"## Dataset: {dataset}")
         lines.append("")
         lines.append("### Abundance Metrics")
+        lines.append("")
+        lines.extend(PROFILE_PUBLIC_NOTE)
         lines.append("")
         lines.append("| " + " | ".join(header) + " |")
         lines.append("| " + " | ".join(["---"] * len(header)) + " |")

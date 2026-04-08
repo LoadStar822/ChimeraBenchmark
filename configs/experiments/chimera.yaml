@@ -2,6 +2,8 @@ name: chimera
 tool: chimera
 db: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/chimera/cami_refseq/DB/cami_refseq
 taxonomy: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/chimera/cami_refseq/DB/cami_refseq.tax
+taxonomy_nodes_dmp: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/taxonomy/ncbi_20260408/nodes.dmp
+taxonomy_names_dmp: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/taxonomy/ncbi_20260408/names.dmp
 threads: 32
 tool_args: []
 tool_config:

@@ -12,15 +12,16 @@ class BrackenTool:
     def __init__(self, config: Dict[str, Any] | None = None) -> None:
         self.config = config or {}
 
-    @staticmethod
-    def _repo_root() -> Path:
-        return Path(__file__).resolve().parents[2]
-
     def _env(self) -> str:
         return self.config.get("env", "kraken")
 
     def _base_cmd(self) -> List[str]:
         return ["conda", "run", "-n", self._env(), self.config.get("bin", "bracken")]
+
+    def _kraken2_cmd(self) -> List[str]:
+        kraken2_bin = self.config.get("kraken2_bin", "kraken2")
+        kraken2_env = self.config.get("kraken2_env", self._env())
+        return ["conda", "run", "-n", kraken2_env, kraken2_bin]
 
     @staticmethod
     def _resolve_db_dir(db_prefix: str, out_dir: str) -> Path:
@@ -42,31 +43,43 @@ class BrackenTool:
         if not db_dir:
             raise ValueError("bracken requires db directory in experiment config (exp.db)")
 
-        dataset_name = dataset.get("name") or ""
-        if not dataset_name:
-            raise ValueError("dataset missing name")
-
-        kraken2_runs = exp.get("kraken2_runs") or "results/classify/kraken2"
-        report_name = exp.get("kraken2_report_name") or "kraken2.report"
-        report_path = Path(kraken2_runs) / dataset_name / "outputs" / report_name
-        if not report_path.is_absolute():
-            report_path = (self._repo_root() / report_path).resolve()
-        if not report_path.exists():
-            raise FileNotFoundError(report_path)
-
         out_prefix_path = Path(out_prefix).resolve()
         if profile_out_prefix is not None:
             out_prefix_path = Path(profile_out_prefix).resolve()
 
+        run_prefix_path = Path(out_prefix).resolve()
+        kraken2_out = str(run_prefix_path.with_name(f"{run_prefix_path.name}_kraken2.out"))
+        kraken2_report = str(run_prefix_path.with_name(f"{run_prefix_path.name}_kraken2.report"))
         bracken_out = str(out_prefix_path) + ".tsv"
         cami_profile = str(out_prefix_path) + "_cami_profile.tsv"
+        threads = str(exp.get("threads", 32))
+
+        classify_cmd = self._kraken2_cmd() + [
+            "--db",
+            str(db_dir),
+            "--threads",
+            threads,
+            "--output",
+            kraken2_out,
+            "--report",
+            kraken2_report,
+        ]
+        if "reads" in dataset:
+            classify_cmd += [str(path) for path in dataset["reads"]]
+        elif "paired" in dataset:
+            paired = list(dataset["paired"])
+            if len(paired) != 2:
+                raise ValueError("bracken paired dataset must provide exactly two read files")
+            classify_cmd += ["--paired", str(paired[0]), str(paired[1])]
+        else:
+            raise ValueError("dataset must define reads or paired")
 
         # Use Bracken defaults (fairness): read_len=100, level=S, threshold=10.
         bracken_cmd = self._base_cmd() + [
             "-d",
             str(db_dir),
             "-i",
-            str(report_path),
+            kraken2_report,
             "-o",
             bracken_out,
         ]
@@ -75,6 +88,11 @@ class BrackenTool:
         convert_cmd = ["python", convert_script, "--input", bracken_out, "--out", cami_profile]
 
         return [
+            {
+                "name": "kraken2_classify",
+                "cmd": classify_cmd,
+                "outputs": {"kraken2_out": kraken2_out, "kraken2_report": kraken2_report},
+            },
             {"name": "bracken", "cmd": bracken_cmd, "outputs": {"bracken_tsv": bracken_out}},
             {"name": "convert", "cmd": convert_cmd, "outputs": {"cami_profile_tsv": cami_profile}},
         ]

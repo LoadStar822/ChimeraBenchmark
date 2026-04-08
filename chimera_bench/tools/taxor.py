@@ -12,38 +12,6 @@ class TaxorTool:
     def __init__(self, config: Dict[str, Any] | None = None) -> None:
         self.config = config or {}
 
-    def _resolve_nodes_dmp(self, exp: Dict[str, Any]) -> str | None:
-        for key in (
-            "taxonomy_nodes_dmp",
-            "nodes_dmp",
-            "taxonomy_nodes",
-            "coverage_nodes_dmp",
-        ):
-            value = exp.get(key)
-            if value:
-                return str(value)
-        tax_dir = exp.get("coverage_taxonomy_dir")
-        if tax_dir:
-            return str(Path(tax_dir) / "nodes.dmp")
-        return None
-
-    def _resolve_names_dmp(self, exp: Dict[str, Any], nodes_dmp: str | None) -> str | None:
-        for key in (
-            "taxonomy_names_dmp",
-            "names_dmp",
-            "taxonomy_names",
-            "coverage_names_dmp",
-        ):
-            value = exp.get(key)
-            if value:
-                return str(value)
-        tax_dir = exp.get("coverage_taxonomy_dir")
-        if tax_dir:
-            return str(Path(tax_dir) / "names.dmp")
-        if nodes_dmp:
-            return str(Path(nodes_dmp).with_name("names.dmp"))
-        return None
-
     def _base_cmd(self) -> List[str]:
         env = self.config.get("env", "taxor")
         bin_path = self.config.get("bin", "taxor")
@@ -232,24 +200,10 @@ with open_text(path) as fh:
             str(threads),
         ] + tool_args
 
-        nodes_dmp = self._resolve_nodes_dmp(exp)
-        names_dmp = self._resolve_names_dmp(exp, nodes_dmp)
-        fix_script = str(Path(__file__).resolve().with_name("taxor_fix_search.py"))
-        fix_cmd = ["python", fix_script, "--search-file", search_out]
-        if nodes_dmp:
-            fix_cmd += ["--nodes-dmp", str(nodes_dmp)]
-        if names_dmp:
-            fix_cmd += ["--names-dmp", str(names_dmp)]
-
         return [
             {
                 "name": "search",
                 "cmd": search_cmd,
-                "outputs": {"search_file": search_out},
-            },
-            {
-                "name": "fix_search",
-                "cmd": fix_cmd,
                 "outputs": {"search_file": search_out},
             },
             {

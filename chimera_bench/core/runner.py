@@ -11,6 +11,26 @@ from .resources import aggregate_resources, parse_time_log
 from ..io.layout import ensure_profile_dirs, ensure_run_dirs
 
 
+def build_run_metrics(exp: dict, dataset: dict, outputs: dict) -> dict:
+    metrics = {}
+    classify_path_str = outputs.get("classify_tsv")
+    if classify_path_str:
+        classify_path = Path(classify_path_str)
+        if classify_path.exists():
+            metrics = summarize_classify_tsv(classify_path)
+    else:
+        tre_path_str = outputs.get("report_reads_tre") or outputs.get("reads_tre")
+        if tre_path_str:
+            tre_path = Path(tre_path_str)
+            if tre_path.exists():
+                metrics = summarize_ganon_tre(tre_path)
+
+    truth_metrics = evaluate_with_truth(exp, dataset, outputs)
+    if truth_metrics:
+        metrics.update(truth_metrics)
+    return metrics
+
+
 class Runner:
     def __init__(self, runs_root: Path, profile_root: Path | None = None) -> None:
         self.runs_root = runs_root
@@ -109,22 +129,7 @@ class Runner:
         }
         (run_dir / "meta.json").write_text(json.dumps(meta, indent=2))
 
-        metrics = {}
-        classify_path_str = outputs_all.get("classify_tsv")
-        if classify_path_str:
-            classify_path = Path(classify_path_str)
-            if classify_path.exists():
-                metrics = summarize_classify_tsv(classify_path)
-        else:
-            tre_path_str = outputs_all.get("report_reads_tre") or outputs_all.get("reads_tre")
-            if tre_path_str:
-                tre_path = Path(tre_path_str)
-                if tre_path.exists():
-                    metrics = summarize_ganon_tre(tre_path)
-
-        truth_metrics = evaluate_with_truth(exp, dataset, outputs_all)
-        if truth_metrics:
-            metrics.update(truth_metrics)
+        metrics = build_run_metrics(exp, dataset, outputs_all)
         (run_dir / "metrics.json").write_text(json.dumps(metrics, indent=2))
 
         write_classify_readme(self.runs_root)

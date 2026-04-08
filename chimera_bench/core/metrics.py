@@ -6,6 +6,17 @@ from pathlib import Path
 from typing import Dict, Iterable, Tuple, Union
 
 RANKS_DEFAULT = ("species", "genus")
+PROFILE_RANK_PRIORITY = (
+    "strain",
+    "species",
+    "genus",
+    "family",
+    "order",
+    "class",
+    "phylum",
+    "superkingdom",
+)
+METRIC_VERSION = "per-read-descendant-aware-v1+profile-opal-v1"
 
 TaxKey = Union[int, str]
 
@@ -566,9 +577,9 @@ def load_cami_mapping(paths: Iterable[Path]):
     return truth_map, abundance, contig_weight
 
 
-def parse_tre_counts(path: Path, ranks: Iterable[str]) -> Dict[str, Dict[int, int]]:
-    out: Dict[str, Dict[int, int]] = {r: {} for r in ranks}
-    ranks_set = set(ranks)
+def parse_tre_counts(path: Path, ranks: Iterable[str] | None = None) -> Dict[str, Dict[int, float]]:
+    out: Dict[str, Dict[int, float]] = {}
+    ranks_set = set(ranks) if ranks is not None else None
     with _open_text(path) as fh:
         for raw in fh:
             line = raw.strip()
@@ -578,7 +589,7 @@ def parse_tre_counts(path: Path, ranks: Iterable[str]) -> Dict[str, Dict[int, in
             if len(parts) < 3:
                 continue
             rank = parts[0]
-            if rank not in ranks_set:
+            if ranks_set is not None and rank not in ranks_set:
                 continue
             taxid_str = parts[1]
             try:
@@ -586,7 +597,7 @@ def parse_tre_counts(path: Path, ranks: Iterable[str]) -> Dict[str, Dict[int, in
             except ValueError:
                 continue
             try:
-                count = int(float(parts[-2]))
+                count = float(parts[-2])
             except (ValueError, IndexError):
                 continue
             if count <= 0:
@@ -601,6 +612,88 @@ def _safe_prf(tp: int, fp: int, fn: int):
     recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
     f1 = (2 * precision * recall / (precision + recall)) if (precision + recall) > 0 else 0.0
     return precision, recall, f1
+
+
+def _normalize_profile(profile: Dict[int, float]) -> Dict[int, float]:
+    cleaned = {taxid: float(value) for taxid, value in profile.items() if value > 0}
+    total = sum(cleaned.values())
+    if total <= 0:
+        return {}
+    return {taxid: value / total for taxid, value in cleaned.items()}
+
+
+def _select_most_specific_profile(profile_by_rank: Dict[str, Dict[int, float]]) -> Dict[int, float]:
+    for rank in PROFILE_RANK_PRIORITY:
+        bucket = profile_by_rank.get(rank)
+        if bucket:
+            return dict(bucket)
+    for _rank, bucket in profile_by_rank.items():
+        if bucket:
+            return dict(bucket)
+    return {}
+
+
+def _taxid_depth(
+    taxid: int,
+    taxonomy: Dict[int, Tuple[int, str]],
+    cache: Dict[int, int],
+) -> int | None:
+    if taxid in cache:
+        return cache[taxid]
+    info = taxonomy.get(taxid)
+    if info is None:
+        return None
+    parent, _rank = info
+    if parent == taxid or parent not in taxonomy:
+        cache[taxid] = 0
+        return 0
+    parent_depth = _taxid_depth(parent, taxonomy, cache)
+    if parent_depth is None:
+        return None
+    cache[taxid] = parent_depth + 1
+    return cache[taxid]
+
+
+def _accumulate_tree_masses(
+    profile: Dict[int, float],
+    taxonomy: Dict[int, Tuple[int, str]],
+) -> Dict[int, float]:
+    masses: Dict[int, float] = {}
+    for taxid, value in _normalize_profile(profile).items():
+        current = taxid
+        seen = set()
+        while current not in seen:
+            info = taxonomy.get(current)
+            if info is None:
+                break
+            masses[current] = masses.get(current, 0.0) + value
+            seen.add(current)
+            parent, _rank = info
+            if parent == current:
+                break
+            current = parent
+    return masses
+
+
+def compute_weighted_unifrac(
+    truth: Dict[int, float],
+    preds: Dict[int, float],
+    taxonomy: Dict[int, Tuple[int, str]],
+) -> float:
+    truth_mass = _accumulate_tree_masses(truth, taxonomy)
+    pred_mass = _accumulate_tree_masses(preds, taxonomy)
+    if not truth_mass and not pred_mass:
+        return 0.0
+
+    depth_cache: Dict[int, int] = {}
+    total = 0.0
+    for taxid in set(truth_mass) | set(pred_mass):
+        depth = _taxid_depth(taxid, taxonomy, depth_cache)
+        if depth is None or depth <= 0:
+            continue
+        branch_length = 1.0 / depth
+        total += branch_length * abs(truth_mass.get(taxid, 0.0) - pred_mass.get(taxid, 0.0))
+    return total
 
 
 def compute_per_read_metrics(
@@ -710,11 +803,10 @@ def compute_per_read_metrics_exact(
     return metrics
 
 
-def compute_abundance_metrics(
+def compute_opal_profile_metrics(
     truth: Dict[str, Dict[TaxKey, float]],
     preds: Dict[str, Dict[TaxKey, float]],
     ranks: Iterable[str],
-    presence_tau: float = 0.0,
 ):
     metrics: Dict[str, float] = {}
     for rank in ranks:
@@ -722,44 +814,40 @@ def compute_abundance_metrics(
         pred_rank = preds.get(rank)
         if not truth_rank and not pred_rank:
             continue
-        truth_vec = truth_rank or {}
-        pred_vec = pred_rank or {}
-        truth_total = sum(truth_vec.values())
-        pred_total = sum(pred_vec.values())
-        if truth_total > 0:
-            truth_pct = {k: 100.0 * v / truth_total for k, v in truth_vec.items()}
-        else:
-            truth_pct = {}
-        if pred_total > 0:
-            pred_pct = {k: 100.0 * v / pred_total for k, v in pred_vec.items()}
-        else:
-            pred_pct = {}
-        keys = set(truth_pct) | set(pred_pct)
-        # Match Chimera/bench convention:
-        # - L1 is reported in "percentage points" (0..200) after renormalization
-        # - Bray-Curtis = L1 / 200, which equals total variation distance under this normalization
-        l1_pct = sum(abs(pred_pct.get(k, 0.0) - truth_pct.get(k, 0.0)) for k in keys)
-        metrics[f"abundance_l1_{rank}"] = l1_pct
-        metrics[f"abundance_tv_{rank}"] = l1_pct / 200.0
-        metrics[f"abundance_bc_{rank}"] = l1_pct / 200.0
+        truth_vec = {k: float(v) for k, v in (truth_rank or {}).items() if isinstance(k, int) and v > 0}
+        pred_vec = {k: float(v) for k, v in (pred_rank or {}).items() if isinstance(k, int) and v > 0}
+        truth_rel = _normalize_profile(truth_vec)
+        pred_rel = _normalize_profile(pred_vec)
+        keys = set(truth_rel) | set(pred_rel)
+        metrics[f"l1_norm_{rank}"] = sum(abs(pred_rel.get(k, 0.0) - truth_rel.get(k, 0.0)) for k in keys)
 
-        tp = fp = fn = 0
-        for k in keys:
-            t_val = truth_pct.get(k, 0.0)
-            p_val = pred_pct.get(k, 0.0)
-            t_present = t_val > presence_tau
-            p_present = p_val > presence_tau
-            if t_present and p_present:
-                tp += 1
-            elif (not t_present) and p_present:
-                fp += 1
-            elif t_present and (not p_present):
-                fn += 1
-        precision, recall, f1 = _safe_prf(tp, fp, fn)
-        metrics[f"presence_precision_{rank}"] = precision
-        metrics[f"presence_recall_{rank}"] = recall
-        metrics[f"presence_f1_{rank}"] = f1
+        tp = len(set(truth_rel) & set(pred_rel))
+        fp = len(set(pred_rel) - set(truth_rel))
+        fn = len(set(truth_rel) - set(pred_rel))
+        purity = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+        completeness = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+        metrics[f"purity_{rank}"] = purity
+        metrics[f"completeness_{rank}"] = completeness
     return metrics
+
+
+def map_named_profile_to_taxids(
+    profile: Dict[str, float],
+    name_to_taxid: Dict[str, int],
+    syn_to_sci: Dict[str, str],
+    sci_names: set[str],
+) -> tuple[Dict[int, float], int, float]:
+    mapped: Dict[int, float] = {}
+    unmapped_count = 0
+    unmapped_mass = 0.0
+    for name, value in profile.items():
+        taxid = taxid_for_name(name, name_to_taxid, syn_to_sci, sci_names)
+        if taxid is None:
+            unmapped_count += 1
+            unmapped_mass += value
+            continue
+        mapped[taxid] = mapped.get(taxid, 0.0) + value
+    return mapped, unmapped_count, unmapped_mass
 
 
 def collapse_pred_by_rank(
@@ -899,7 +987,14 @@ def _resolve_mapping_paths(dataset: dict) -> list[Path]:
     return []
 
 
-def evaluate_with_truth(exp: dict, dataset: dict, outputs: dict) -> Dict[str, float]:
+def evaluate_with_truth(
+    exp: dict,
+    dataset: dict,
+    outputs: dict,
+    *,
+    include_per_read: bool = True,
+    include_profile: bool = True,
+) -> Dict[str, float]:
     ranks = tuple(exp.get("ranks", RANKS_DEFAULT))
     taxonomy_path = _resolve_taxonomy(exp)
     if taxonomy_path is None:
@@ -938,150 +1033,139 @@ def evaluate_with_truth(exp: dict, dataset: dict, outputs: dict) -> Dict[str, fl
         truth_reads, truth_abundance, contig_weight = load_cami_mapping(mapping_paths)
 
     classify_path = outputs.get("classify_tsv")
-    preds = None
-    if classify_path:
-        classify_path = Path(classify_path)
-        if classify_path.exists():
-            preds = parse_classify_tsv(classify_path)
-        else:
-            metrics["classify_tsv_missing"] = 1
-    else:
-        classify_one = outputs.get("classify_one")
+    classify_one = outputs.get("classify_one")
+    preds: Dict[str, int | None] | None = None
+    preds_loaded = False
+
+    def _load_preds() -> Dict[str, int | None] | None:
+        nonlocal preds, preds_loaded
+        if preds_loaded:
+            return preds
+        preds_loaded = True
+        if classify_path:
+            path = Path(classify_path)
+            if path.exists():
+                preds = parse_classify_tsv(path)
+            else:
+                metrics["classify_tsv_missing"] = 1
+            return preds
         if classify_one:
-            classify_one = Path(classify_one)
-            if classify_one.exists():
-                preds = parse_ganon_one(classify_one, file_to_taxid)
+            path = Path(classify_one)
+            if path.exists():
+                preds = parse_ganon_one(path, file_to_taxid)
             else:
                 metrics["classify_one_missing"] = 1
+        return preds
 
-    if preds is not None and truth_reads:
+    if include_per_read and truth_reads:
+        preds = _load_preds()
+    if include_per_read and preds is not None and truth_reads:
         desc_metrics = compute_per_read_metrics(truth_reads, preds, taxonomy, ranks, covered_by_rank)
         exact_metrics = compute_per_read_metrics_exact(truth_reads, preds, taxonomy, ranks, covered_by_rank)
         metrics.update(desc_metrics)
         for key, value in exact_metrics.items():
             metrics[f"exact_{key}"] = value
 
-    truth_by_rank_mapped: Dict[str, Dict[TaxKey, float]] = {r: {} for r in ranks}
-    truth_by_rank_full: Dict[str, Dict[TaxKey, float]] = {r: {} for r in ranks}
-    truth_profile_path = dataset.get("truth_profile") or dataset.get("truth_profile_path")
-    if not truth_profile_path:
-        truth_candidate = dataset.get("truth")
-        if truth_candidate and str(truth_candidate).endswith(".tsv"):
-            truth_profile_path = truth_candidate
+    truth_by_rank: Dict[str, Dict[TaxKey, float]] = {r: {} for r in ranks}
+    truth_taxid_profile: Dict[int, float] = {}
+    if include_profile:
+        truth_profile_path = dataset.get("truth_profile") or dataset.get("truth_profile_path")
+        if not truth_profile_path:
+            truth_candidate = dataset.get("truth")
+            if truth_candidate and str(truth_candidate).endswith(".tsv"):
+                truth_profile_path = truth_candidate
 
-    unmapped = None
-    if truth_profile_path:
-        truth_profile_path = Path(truth_profile_path)
-        if not truth_profile_path.exists():
-            metrics["truth_profile_missing"] = 1
-        else:
-            profile = parse_truth_profile(truth_profile_path)
-            if profile:
-                truth_by_rank_mapped, truth_by_rank_full, unmapped, unmapped_mass = map_species_profile(
-                    profile,
-                    taxonomy,
-                    name_to_taxid,
-                    syn_to_sci,
-                    sci_names,
-                    ranks,
-                    covered_by_rank,
-                )
-                total_species = len(profile)
-                metrics["truth_profile_species_total"] = total_species
-                metrics["truth_profile_species_unmapped"] = unmapped
-                metrics["truth_profile_species_mapped"] = total_species - unmapped
-                if total_species > 0:
-                    metrics["truth_profile_species_unmapped_rate"] = unmapped / total_species
-                total_mass = sum(profile.values())
-                metrics["truth_profile_mass_total"] = total_mass
-                metrics["truth_profile_mass_unmapped"] = unmapped_mass
-                metrics["truth_profile_mass_mapped"] = total_mass - unmapped_mass
-                if total_mass > 0:
-                    metrics["truth_profile_mass_mapped_rate"] = (total_mass - unmapped_mass) / total_mass
-    elif truth_abundance:
-        truth_by_rank_mapped, truth_by_rank_full = map_taxid_profile_to_rank(
-            {k: float(v) for k, v in truth_abundance.items()},
-            taxonomy,
-            ranks,
-            covered_by_rank,
-        )
+        unmapped = None
+        if truth_profile_path:
+            truth_profile_path = Path(truth_profile_path)
+            if not truth_profile_path.exists():
+                metrics["truth_profile_missing"] = 1
+            else:
+                profile = parse_truth_profile(truth_profile_path)
+                if profile:
+                    truth_taxid_profile, unmapped, unmapped_mass = map_named_profile_to_taxids(
+                        profile,
+                        name_to_taxid,
+                        syn_to_sci,
+                        sci_names,
+                    )
+                    truth_by_rank, _truth_by_rank_full = map_taxid_profile_to_rank(
+                        truth_taxid_profile,
+                        taxonomy,
+                        ranks,
+                        covered_by_rank,
+                    )
+                    total_species = len(profile)
+                    metrics["truth_profile_species_total"] = total_species
+                    metrics["truth_profile_species_unmapped"] = unmapped
+                    metrics["truth_profile_species_mapped"] = total_species - unmapped
+                    if total_species > 0:
+                        metrics["truth_profile_species_unmapped_rate"] = unmapped / total_species
+                    total_mass = sum(profile.values())
+                    metrics["truth_profile_mass_total"] = total_mass
+                    metrics["truth_profile_mass_unmapped"] = unmapped_mass
+                    metrics["truth_profile_mass_mapped"] = total_mass - unmapped_mass
+                    if total_mass > 0:
+                        metrics["truth_profile_mass_mapped_rate"] = (total_mass - unmapped_mass) / total_mass
+        elif truth_abundance:
+            truth_taxid_profile = {k: float(v) for k, v in truth_abundance.items()}
+            truth_by_rank, _truth_by_rank_full = map_taxid_profile_to_rank(
+                truth_taxid_profile,
+                taxonomy,
+                ranks,
+                covered_by_rank,
+            )
 
+    pred_by_rank: Dict[str, Dict[TaxKey, float]] | None = None
+    pred_taxid_profile: Dict[int, float] = {}
     pred_source = None
+    explicit_profile_seen = False
     if outputs.get("report_abundance_tre"):
         pred_source = Path(outputs["report_abundance_tre"])
     elif outputs.get("report_reads_tre"):
         pred_source = Path(outputs["report_reads_tre"])
-    pred_by_rank_mapped: Dict[str, Dict[TaxKey, float]] | None = None
-    pred_by_rank_full: Dict[str, Dict[TaxKey, float]] | None = None
     if pred_source and pred_source.exists():
-        pred_by_rank_mapped = {r: {} for r in ranks}
-        pred_by_rank_full = {r: {} for r in ranks}
-        raw_pred = parse_tre_counts(pred_source, ranks)
-        for rank, bucket in raw_pred.items():
-            for taxid, value in bucket.items():
-                mapped = taxid_to_rank(taxid, rank, taxonomy)
-                if mapped is None or (
-                    covered_by_rank is not None and mapped not in covered_by_rank.get(rank, set())
-                ):
-                    key: TaxKey = taxid
-                    pred_by_rank_full[rank][key] = pred_by_rank_full[rank].get(key, 0.0) + float(value)
-                    continue
-                pred_by_rank_full[rank][mapped] = pred_by_rank_full[rank].get(mapped, 0.0) + float(value)
-                pred_by_rank_mapped[rank][mapped] = pred_by_rank_mapped[rank].get(mapped, 0.0) + float(value)
+        explicit_profile_seen = True
+        pred_taxid_profile = _select_most_specific_profile(parse_tre_counts(pred_source))
+        if pred_taxid_profile:
+            _pred_by_rank_mapped, pred_by_rank = map_taxid_profile_to_rank(
+                pred_taxid_profile,
+                taxonomy,
+                ranks,
+                covered_by_rank,
+            )
     else:
         profile_path_str = outputs.get("profile_tsv") or outputs.get("sylph_profile_tsv")
         if profile_path_str:
             profile_path = Path(profile_path_str)
             if profile_path.exists():
-                pred_species, unmapped_mass, _unmapped_count = parse_sylph_profile(
+                explicit_profile_seen = True
+                pred_taxid_profile, _unmapped_mass, _unmapped_count = parse_sylph_profile(
                     profile_path, file_to_taxid
                 )
-                if pred_species or unmapped_mass > 0:
-                    pred_by_rank_mapped = {r: {} for r in ranks}
-                    pred_by_rank_full = {r: {} for r in ranks}
-                    if unmapped_mass > 0:
-                        for rank in ranks:
-                            pred_by_rank_full[rank]["unmapped"] = pred_by_rank_full[rank].get("unmapped", 0.0) + unmapped_mass
-                    for taxid, value in pred_species.items():
-                        for rank in ranks:
-                            mapped = taxid_to_rank(taxid, rank, taxonomy)
-                            if mapped is None or (
-                                covered_by_rank is not None and mapped not in covered_by_rank.get(rank, set())
-                            ):
-                                key = taxid
-                                pred_by_rank_full[rank][key] = pred_by_rank_full[rank].get(key, 0.0) + value
-                                continue
-                            pred_by_rank_full[rank][mapped] = pred_by_rank_full[rank].get(mapped, 0.0) + value
-                            pred_by_rank_mapped[rank][mapped] = pred_by_rank_mapped[rank].get(mapped, 0.0) + value
+                if pred_taxid_profile:
+                    _pred_by_rank_mapped, pred_by_rank = map_taxid_profile_to_rank(
+                        pred_taxid_profile,
+                        taxonomy,
+                        ranks,
+                        covered_by_rank,
+                    )
         else:
             cami_profile_path_str = outputs.get("cami_profile_tsv") or outputs.get("taxor_profile_tsv")
             if cami_profile_path_str:
                 cami_path = Path(cami_profile_path_str)
                 if cami_path.exists():
+                    explicit_profile_seen = True
                     cami_by_rank = parse_cami_profile(cami_path)
                     if cami_by_rank:
-                        pred_by_rank_mapped = {r: {} for r in ranks}
-                        pred_by_rank_full = {r: {} for r in ranks}
-                        for rank in ranks:
-                            if rank == "species":
-                                candidates = ("species", "strain")
-                            elif rank == "genus":
-                                candidates = ("species", "strain", "genus")
-                            else:
-                                candidates = (rank,)
-                            src_rank = next((c for c in candidates if c in cami_by_rank), None)
-                            if src_rank is None:
-                                continue
-                            for taxid, value in cami_by_rank[src_rank].items():
-                                mapped = taxid_to_rank(taxid, rank, taxonomy)
-                                if mapped is None or (
-                                    covered_by_rank is not None and mapped not in covered_by_rank.get(rank, set())
-                                ):
-                                    key: TaxKey = taxid
-                                    pred_by_rank_full[rank][key] = pred_by_rank_full[rank].get(key, 0.0) + float(value)
-                                    continue
-                                pred_by_rank_full[rank][mapped] = pred_by_rank_full[rank].get(mapped, 0.0) + float(value)
-                                pred_by_rank_mapped[rank][mapped] = pred_by_rank_mapped[rank].get(mapped, 0.0) + float(value)
+                        pred_taxid_profile = _select_most_specific_profile(cami_by_rank)
+                        if pred_taxid_profile:
+                            _pred_by_rank_mapped, pred_by_rank = map_taxid_profile_to_rank(
+                                pred_taxid_profile,
+                                taxonomy,
+                                ranks,
+                                covered_by_rank,
+                            )
             else:
                 chimera_profile_path_str = outputs.get("chimera_profile_tsv") or outputs.get("chimera_profile")
                 if chimera_profile_path_str:
@@ -1089,45 +1173,34 @@ def evaluate_with_truth(exp: dict, dataset: dict, outputs: dict) -> Dict[str, fl
                     if not profile_path.exists():
                         metrics["chimera_profile_missing"] = 1
                     else:
+                        explicit_profile_seen = True
                         pred_profile = parse_truth_profile(profile_path)
                         if pred_profile:
-                            pred_by_rank_mapped, pred_by_rank_full, _unmapped, _unmapped_mass = map_species_profile(
+                            pred_taxid_profile, _unmapped, _unmapped_mass = map_named_profile_to_taxids(
                                 pred_profile,
-                                taxonomy,
                                 name_to_taxid,
                                 syn_to_sci,
                                 sci_names,
+                            )
+                            if pred_taxid_profile:
+                                _pred_by_rank_mapped, pred_by_rank = map_taxid_profile_to_rank(
+                                pred_taxid_profile,
+                                taxonomy,
                                 ranks,
                                 covered_by_rank,
                             )
 
-    if pred_by_rank_full is None and preds is not None and truth_by_rank_full:
-        pred_abundance: Dict[int, float] = {}
-        for read_id, pred_taxid in preds.items():
-            if pred_taxid is None:
-                continue
-            weight = float(contig_weight.get(read_id, 1))
-            pred_abundance[pred_taxid] = pred_abundance.get(pred_taxid, 0.0) + weight
-        if pred_abundance:
-            pred_by_rank_mapped, pred_by_rank_full = map_taxid_profile_to_rank(
-                pred_abundance,
-                taxonomy,
-                ranks,
-                covered_by_rank,
-            )
+    if include_profile and explicit_profile_seen and pred_by_rank is None:
+        pred_by_rank = {rank: {} for rank in ranks}
 
-    if pred_by_rank_full is not None:
-        has_truth = any(truth_by_rank_full.get(rank) for rank in ranks)
-        if has_truth:
-            desc_pred_by_rank = collapse_pred_by_rank(pred_by_rank_full, truth_by_rank_full, taxonomy, ranks)
-            desc_metrics = compute_abundance_metrics(truth_by_rank_full, desc_pred_by_rank, ranks)
-            metrics.update(desc_metrics)
-
-        if pred_by_rank_mapped is not None and any(truth_by_rank_mapped.get(rank) for rank in ranks):
-            exact_metrics = compute_abundance_metrics(truth_by_rank_mapped, pred_by_rank_mapped, ranks)
-            for key, value in exact_metrics.items():
-                metrics[f"exact_{key}"] = value
+    if include_profile and pred_by_rank is not None and any(truth_by_rank.get(rank) for rank in ranks):
+        metrics.update(compute_opal_profile_metrics(truth_by_rank, pred_by_rank, ranks))
+        metrics["weighted_unifrac"] = compute_weighted_unifrac(
+            truth_taxid_profile,
+            pred_taxid_profile,
+            taxonomy,
+        )
 
     if metrics:
-        metrics.setdefault("metric_version", "descendant-aware-v1")
+        metrics.setdefault("metric_version", METRIC_VERSION)
     return metrics

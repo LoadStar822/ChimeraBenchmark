@@ -32,9 +32,9 @@ def test_classify_and_profile_readmes_skip_failed_runs(tmp_path: Path):
                 "per_read_precision_species": 0.9,
                 "per_read_recall_species": 0.8,
                 "per_read_f1_species": 0.85,
-                "presence_precision_species": 0.7,
-                "presence_recall_species": 0.6,
-                "presence_f1_species": 0.65,
+                "completeness_species": 0.7,
+                "purity_species": 0.6,
+                "l1_norm_species": 0.65,
             }
         )
     )

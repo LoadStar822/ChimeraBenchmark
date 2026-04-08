@@ -6,117 +6,153 @@ Auto-generated. Do not edit.
 
 ### Abundance Metrics
 
-| Tool | DB | Elapsed (s) | Max RSS (GB) | Presence Precision (species) | Presence Recall (species) | Presence F1 (species) | L1 (species) | TV (species) | Bray-Curtis (species) | Presence Precision (genus) | Presence Recall (genus) | Presence F1 (genus) | L1 (genus) | TV (genus) | Bray-Curtis (genus) |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 2.937304 | 0.054688 | 0.079812 | 0.85 | 0.145923 | 89.728777 | 0.448644 | 0.448644 | 0.319149 | 0.833333 | 0.461538 | 89.194122 | 0.445971 | 0.445971 |
-| centrifuger | cami_refseq | 2689.701012 | 143.404285 | 0.178947 | 0.85 | 0.295652 | 75.041655 | 0.375208 | 0.375208 | 0.46875 | 0.833333 | 0.6 | 74.909075 | 0.374545 | 0.374545 |
-| chimera | cami_refseq | 8474.996537 | 168.884773 | 0.857143 | 0.6 | 0.705882 | 91.273549 | 0.456368 | 0.456368 | 0.846154 | 0.611111 | 0.709677 | 91.273549 | 0.456368 | 0.456368 |
-| ganon2 | cami_refseq | 42249.530233 | 213.392277 | 0.459459 | 0.85 | 0.596491 | 97.258569 | 0.486293 | 0.486293 | 0.555556 | 0.833333 | 0.666667 | 89.322194 | 0.446611 | 0.446611 |
-| kraken2 | cami_refseq | 812.103278 | 120.842556 | 0.021739 | 0.85 | 0.042394 | 97.632403 | 0.488162 | 0.488162 | 0.076923 | 0.833333 | 0.140845 | 89.275878 | 0.446379 | 0.446379 |
-| sylph | cami_refseq | 154.929078 | 22.302765 | 0.789474 | 0.75 | 0.769231 | 67.02 | 0.3351 | 0.3351 | 0.764706 | 0.722222 | 0.742857 | 67.02 | 0.3351 | 0.3351 |
+本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
+只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
+只有满足默认参数合同的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
+
+| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| bracken | cami_refseq | 285.382327 | 120.900398 | 1 | 0.093897 | 0.53677 | 1 | 0.375 | 0.531091 | 0.662551 |
+| centrifuger | cami_refseq | 2689.701012 | 143.404285 | 1 | 0.210526 | 0.389796 | 1 | 0.545455 | 0.38847 | 0.424866 |
+| chimera | cami_refseq | 8474.996537 | 168.884773 | 0.65 | 0.928571 | 0.552735 | 0.666667 | 0.923077 | 0.552735 | 0.701381 |
+| ganon2 | cami_refseq | 37667.762073 | 213.497807 | 1 | 0.434783 | 0.565472 | 1 | 0.62069 | 0.530838 | 0.66588 |
+| sylph | cami_refseq | 154.929078 | 22.302765 | 0.85 | 0.944444 | 0.266445 | 0.888889 | 1 | 0.266359 | 0.431759 |
 
 ## Dataset: atcc-illumina
 
 ### Abundance Metrics
 
-| Tool | DB | Elapsed (s) | Max RSS (GB) | Presence Precision (species) | Presence Recall (species) | Presence F1 (species) | L1 (species) | TV (species) | Bray-Curtis (species) | Presence Precision (genus) | Presence Recall (genus) | Presence F1 (genus) | L1 (genus) | TV (genus) | Bray-Curtis (genus) |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 2.653595 | 0.052734 | 0.055375 | 0.85 | 0.103976 | 82.075899 | 0.410379 | 0.410379 | 0.151515 | 0.833333 | 0.25641 | 71.262675 | 0.356313 | 0.356313 |
-| centrifuger | cami_refseq | 287.264869 | 141.378284 | 0.027331 | 0.85 | 0.05296 | 54.05225 | 0.270261 | 0.270261 | 0.073171 | 0.833333 | 0.134529 | 50.407833 | 0.252039 | 0.252039 |
-| chimera | cami_refseq | 1063.085245 | 106.342648 | 0.842105 | 0.8 | 0.820513 | 74.220679 | 0.371103 | 0.371103 | 0.823529 | 0.777778 | 0.8 | 74.220679 | 0.371103 | 0.371103 |
-| ganon2 | cami_refseq | 8680.516536 | 210.339127 | 0.053292 | 0.85 | 0.100295 | 90.62553 | 0.453128 | 0.453128 | 0.110294 | 0.833333 | 0.194805 | 76.275651 | 0.381378 | 0.381378 |
-| kraken2 | cami_refseq | 124.688434 | 121.132881 | 0.004843 | 0.85 | 0.009632 | 141.47183 | 0.707359 | 0.707359 | 0.014218 | 0.833333 | 0.027959 | 112.239892 | 0.561199 | 0.561199 |
-| sylph | cami_refseq | 66.459957 | 22.24855 | 0.777778 | 0.7 | 0.736842 | 48.413858 | 0.242069 | 0.242069 | 0.75 | 0.666667 | 0.705882 | 48.413858 | 0.242069 | 0.242069 |
+本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
+只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
+只有满足默认参数合同的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
+
+| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| bracken | cami_refseq | 114.676187 | 121.155163 | 1 | 0.065359 | 0.460124 | 1 | 0.18 | 0.351977 | 0.392745 |
+| centrifuger | cami_refseq | 287.264869 | 141.378284 | 1 | 0.032206 | 0.179798 | 1 | 0.080357 | 0.143373 | 0.164735 |
+| chimera | cami_refseq | 1063.085245 | 106.342648 | 0.85 | 0.894737 | 0.382207 | 0.833333 | 0.882353 | 0.382207 | 0.429112 |
+| ganon2 | cami_refseq | 19364.34498 | 379.070454 | 1 | 0.048309 | 0.387492 | 1 | 0.101124 | 0.353129 | 0.38312 |
+| sylph | cami_refseq | 66.459957 | 22.24855 | 0.8 | 0.941176 | 0.090401 | 0.833333 | 1 | 0.089345 | 0.12543 |
 
 ## Dataset: cami2-marine-long
 
 ### Abundance Metrics
 
-| Tool | DB | Elapsed (s) | Max RSS (GB) | Presence Precision (species) | Presence Recall (species) | Presence F1 (species) | L1 (species) | TV (species) | Bray-Curtis (species) | Presence Precision (genus) | Presence Recall (genus) | Presence F1 (genus) | L1 (genus) | TV (genus) | Bray-Curtis (genus) |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 2.705288 | 0.054688 | 0.698864 | 0.947977 | 0.804579 | 111.659119 | 0.558296 | 0.558296 | 0.682353 | 0.935484 | 0.789116 | 97.75399 | 0.48877 | 0.48877 |
-| centrifuger | cami_refseq | 1327.807372 | 142.294285 | 0.886691 | 0.949904 | 0.917209 | 119.496045 | 0.59748 | 0.59748 | 0.946128 | 0.959044 | 0.952542 | 101.042187 | 0.505211 | 0.505211 |
-| chimera | cami_refseq | 819.923478 | 79.227821 | 0.796095 | 0.707129 | 0.74898 | 129.07425 | 0.645371 | 0.645371 | 0.715625 | 0.73871 | 0.726984 | 114.560267 | 0.572801 | 0.572801 |
-| ganon2 | cami_refseq | 2736.595358 | 213.020084 | 0.812825 | 0.903661 | 0.855839 | 115.860163 | 0.579301 | 0.579301 | 0.92069 | 0.911263 | 0.915952 | 94.101506 | 0.470508 | 0.470508 |
-| kraken2 | cami_refseq | 243.954304 | 123.355232 | 0.206925 | 0.955684 | 0.340192 | 18.13295 | 0.090665 | 0.090665 | 0.272291 | 0.969283 | 0.42515 | 4.123142 | 0.020616 | 0.020616 |
-| sylph | cami_refseq | 109.573765 | 33.309525 | 0.94375 | 0.872832 | 0.906907 | 129.365976 | 0.64683 | 0.64683 | 0.996198 | 0.894198 | 0.942446 | 111.806077 | 0.55903 | 0.55903 |
-| taxor | cami_refseq | 982.843509 | 86.356911 | 0.670823 | 0.518304 | 0.584783 | 133.530346 | 0.667652 | 0.667652 | 0.751055 | 0.607509 | 0.671698 | 123.28124 | 0.616406 | 0.616406 |
+本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
+只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
+只有满足默认参数合同的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
+
+| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| bracken | cami_refseq | 188.384693 | 123.18877 | 0.947589 | 0.326354 | 1.219465 | 0.982818 | 0.662037 | 0.939621 | 0.724807 |
+| centrifuger | cami_refseq | 1327.807372 | 142.294285 | 0.947589 | 0.571429 | 1.235676 | 0.972509 | 0.837278 | 1.030172 | 0.878923 |
+| chimera | cami_refseq | 819.923478 | 79.227821 | 0.840671 | 0.811741 | 1.207203 | 0.931271 | 0.928082 | 0.949483 | 0.723178 |
+| ganon2 | cami_refseq | 4373.419369 | 212.943272 | 0.899371 | 0.426866 | 1.252248 | 0.945017 | 0.797101 | 0.954166 | 0.745256 |
+| sylph | cami_refseq | 109.573765 | 33.309525 | 0.865828 | 0.723292 | 1.343782 | 0.917526 | 0.956989 | 1.053469 | 0.923562 |
+| taxor | cami_refseq | 982.843509 | 86.356911 | 0 | 0 | 1 | 0 | 0 | 1 | 2.835332 |
 
 ## Dataset: cami2-marine-long-sample0
 
 ### Abundance Metrics
 
-| Tool | DB | Elapsed (s) | Max RSS (GB) | Presence Precision (species) | Presence Recall (species) | Presence F1 (species) | L1 (species) | TV (species) | Bray-Curtis (species) | Presence Precision (genus) | Presence Recall (genus) | Presence F1 (genus) | L1 (genus) | TV (genus) | Bray-Curtis (genus) |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 4.193569 | 0.052734 | 0.8 | 0.858131 | 0.828047 | 129.631379 | 0.648157 | 0.648157 | 0.819048 | 0.855721 | 0.836983 | 113.070454 | 0.565352 | 0.565352 |
-| centrifuger | cami_refseq | 262.735984 | 142.185009 | 0.931034 | 0.934256 | 0.932642 | 138.172325 | 0.690862 | 0.690862 | 0.96875 | 0.94898 | 0.958763 | 117.317698 | 0.586588 | 0.586588 |
-| ganon2 | cami_refseq | 645.867684 | 210.876648 | 0.844595 | 0.865052 | 0.854701 | 134.485964 | 0.67243 | 0.67243 | 0.924324 | 0.872449 | 0.897638 | 108.507855 | 0.542539 | 0.542539 |
-| kraken2 | cami_refseq | 111.661773 | 122.170258 | 0.327381 | 0.951557 | 0.487157 | 21.654525 | 0.108273 | 0.108273 | 0.41048 | 0.959184 | 0.574924 | 5.733802 | 0.028669 | 0.028669 |
-| sylph | cami_refseq | 51.520681 | 23.42767 | 0.94332 | 0.806228 | 0.869403 | 144.057509 | 0.720288 | 0.720288 | 0.994118 | 0.862245 | 0.923497 | 123.20921 | 0.616046 | 0.616046 |
-| taxor | cami_refseq | 109.52994 | 86.202934 | 0.681818 | 0.519031 | 0.589391 | 137.096414 | 0.685482 | 0.685482 | 0.788732 | 0.571429 | 0.662722 | 131.888415 | 0.659442 | 0.659442 |
+本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
+只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
+只有满足默认参数合同的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
+
+| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| bracken | cami_refseq | 1956.802111 | 122.240528 | 0.846154 | 0.508083 | 1.411304 | 0.893617 | 0.777778 | 1.093833 | 0.863831 |
+| centrifuger | cami_refseq | 262.735984 | 142.185009 | 0.926923 | 0.656676 | 1.424768 | 0.973404 | 0.875598 | 1.194142 | 0.993778 |
+| ganon2 | cami_refseq | 967.721634 | 210.739708 | 0.853846 | 0.458678 | 1.447321 | 0.909574 | 0.830097 | 1.10455 | 0.911679 |
+| sylph | cami_refseq | 51.520681 | 23.42767 | 0.807692 | 0.763636 | 1.528172 | 0.882979 | 0.948571 | 1.214967 | 1.111522 |
+| taxor | cami_refseq | 109.52994 | 86.202934 | 0 | 0 | 1 | 0 | 0 | 1 | 2.817753 |
 
 ## Dataset: cami2-marine-short
 
 ### Abundance Metrics
 
-| Tool | DB | Elapsed (s) | Max RSS (GB) | Presence Precision (species) | Presence Recall (species) | Presence F1 (species) | L1 (species) | TV (species) | Bray-Curtis (species) | Presence Precision (genus) | Presence Recall (genus) | Presence F1 (genus) | L1 (genus) | TV (genus) | Bray-Curtis (genus) |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 2.977521 | 0.054688 | 0.350494 | 0.959459 | 0.51343 | 110.544349 | 0.552722 | 0.552722 | 0.355828 | 0.935484 | 0.515556 | 96.680013 | 0.4834 | 0.4834 |
-| centrifuger | cami_refseq | 1753.243818 | 141.592957 | 0.706724 | 0.953668 | 0.811832 | 116.127396 | 0.580637 | 0.580637 | 0.849398 | 0.962457 | 0.9024 | 98.978832 | 0.494894 | 0.494894 |
-| chimera | cami_refseq | 718.197562 | 106.462322 | 0.8 | 0.694981 | 0.743802 | 119.903527 | 0.599518 | 0.599518 | 0.71885 | 0.725806 | 0.722311 | 108.245741 | 0.541229 | 0.541229 |
-| ganon2 | cami_refseq | 3905.759646 | 210.60994 | 0.602564 | 0.907336 | 0.724191 | 113.668157 | 0.568341 | 0.568341 | 0.775568 | 0.931741 | 0.846512 | 93.163815 | 0.465819 | 0.465819 |
-| kraken2 | cami_refseq | 259.510867 | 123.464989 | 0.070488 | 0.96139 | 0.131346 | 19.789248 | 0.098946 | 0.098946 | 0.129562 | 0.969283 | 0.228571 | 5.035289 | 0.025176 | 0.025176 |
-| sylph | cami_refseq | 112.983479 | 33.121845 | 0.94572 | 0.874517 | 0.908726 | 129.159497 | 0.645797 | 0.645797 | 0.996198 | 0.894198 | 0.942446 | 113.502652 | 0.567513 | 0.567513 |
-| taxor | cami_refseq | 8511.758909 | 107.677494 | 0.467638 | 0.557915 | 0.508803 | 134.666369 | 0.673332 | 0.673332 | 0.566092 | 0.672355 | 0.614665 | 124.272343 | 0.621362 | 0.621362 |
+本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
+只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
+只有满足默认参数合同的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
+
+| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| bracken | cami_refseq | 208.572473 | 123.513264 | 0.957983 | 0.107269 | 1.201877 | 0.989655 | 0.276493 | 0.928795 | 0.726246 |
+| centrifuger | cami_refseq | 1753.243818 | 141.592957 | 0.951681 | 0.337305 | 1.21984 | 0.975862 | 0.683575 | 1.009152 | 0.864291 |
+| chimera | cami_refseq | 718.197562 | 106.462322 | 0.836134 | 0.839662 | 1.071362 | 0.913793 | 0.936396 | 0.875801 | 0.677821 |
+| ganon2 | cami_refseq | 3722.749219 | 210.564232 | 0.903361 | 0.218718 | 1.242685 | 0.965517 | 0.554455 | 0.942854 | 0.743267 |
+| sylph | cami_refseq | 112.983479 | 33.121845 | 0.869748 | 0.735346 | 1.342675 | 0.924138 | 0.960573 | 1.068007 | 0.928923 |
+| taxor | cami_refseq | 8511.758909 | 107.677494 | 0 | 0 | 1 | 0 | 0 | 1 | 2.835747 |
 
 ## Dataset: zymo-gridion-even
 
 ### Abundance Metrics
 
-| Tool | DB | Elapsed (s) | Max RSS (GB) | Presence Precision (species) | Presence Recall (species) | Presence F1 (species) | L1 (species) | TV (species) | Bray-Curtis (species) | Presence Precision (genus) | Presence Recall (genus) | Presence F1 (genus) | L1 (genus) | TV (genus) | Bray-Curtis (genus) |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 4.471299 | 0.064453 | 0.004032 | 0.8 | 0.008024 | 40.452532 | 0.202263 | 0.202263 | 0.012539 | 0.8 | 0.024691 | 40.116973 | 0.200585 | 0.200585 |
-| centrifuger | cami_refseq | 1614.750858 | 142.312016 | 0.000579 | 0.8 | 0.001158 | 149.000872 | 0.745004 | 0.745004 | 0.00276 | 0.8 | 0.0055 | 148.632667 | 0.743163 | 0.743163 |
-| chimera | cami_refseq | 1489.262686 | 156.739296 | 0.352941 | 0.6 | 0.444444 | 140.060088 | 0.7003 | 0.7003 | 0.466667 | 0.7 | 0.56 | 135.510248 | 0.677551 | 0.677551 |
-| ganon2 | cami_refseq | 5104.420392 | 211.467873 | 0.090909 | 0.4 | 0.148148 | 190.301442 | 0.951507 | 0.951507 | 0.184211 | 0.7 | 0.291667 | 177.85059 | 0.889253 | 0.889253 |
-| kraken2 | cami_refseq | 480.666343 | 121.671375 | 0.000504 | 0.8 | 0.001008 | 43.937256 | 0.219686 | 0.219686 | 0.002421 | 0.8 | 0.004827 | 41.782171 | 0.208911 | 0.208911 |
-| sylph | cami_refseq | 105.779297 | 23.316505 | 0.875 | 0.7 | 0.777778 | 56.9232 | 0.284616 | 0.284616 | 0.875 | 0.7 | 0.777778 | 56.9232 | 0.284616 | 0.284616 |
+本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
+只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
+只有满足默认参数合同的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
+
+| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| bracken | cami_refseq | 248.526537 | 121.563915 | 0.8 | 0.004032 | 0.404525 | 0.8 | 0.011923 | 0.401775 | 0.590682 |
+| centrifuger | cami_refseq | 1614.750858 | 142.312016 | 0.8 | 0.00058 | 1.490009 | 0.8 | 0.002521 | 1.488706 | 1.60751 |
+| chimera | cami_refseq | 1489.262686 | 156.739296 | 0.7 | 0.411765 | 1.179687 | 0.8 | 0.571429 | 0.910334 | 0.995278 |
+| ganon2 | cami_refseq | 3921.410652 | 211.48431 | 0.8 | 0.007897 | 1.95806 | 0.8 | 0.016327 | 1.778506 | 1.709693 |
+| sylph | cami_refseq | 105.779297 | 23.316505 | 0.6 | 0.857143 | 0.788838 | 0.7 | 1 | 0.548838 | 0.8553 |
 
 ## Dataset: zymo-gridion-log
 
 ### Abundance Metrics
 
-| Tool | DB | Elapsed (s) | Max RSS (GB) | Presence Precision (species) | Presence Recall (species) | Presence F1 (species) | L1 (species) | TV (species) | Bray-Curtis (species) | Presence Precision (genus) | Presence Recall (genus) | Presence F1 (genus) | L1 (genus) | TV (genus) | Bray-Curtis (genus) |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 3.347812 | 0.052734 | 0.005678 | 0.8 | 0.011276 | 19.404357 | 0.097022 | 0.097022 | 0.016985 | 0.8 | 0.033264 | 19.066265 | 0.095331 | 0.095331 |
-| centrifuger | cami_refseq | 2018.19876 | 142.391235 | 0.00055 | 0.8 | 0.0011 | 128.268883 | 0.641344 | 0.641344 | 0.002699 | 0.8 | 0.00538 | 128.039824 | 0.640199 | 0.640199 |
-| chimera | cami_refseq | 1284.699601 | 152.110016 | 0.307692 | 0.4 | 0.347826 | 57.087719 | 0.285439 | 0.285439 | 0.454545 | 0.5 | 0.47619 | 55.976904 | 0.279885 | 0.279885 |
-| ganon2 | cami_refseq | 5116.531988 | 211.691677 | 0.060606 | 0.2 | 0.093023 | 188.578347 | 0.942892 | 0.942892 | 0.178571 | 0.5 | 0.263158 | 182.909089 | 0.914545 | 0.914545 |
-| kraken2 | cami_refseq | 683.341297 | 121.574322 | 0.00054 | 0.8 | 0.00108 | 20.221467 | 0.101107 | 0.101107 | 0.002513 | 0.8 | 0.005011 | 19.098509 | 0.095493 | 0.095493 |
-| sylph | cami_refseq | 116.305271 | 23.317101 | 0.833333 | 0.5 | 0.625 | 19.95598 | 0.09978 | 0.09978 | 0.833333 | 0.5 | 0.625 | 19.95598 | 0.09978 | 0.09978 |
+本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
+只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
+只有满足默认参数合同的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
+
+| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| bracken | cami_refseq | 241.730585 | 121.519745 | 0.8 | 0.005678 | 0.194044 | 0.8 | 0.015564 | 0.191278 | 0.203876 |
+| centrifuger | cami_refseq | 2018.19876 | 142.391235 | 0.8 | 0.000551 | 1.282689 | 0.8 | 0.002478 | 1.280624 | 1.432399 |
+| chimera | cami_refseq | 1284.699601 | 152.110016 | 0.4 | 0.307692 | 0.570877 | 0.5 | 0.5 | 0.55312 | 0.775514 |
+| ganon2 | cami_refseq | 4411.270175 | 211.667702 | 0.5 | 0.004912 | 1.992404 | 0.7 | 0.014957 | 1.958671 | 2.291503 |
+| sylph | cami_refseq | 116.305271 | 23.317101 | 0.4 | 0.8 | 0.218109 | 0.5 | 1 | 0.199547 | 0.152127 |
 
 ## Dataset: zymo-promethion-even
 
 ### Abundance Metrics
 
-| Tool | DB | Elapsed (s) | Max RSS (GB) | Presence Precision (species) | Presence Recall (species) | Presence F1 (species) | L1 (species) | TV (species) | Bray-Curtis (species) | Presence Precision (genus) | Presence Recall (genus) | Presence F1 (genus) | L1 (genus) | TV (genus) | Bray-Curtis (genus) |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 4.238009 | 0.101562 | 0.000529 | 0.8 | 0.001057 | 40.055943 | 0.20028 | 0.20028 | 0.00206 | 0.8 | 0.00411 | 39.616694 | 0.198083 | 0.198083 |
-| centrifuger | cami_refseq | 20336.279081 | 143.906261 | 0.003046 | 0.8 | 0.00607 | 192.104357 | 0.960522 | 0.960522 | 0.010624 | 0.8 | 0.02097 | 158.289425 | 0.791447 | 0.791447 |
-| ganon2 | cami_refseq | 52171.185963 | 211.738628 | 0.005084 | 0.7 | 0.010094 | 175.170246 | 0.875851 | 0.875851 | 0.015385 | 0.8 | 0.030189 | 169.284628 | 0.846423 | 0.846423 |
-| kraken2 | cami_refseq | 5145.601854 | 124.483154 | 0.000402 | 0.8 | 0.000804 | 44.168699 | 0.220843 | 0.220843 | 0.002191 | 0.8 | 0.004369 | 40.99121 | 0.204956 | 0.204956 |
-| sylph | cami_refseq | 820.419387 | 34.487347 | 0.875 | 0.7 | 0.777778 | 55.336 | 0.27668 | 0.27668 | 0.875 | 0.7 | 0.777778 | 55.336 | 0.27668 | 0.27668 |
+本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
+只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
+只有满足默认参数合同的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
+
+| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| bracken | cami_refseq | 1739.503428 | 124.327122 | 0.8 | 0.00053 | 0.400559 | 0.8 | 0.002394 | 0.396827 | 0.572166 |
+| centrifuger | cami_refseq | 20336.279081 | 143.906261 | 0.8 | 0.003048 | 1.921044 | 0.8 | 0.00949 | 1.776824 | 1.49142 |
+| ganon2 | cami_refseq | 40650.987322 | 211.724251 | 0.8 | 0.001451 | 1.920734 | 0.8 | 0.005215 | 1.803527 | 1.795618 |
+| sylph | cami_refseq | 820.419387 | 34.487347 | 0.6 | 0.857143 | 0.771479 | 0.7 | 1 | 0.531479 | 0.832102 |
 
 ## Dataset: zymo-promethion-log
 
 ### Abundance Metrics
 
-| Tool | DB | Elapsed (s) | Max RSS (GB) | Presence Precision (species) | Presence Recall (species) | Presence F1 (species) | L1 (species) | TV (species) | Bray-Curtis (species) | Presence Precision (genus) | Presence Recall (genus) | Presence F1 (genus) | L1 (genus) | TV (genus) | Bray-Curtis (genus) |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 3.483592 | 0.085938 | 0.000566 | 0.8 | 0.00113 | 19.40025 | 0.097001 | 0.097001 | 0.002172 | 0.8 | 0.004331 | 19.103413 | 0.095517 | 0.095517 |
-| centrifuger | cami_refseq | 20472.630834 | 142.917328 | 0.003189 | 0.8 | 0.006352 | 195.27129 | 0.976356 | 0.976356 | 0.010568 | 0.8 | 0.02086 | 190.388215 | 0.951941 | 0.951941 |
-| chimera | cami_refseq | 12872.658087 | 846.385662 | 0.285714 | 0.4 | 0.333333 | 54.788976 | 0.273945 | 0.273945 | 0.416667 | 0.5 | 0.454545 | 53.545248 | 0.267726 | 0.267726 |
-| ganon2 | cami_refseq | 47708.910829 | 211.735104 | 0.007021 | 0.7 | 0.013903 | 199.40333 | 0.997017 | 0.997017 | 0.018391 | 0.8 | 0.035955 | 197.597903 | 0.98799 | 0.98799 |
-| kraken2 | cami_refseq | 5249.200369 | 124.863625 | 0.00041 | 0.8 | 0.00082 | 22.036603 | 0.110183 | 0.110183 | 0.002209 | 0.8 | 0.004406 | 20.887574 | 0.104438 | 0.104438 |
-| sylph | cami_refseq | 769.728807 | 34.486584 | 0.857143 | 0.6 | 0.705882 | 20.110006 | 0.10055 | 0.10055 | 0.857143 | 0.6 | 0.705882 | 20.110006 | 0.10055 | 0.10055 |
+本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
+只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
+只有满足默认参数合同的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
+
+| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| bracken | cami_refseq | 3246.877782 | 124.719833 | 0.8 | 0.000566 | 0.194002 | 0.8 | 0.002467 | 0.191574 | 0.235134 |
+| centrifuger | cami_refseq | 20472.630834 | 142.917328 | 0.8 | 0.003189 | 1.952713 | 0.8 | 0.009445 | 1.907987 | 2.007529 |
+| chimera | cami_refseq | 12872.658087 | 846.385662 | 0.4 | 0.285714 | 0.54789 | 0.5 | 0.454545 | 0.52843 | 0.775812 |
+| ganon2 | cami_refseq | 47708.910829 | 211.735104 | 0.7 | 0.007021 | 1.994033 | 0.8 | 0.016598 | 1.978402 | 2.489136 |
+| sylph | cami_refseq | 769.728807 | 34.486584 | 0.5 | 0.833333 | 0.218161 | 0.6 | 1 | 0.201088 | 0.157007 |
 

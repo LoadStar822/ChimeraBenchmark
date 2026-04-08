@@ -5,17 +5,15 @@ import json
 import resource
 from pathlib import Path
 import subprocess
-import sys
 
 from .config import load_yaml_dir
-from .core.runner import Runner
+from .core.runner import Runner, build_run_metrics
 from .core.build_runner import BuildRunner
 from .core.reporter import write_summary
+from .core.results_readme import write_classify_readme, write_profile_readme
 from .registry import TOOLS
 
 DEFAULT_THREADS = 32
-TAXOR_MAX_INPUT_BYTES = 100 * 1000 * 1000 * 1000
-TAXOR_MAX_FILE_BYTES = 100 * 1000 * 1000 * 1000
 
 
 def _make_executor(*, max_file_bytes: int | None = None):
@@ -42,23 +40,6 @@ def _make_executor(*, max_file_bytes: int | None = None):
         return proc.returncode
 
     return _executor
-
-
-def _dataset_read_paths(dataset: dict) -> list[Path]:
-    paired = dataset.get("paired")
-    if isinstance(paired, list) and paired:
-        return [Path(p) for p in paired]
-    reads = dataset.get("reads")
-    if isinstance(reads, list) and reads:
-        return [Path(p) for p in reads]
-    raise ValueError("dataset must define reads or paired inputs")
-
-
-def _sum_file_bytes(paths: list[Path]) -> int:
-    total = 0
-    for path in paths:
-        total += path.stat().st_size
-    return total
 
 
 def _resolve_datasets(exp: dict, datasets: dict, selected: list[str]) -> list[dict]:
@@ -102,8 +83,6 @@ def run_cmd(args) -> None:
     runner = Runner(Path(args.runs), Path(args.profile) if args.profile else None)
     tool = tool_cls(tool_config)
     executor = _make_executor()
-    if tool_name == "taxor":
-        executor = _make_executor(max_file_bytes=TAXOR_MAX_FILE_BYTES)
 
     if args.dry_run:
         Path(args.runs).mkdir(parents=True, exist_ok=True)
@@ -111,25 +90,16 @@ def run_cmd(args) -> None:
 
     selected = args.dataset or []
     for dataset in _resolve_datasets(exp, datasets, selected):
-        if tool_name == "taxor":
-            dataset_name = dataset.get("name", "dataset")
-            read_paths = _dataset_read_paths(dataset)
-            total_bytes = _sum_file_bytes(read_paths)
-            if total_bytes > TAXOR_MAX_INPUT_BYTES:
-                size_gib = total_bytes / (1024 * 1024 * 1024)
-                print(
-                    f"[skip] taxor dataset={dataset_name} input_size={size_gib:.2f}GiB exceeds 100GB",
-                    file=sys.stderr,
-                )
-                continue
         runner.run(exp=exp, dataset=dataset, tool=tool, executor=executor)
 
 
-def report_cmd(args) -> None:
-    runs_root = Path(args.runs) / args.exp
+def _collect_summary_records(runs_root: Path, exp_name: str, selected: list[str]) -> list[dict]:
+    exp_root = runs_root / exp_name
     run_records = []
-    for meta_path in runs_root.rglob("meta.json"):
+    for meta_path in exp_root.rglob("meta.json"):
         meta = json.loads(meta_path.read_text())
+        if meta.get("return_code") not in {None, 0}:
+            continue
         metrics_path = meta_path.parent / "metrics.json"
         metrics = json.loads(metrics_path.read_text()) if metrics_path.exists() else {}
         resource = meta.get("resource", {})
@@ -145,12 +115,48 @@ def report_cmd(args) -> None:
                 "metrics": metrics,
             }
         )
-    if args.dataset:
-        allowed = set(args.dataset)
+    if selected:
+        allowed = set(selected)
         run_records = [r for r in run_records if r.get("dataset") in allowed]
+    return run_records
+
+
+def report_cmd(args) -> None:
+    run_records = _collect_summary_records(Path(args.runs), args.exp, args.dataset or [])
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     write_summary(run_records, out)
+
+
+def recompute_cmd(args) -> None:
+    cfg_root = Path(args.config)
+    datasets = load_yaml_dir(cfg_root / "datasets")
+    exps = load_yaml_dir(cfg_root / "experiments")
+    exp = dict(exps[args.exp])
+    exp["name"] = exp.get("name", args.exp)
+    selected = args.dataset or []
+    runs_root = Path(args.runs)
+    exp_root = runs_root / args.exp
+
+    for dataset in _resolve_datasets(exp, datasets, selected):
+        dataset_name = dataset.get("name", "dataset")
+        run_dir = exp_root / dataset_name
+        meta_path = run_dir / "meta.json"
+        if not meta_path.exists():
+            continue
+        meta = json.loads(meta_path.read_text())
+        if meta.get("return_code") not in {None, 0}:
+            continue
+        metrics = build_run_metrics(exp, dataset, meta.get("outputs") or {})
+        (run_dir / "metrics.json").write_text(json.dumps(metrics, indent=2))
+
+    write_classify_readme(runs_root)
+    if args.profile:
+        write_profile_readme(Path(args.profile), runs_root)
+
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    write_summary(_collect_summary_records(runs_root, args.exp, selected), out)
 
 
 def build_cmd(args) -> None:
@@ -204,6 +210,15 @@ def main() -> None:
     report_p.add_argument("--out", default="results/reports/summary.tsv")
     report_p.add_argument("--dataset", action="append", default=[])
     report_p.set_defaults(func=report_cmd)
+
+    recompute_p = sub.add_parser("recompute")
+    recompute_p.add_argument("--exp", required=True)
+    recompute_p.add_argument("--config", default="configs")
+    recompute_p.add_argument("--runs", default="results/classify")
+    recompute_p.add_argument("--profile", default="results/profile")
+    recompute_p.add_argument("--out", default="results/reports/summary.tsv")
+    recompute_p.add_argument("--dataset", action="append", default=[])
+    recompute_p.set_defaults(func=recompute_cmd)
 
     build_p = sub.add_parser("build")
     build_p.add_argument("--build", required=True)

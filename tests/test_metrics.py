@@ -1,7 +1,7 @@
 from math import isclose
 from pathlib import Path
 
-from chimera_bench.core.metrics import evaluate_with_truth, parse_ganon_one, load_taxonomy
+from chimera_bench.core.metrics import compute_weighted_unifrac, evaluate_with_truth, load_taxonomy, parse_ganon_one
 
 
 def test_resolve_mapping_paths_collects_all_samples(tmp_path: Path):
@@ -28,7 +28,7 @@ def test_resolve_mapping_paths_collects_all_samples(tmp_path: Path):
     )
 
 
-def test_evaluate_with_truth_per_read_and_abundance(tmp_path: Path):
+def test_evaluate_with_truth_per_read_and_profile(tmp_path: Path):
     tax = tmp_path / "test.tax"
     tax.write_text(
         "\n".join(
@@ -76,11 +76,10 @@ def test_evaluate_with_truth_per_read_and_abundance(tmp_path: Path):
     assert isclose(metrics["per_read_precision_species"], 1.0, rel_tol=1e-6)
     assert isclose(metrics["per_read_recall_species"], 0.5, rel_tol=1e-6)
 
-    assert isclose(metrics["abundance_l1_species"], 26.666666667, rel_tol=1e-6)
-    assert isclose(metrics["abundance_tv_species"], 0.1333333333, rel_tol=1e-6)
-    assert isclose(metrics["abundance_bc_species"], 0.1333333333, rel_tol=1e-6)
-    assert isclose(metrics["presence_precision_species"], 1.0, rel_tol=1e-6)
-    assert isclose(metrics["presence_recall_species"], 1.0, rel_tol=1e-6)
+    assert isclose(metrics["l1_norm_species"], 0.2666666667, rel_tol=1e-6)
+    assert isclose(metrics["completeness_species"], 1.0, rel_tol=1e-6)
+    assert isclose(metrics["purity_species"], 1.0, rel_tol=1e-6)
+    assert isclose(metrics["weighted_unifrac"], 0.4, rel_tol=1e-6)
 
 
 def test_parse_ganon_one_uses_file_mapping(tmp_path: Path):
@@ -141,7 +140,10 @@ def test_evaluate_with_truth_profile_only(tmp_path: Path):
 
     metrics = evaluate_with_truth(exp, dataset, outputs)
 
-    assert isclose(metrics["presence_precision_species"], 1.0, rel_tol=1e-6)
+    assert isclose(metrics["completeness_species"], 1.0, rel_tol=1e-6)
+    assert isclose(metrics["purity_species"], 1.0, rel_tol=1e-6)
+    assert isclose(metrics["l1_norm_species"], 0.0, rel_tol=1e-6)
+    assert isclose(metrics["weighted_unifrac"], 0.0, rel_tol=1e-6)
     assert metrics.get("per_read_precision_species") is None
 
 
@@ -178,6 +180,48 @@ def test_descendant_per_read_penalizes_ancestor(tmp_path: Path):
     assert isclose(metrics["per_read_recall_species"], 0.5, rel_tol=1e-6)
     assert isclose(metrics["exact_per_read_precision_species"], 0.5, rel_tol=1e-6)
     assert isclose(metrics["exact_per_read_recall_species"], 0.5, rel_tol=1e-6)
+
+
+def test_exact_per_read_uses_rank_lift_not_raw_rank(tmp_path: Path):
+    tax = tmp_path / "test.tax"
+    tax.write_text(
+        "\n".join(
+            [
+                "1\t1\tno rank\troot\t0",
+                "10\t1\tgenus\tGenusA\t0",
+                "11\t10\tspecies\tSpeciesA\t0",
+                "12\t11\tstrain\tStrainA1\t0",
+                "20\t1\tfamily\tFamilyB\t0",
+            ]
+        )
+        + "\n"
+    )
+
+    mapping = tmp_path / "mapping.tsv"
+    mapping.write_text(
+        "#anonymous_contig_id\tgenome_id\ttax_id\tcontig_id\tnumber_reads\tstart_position\tend_position\n"
+        "c1\tOtu1\t12\tX\t10\t0\t0\n"
+        "c2\tOtu2\t10\tY\t5\t0\t0\n"
+        "c3\tOtu3\t20\tZ\t5\t0\t0\n"
+    )
+
+    classify = tmp_path / "pred.tsv"
+    classify.write_text("c1\t11:1\n" "c2\t12:1\n" "c3\t11:1\n")
+
+    exp = {"taxonomy": str(tax)}
+    dataset = {"truth_map": str(mapping)}
+    outputs = {"classify_tsv": str(classify)}
+
+    metrics = evaluate_with_truth(exp, dataset, outputs)
+
+    assert isclose(metrics["exact_per_read_truth_mapped_rate_species"], 1.0 / 3.0, rel_tol=1e-6)
+    assert isclose(metrics["exact_per_read_truth_mapped_rate_genus"], 2.0 / 3.0, rel_tol=1e-6)
+    assert isclose(metrics["exact_per_read_precision_species"], 1.0, rel_tol=1e-6)
+    assert isclose(metrics["exact_per_read_recall_species"], 1.0, rel_tol=1e-6)
+    assert isclose(metrics["exact_per_read_f1_species"], 1.0, rel_tol=1e-6)
+    assert isclose(metrics["exact_per_read_precision_genus"], 1.0, rel_tol=1e-6)
+    assert isclose(metrics["exact_per_read_recall_genus"], 1.0, rel_tol=1e-6)
+    assert isclose(metrics["exact_per_read_f1_genus"], 1.0, rel_tol=1e-6)
 
 
 def test_truth_profile_uses_names_dmp_mapping(tmp_path: Path):
@@ -233,7 +277,7 @@ def test_truth_profile_uses_names_dmp_mapping(tmp_path: Path):
 
     metrics = evaluate_with_truth(exp, dataset, outputs)
 
-    assert isclose(metrics["presence_recall_species"], 1.0 / 3.0, rel_tol=1e-6)
+    assert isclose(metrics["completeness_species"], 1.0 / 3.0, rel_tol=1e-6)
 
 
 def test_evaluate_with_truth_accepts_legacy_sylph_profile_key(tmp_path: Path):
@@ -265,10 +309,10 @@ def test_evaluate_with_truth_accepts_legacy_sylph_profile_key(tmp_path: Path):
 
     metrics = evaluate_with_truth(exp, dataset, outputs)
 
-    assert isclose(metrics["presence_precision_species"], 1.0, rel_tol=1e-6)
+    assert isclose(metrics["purity_species"], 1.0, rel_tol=1e-6)
 
 
-def test_abundance_metrics_penalize_unmapped_taxa_and_no_unk_metrics(tmp_path: Path):
+def test_profile_metrics_penalize_unmapped_taxa_and_no_unk_metrics(tmp_path: Path):
     tax = tmp_path / "test.tax"
     tax.write_text(
         "\n".join(
@@ -284,8 +328,8 @@ def test_abundance_metrics_penalize_unmapped_taxa_and_no_unk_metrics(tmp_path: P
     truth = tmp_path / "truth.tsv"
     truth.write_text("species\tpercent\nSpeciesA\t100\n")
 
-    # Include an unknown taxid (999) in the prediction. Bench-style descendant-aware
-    # abundance metrics should treat it as an extra FP taxon (not drop it).
+    # Include an unknown taxid (999) in the prediction. OPAL-style rank metrics
+    # should treat it as an extra FP taxon rather than silently dropping it.
     tre = tmp_path / "pred.tre"
     tre.write_text(
         "\n".join(
@@ -303,10 +347,144 @@ def test_abundance_metrics_penalize_unmapped_taxa_and_no_unk_metrics(tmp_path: P
 
     metrics = evaluate_with_truth(exp, dataset, outputs)
 
-    assert isclose(metrics["presence_precision_species"], 0.5, rel_tol=1e-6)
-    assert isclose(metrics["presence_recall_species"], 1.0, rel_tol=1e-6)
-    assert isclose(metrics["abundance_l1_species"], 100.0, rel_tol=1e-6)
+    assert isclose(metrics["purity_species"], 0.5, rel_tol=1e-6)
+    assert isclose(metrics["completeness_species"], 1.0, rel_tol=1e-6)
+    assert isclose(metrics["l1_norm_species"], 1.0, rel_tol=1e-6)
     assert all("_unk" not in key for key in metrics.keys())
+
+
+def test_profile_metrics_score_explicit_empty_profile_output(tmp_path: Path):
+    tax = tmp_path / "test.tax"
+    tax.write_text(
+        "\n".join(
+            [
+                "1\t0\tno rank\troot\t0",
+                "2\t1\tgenus\tGenusA\t0",
+                "3\t2\tspecies\tSpeciesA\t0",
+            ]
+        )
+        + "\n"
+    )
+
+    truth = tmp_path / "truth.tsv"
+    truth.write_text("species\tpercent\nSpeciesA\t100\n")
+
+    empty_profile = tmp_path / "pred.tsv"
+    empty_profile.write_text(
+        "\n".join(
+            [
+                "@@TAXID\tRANK\tTAXPATH\tTAXPATHSN\tPERCENTAGE",
+                "unclassified\tno rank\t-\t-\t100.0",
+            ]
+        )
+        + "\n"
+    )
+
+    exp = {"taxonomy": str(tax)}
+    dataset = {"truth_profile": str(truth)}
+    outputs = {"cami_profile_tsv": str(empty_profile)}
+
+    metrics = evaluate_with_truth(exp, dataset, outputs, include_per_read=False, include_profile=True)
+
+    assert isclose(metrics["completeness_species"], 0.0, rel_tol=1e-6)
+    assert isclose(metrics["purity_species"], 0.0, rel_tol=1e-6)
+    assert isclose(metrics["l1_norm_species"], 1.0, rel_tol=1e-6)
+    assert isclose(metrics["weighted_unifrac"], 1.5, rel_tol=1e-6)
+
+
+def test_profile_metrics_do_not_fallback_when_explicit_profile_has_no_taxa(tmp_path: Path):
+    tax = tmp_path / "test.tax"
+    tax.write_text(
+        "\n".join(
+            [
+                "1\t0\tno rank\troot\t0",
+                "2\t1\tgenus\tGenusA\t0",
+                "3\t2\tspecies\tSpeciesA\t0",
+                "4\t1\tgenus\tGenusB\t0",
+                "5\t4\tspecies\tSpeciesB\t0",
+            ]
+        )
+        + "\n"
+    )
+
+    empty_profile = tmp_path / "pred_profile.tsv"
+    empty_profile.write_text(
+        "\n".join(
+            [
+                "@@TAXID\tRANK\tTAXPATH\tTAXPATHSN\tPERCENTAGE",
+                "unclassified\tno rank\t-\t-\t100.0",
+            ]
+        )
+        + "\n"
+    )
+
+    classify = tmp_path / "pred.tsv"
+    classify.write_text("c1\t3:1\n" "c2\tunclassified\n")
+
+    exp = {"taxonomy": str(tax)}
+    truth = tmp_path / "truth.tsv"
+    truth.write_text("species\tpercent\nSpeciesA\t50\nSpeciesB\t50\n")
+    dataset = {"truth_profile": str(truth)}
+    outputs = {"cami_profile_tsv": str(empty_profile), "classify_tsv": str(classify)}
+
+    metrics = evaluate_with_truth(exp, dataset, outputs, include_per_read=False, include_profile=True)
+
+    assert isclose(metrics["completeness_species"], 0.0, rel_tol=1e-6)
+    assert isclose(metrics["purity_species"], 0.0, rel_tol=1e-6)
+    assert isclose(metrics["l1_norm_species"], 1.0, rel_tol=1e-6)
+    assert metrics["weighted_unifrac"] > 0.0
+
+
+def test_profile_metrics_require_native_profile_output(tmp_path: Path):
+    tax = tmp_path / "test.tax"
+    tax.write_text(
+        "\n".join(
+            [
+                "1\t0\tno rank\troot\t0",
+                "2\t1\tgenus\tGenusA\t0",
+                "3\t2\tspecies\tSpeciesA\t0",
+            ]
+        )
+        + "\n"
+    )
+
+    truth = tmp_path / "truth.tsv"
+    truth.write_text("species\tpercent\nSpeciesA\t100\n")
+
+    classify = tmp_path / "pred.tsv"
+    classify.write_text("c1\t3:1\n")
+
+    exp = {"taxonomy": str(tax)}
+    dataset = {"truth_profile": str(truth)}
+    outputs = {"classify_tsv": str(classify)}
+
+    metrics = evaluate_with_truth(exp, dataset, outputs, include_per_read=False, include_profile=True)
+
+    assert "completeness_species" not in metrics
+    assert "purity_species" not in metrics
+    assert "l1_norm_species" not in metrics
+    assert "weighted_unifrac" not in metrics
+
+
+def test_weighted_unifrac_penalizes_far_taxa_more_than_near_taxa():
+    taxonomy = {
+        1: (0, "no rank"),
+        10: (1, "genus"),
+        11: (10, "species"),
+        12: (10, "species"),
+        20: (1, "genus"),
+        21: (20, "species"),
+    }
+
+    truth = {11: 1.0}
+    near_pred = {12: 1.0}
+    far_pred = {21: 1.0}
+
+    near = compute_weighted_unifrac(truth, near_pred, taxonomy)
+    far = compute_weighted_unifrac(truth, far_pred, taxonomy)
+
+    assert isclose(compute_weighted_unifrac(truth, truth, taxonomy), 0.0, rel_tol=1e-6)
+    assert far > near
 
 
 def test_evaluate_with_truth_missing_truth_profile_does_not_crash(tmp_path: Path):

@@ -11,12 +11,14 @@ datasets:
   - zymo-promethion-even
   - zymo-promethion-log
 db: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/ganon/cami_refseq/DB/cami_refseq
+taxonomy_nodes_dmp: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/taxonomy/ncbi_20260408/nodes.dmp
+taxonomy_names_dmp: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/taxonomy/ncbi_20260408/names.dmp
 threads: 32
-coverage_target_tsv: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/target.tsv
-coverage_nodes_dmp: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/ncbi_taxonomy/nodes.dmp
 tool_config:
   env: ganon
   bin: ganon
+  output_one: true
+  output_unclassified: true
+  skip_report: true
   output_all: false
-  multiple_matches: lca
 tool_args: []

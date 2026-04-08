@@ -1,6 +1,33 @@
 from chimera_bench.tools.bracken import BrackenTool
 
 
+def test_bracken_build_steps_run_end_to_end_pipeline():
+    tool = BrackenTool({"env": "kraken", "bin": "bracken"})
+    steps = tool.build_steps(
+        dataset={"reads": ["reads.fastq"]},
+        exp={
+            "db": "/db/cami_refseq",
+            "threads": 32,
+        },
+        out_prefix="/tmp/runs/bracken/outputs/bracken",
+        profile_out_prefix="/tmp/profile/bracken/outputs/bracken_abundance",
+    )
+
+    assert [step["name"] for step in steps] == ["kraken2_classify", "bracken", "convert"]
+
+    classify_cmd = steps[0]["cmd"]
+    assert classify_cmd[:6] == ["conda", "run", "-n", "kraken", "kraken2", "--db"]
+    assert "/db/cami_refseq" in classify_cmd
+    assert "--report" in classify_cmd
+    report_path = classify_cmd[classify_cmd.index("--report") + 1]
+    assert report_path.endswith("_kraken2.report")
+
+    bracken_cmd = steps[1]["cmd"]
+    assert bracken_cmd[:5] == ["conda", "run", "-n", "kraken", "bracken"]
+    assert bracken_cmd[bracken_cmd.index("-i") + 1] == report_path
+    assert "results/classify/kraken2" not in " ".join(bracken_cmd)
+
+
 def test_bracken_build_db_steps_stage_source_db(tmp_path):
     tool = BrackenTool({"env": "kraken", "bin": "bracken"})
     source_db = tmp_path / "kraken2" / "cami_refseq"
