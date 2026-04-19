@@ -6,6 +6,7 @@ import resource
 from pathlib import Path
 import subprocess
 
+from .catalog import write_catalog_outputs
 from .config import load_yaml_dir
 from .core.runner import Runner, build_run_metrics
 from .core.build_runner import BuildRunner
@@ -91,6 +92,15 @@ def run_cmd(args) -> None:
     selected = args.dataset or []
     for dataset in _resolve_datasets(exp, datasets, selected):
         runner.run(exp=exp, dataset=dataset, tool=tool, executor=executor)
+
+
+def catalog_cmd(args) -> None:
+    write_catalog_outputs(
+        config_root=Path(args.config),
+        results_root=Path(args.results_root),
+        resources_root=Path(getattr(args, "resources_root", "resources")),
+        progress=True,
+    )
 
 
 def _collect_summary_records(runs_root: Path, exp_name: str, selected: list[str]) -> list[dict]:
@@ -207,7 +217,7 @@ def main() -> None:
     report_p = sub.add_parser("report")
     report_p.add_argument("--exp", required=True)
     report_p.add_argument("--runs", default="results/classify")
-    report_p.add_argument("--out", default="results/reports/summary.tsv")
+    report_p.add_argument("--out", default="resources/reports/summary.tsv")
     report_p.add_argument("--dataset", action="append", default=[])
     report_p.set_defaults(func=report_cmd)
 
@@ -216,7 +226,7 @@ def main() -> None:
     recompute_p.add_argument("--config", default="configs")
     recompute_p.add_argument("--runs", default="results/classify")
     recompute_p.add_argument("--profile", default="results/profile")
-    recompute_p.add_argument("--out", default="results/reports/summary.tsv")
+    recompute_p.add_argument("--out", default="resources/reports/summary.tsv")
     recompute_p.add_argument("--dataset", action="append", default=[])
     recompute_p.set_defaults(func=recompute_cmd)
 
@@ -230,6 +240,12 @@ def main() -> None:
     build_p.add_argument("--sylph-env", default="sylph")
     build_p.add_argument("--dry-run", action="store_true")
     build_p.set_defaults(func=build_cmd)
+
+    catalog_p = sub.add_parser("catalog")
+    catalog_p.add_argument("--config", default="configs")
+    catalog_p.add_argument("--results-root", default="results")
+    catalog_p.add_argument("--resources-root", default="resources")
+    catalog_p.set_defaults(func=catalog_cmd)
 
     args = p.parse_args()
     args.func(args)

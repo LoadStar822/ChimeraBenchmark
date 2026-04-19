@@ -12,8 +12,8 @@ datasets:
   - zymo-promethion-log
 db: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/kraken2/cami_refseq/DB/cami_refseq
 taxonomy: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/ganon/cami_refseq/DB/cami_refseq.tax
-taxonomy_nodes_dmp: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/taxonomy/ncbi_20260408/nodes.dmp
-taxonomy_names_dmp: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/taxonomy/ncbi_20260408/names.dmp
+taxonomy_nodes_dmp: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/taxonomy/ncbi_20260408/nodes.dmp
+taxonomy_names_dmp: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/taxonomy/ncbi_20260408/names.dmp
 threads: 32
 tool_config:
   env: kraken

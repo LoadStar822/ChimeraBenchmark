@@ -6,6 +6,7 @@ classify/
 profile/
 builds/
 reports/
+resources/
 runs/
 DB/
 results/**
@@ -16,5 +17,3 @@ results/**
 !results/classify/README.md
 !results/profile/
 !results/profile/README.md
-!results/reports/
-!results/reports/README.md

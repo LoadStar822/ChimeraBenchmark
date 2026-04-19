@@ -1,52 +1,70 @@
 # ChimeraBenchmark
 
-本仓库用于运行与汇总 Chimera 的基准测试（build / classify / profile）。
+ChimeraBenchmark 汇集了论文中用于评估 Chimera 的宏基因组分类基准测试（metagenomic taxonomic benchmark）。它包含数据集说明、参考库规模、评估任务、结果表和复现脚本。
 
-- 所有结果统一写入 `results/`（默认不提交原始输出与日志，仅提交聚合后的 README）。
-- 实验与数据集配置在 `configs/` 下。
-- 旧版脚本与文档已移动到 `legacy` 分支（见 `legacy` branch）。
+如果你是从论文来到这里，建议先阅读 `results/README.md`，再查看具体的 build、classify 和 profile 结果表。
 
-## 实验公平性与默认参数策略
+## 目录
 
-为保证论文实验公平性，本项目遵循以下原则：
+- [Benchmark 设计](#benchmark-设计)
+- [数据与结果](#数据与结果)
+- [复现方式](#复现方式)
+- [仓库结构](#仓库结构)
+- [方法边界](#方法边界)
 
-- 统一使用相同线程数运行所有软件（默认 **32**，除非另行说明）。
-- 推断参数保持软件默认；本仓库不再接受为了“好看结果”而改推断策略。
-- 仅允许为了**导出评估结果**而增加输出开关；这类开关不能改变算法行为与默认推断逻辑。
-- 若某工具必须依赖多步 pipeline（例如 `kraken2 -> bracken`），runtime / memory 必须按端到端 pipeline 解释。
-- 评估时统一使用同一份 NCBI taxonomy 快照，不再混用各工具 build 目录里的 rank / name 定义。
+## Benchmark 设计
 
-### Ganon（ganon2）当前 benchmark 的默认跑法
+本 benchmark 覆盖三类任务：
 
-保持 ganon 的默认推断逻辑，仅增加输出以便评估：
+- 数据库构建（build）：比较不同工具在同一参考库上的构建成本。
+- 逐读段分类（per-read classify）：比较每条 read 或 contig 在目标层级上的分类准确性。
+- 丰度画像（profile）：比较样本层面的物种组成估计。
 
-- classify 仅追加 `--output-one`、`--output-unclassified`、`--skip-report`（不改变算法结果）。
-- 不显式设置 `--multiple-matches / --rel-cutoff / --rel-filter / --fpr-query`，全部使用默认值。
-- profile 由 `ganon report` 从 `.rep` 生成 `.tre`（reads 与 abundance 两类）。
+公开评估默认报告 `species` 和 `genus` 两个层级。逐读段结果使用真值映射，丰度结果使用样本组成真值。
 
-如需变更该策略，必须在 README 中明确记录，并注明原因。
+## 数据与结果
 
-## 历史结果刷新状态
+- `results/README.md`：数据集、参考库、评估口径和指标说明。
+- `results/builds/README.md`：数据库构建结果。
+- `results/classify/README.md`：逐读段分类结果。
+- `results/profile/README.md`：丰度画像结果。
 
-- 当前仓库里已落盘的 `bracken` 结果，已按新的端到端 `kraken2 -> bracken` 合同刷新。
-- 当前仓库里已落盘的 `taxor` 结果，包含旧的 benchmark 特殊处理痕迹，刷新后才能用于论文主表。
-- 当前仓库里已落盘的 `ganon` 结果，已按新的默认参数合同刷新。
+`results/README.md` 中的两张 summary 表可直接对应论文补充材料：
 
-## 统一 taxonomy 快照
+- Reference Database Summary：参考库规模和来源。
+- Benchmark Dataset Summary：实际输入数据、测序类型、读长和真值类型。
 
-- 当前评估统一使用官方 NCBI taxonomy 快照：
-  `results/taxonomy/ncbi_20260408/`
-- 评估依赖文件：
-  - `nodes.dmp`
-  - `names.dmp`
-  - `source.json`
-  - `SHA256SUMS`
-- 这份快照用于统一 rank 判定和名称归一化，避免不同工具各自 `.tax` 的差异直接进入评估口径。
+## 复现方式
 
-## Per-read 主指标合同
+查看可用命令：
 
-- `species exact` 只统计能提升到 `species` 的真值，不要求原始真值的 rank 恰好等于 `species`。
-- `genus exact` 只统计能提升到 `genus` 的真值，不要求原始真值的 rank 恰好等于 `genus`。
-- 若原始真值是 `strain/subspecies/isolate`，但能唯一上提到某个 `species/genus`，则进入对应主指标分母。
-- 若原始真值只有 `family/order/class`，无法上提到更细层级，则不进入该层级主指标分母。
-- 公开结果必须同时展示 `Truth Mapped Rate`，否则 `species/genus F1` 不可单独引用。
+```bash
+python -m chimera_bench.cli -h
+```
+
+重新生成数据集与参考库 summary 表：
+
+```bash
+python -m chimera_bench.cli catalog --config configs --results-root results --resources-root resources
+```
+
+运行核心测试：
+
+```bash
+pytest -q tests/test_catalog.py tests/test_results_readme.py tests/test_cli.py
+```
+
+## 仓库结构
+
+- `configs/`：数据集、参考库和工具运行配置。
+- `chimera_bench/`：运行、汇总和评估代码。
+- `results/`：结果表和各工具运行输出。
+- `resources/`：统一分类体系、输入清单和 summary 表。
+- `tests/`：README 生成、指标汇总和命令行行为测试。
+
+## 方法边界
+
+- 除线程数外，公开比较尽量使用各工具默认推断参数。
+- 多步工具按端到端流程（end-to-end pipeline）统计运行时间和内存，例如 `kraken2 -> bracken`。
+- 公开评估统一使用 NCBI 分类体系（NCBI taxonomy）快照 `resources/taxonomy/ncbi_20260408/`。
+- 逐读段 F1 需要结合 `Truth Mapped Rate` 解读；当映射率不足时，结论只代表可映射子集。
