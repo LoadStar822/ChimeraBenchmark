@@ -135,6 +135,159 @@ def test_collect_dataset_rows_outputs_paper_fields(tmp_path: Path):
     assert "input_summary" not in row
 
 
+def test_collect_dataset_rows_uses_collection_catalog_metadata(tmp_path: Path, monkeypatch):
+    config_root = tmp_path / "configs"
+    datasets_root = config_root / "datasets"
+    datasets_root.mkdir(parents=True)
+
+    r1 = tmp_path / "sample_R1.fastq.gz"
+    r2 = tmp_path / "sample_R2.fastq.gz"
+    r1.write_bytes(b"not-scanned")
+    r2.write_bytes(b"not-scanned")
+    truth = tmp_path / "truth.tsv"
+    profile = tmp_path / "profile.tsv"
+    truth.write_text("read_id\tspecies_label\nr1\tSpeciesA\n")
+    profile.write_text("species_label\ttruth_abundance\nSpeciesA\t1.0\n")
+    (datasets_root / "real.yaml").write_text(
+        "\n".join(
+            [
+                "name: real",
+                "group: real",
+                "truth_label: local per-read + profile",
+                "truth_map_format: species_label",
+                "catalog:",
+                "  total_size_gb: '1.2'",
+                "  samples: 1",
+                "  input_type: paired FASTQ",
+                "  reads_or_contigs: 2",
+                "  base_pairs_bp: 250",
+                "  mean_length_bp: 125",
+                "  truth: local per-read + profile",
+                "samples:",
+                "  - sample_id: S1",
+                "    paired:",
+                f"      - {r1}",
+                f"      - {r2}",
+                f"    truth_map: {truth}",
+                f"    truth_profile: {profile}",
+            ]
+        )
+        + "\n"
+    )
+
+    def fail_scan(*_args, **_kwargs):
+        raise AssertionError("catalog metadata dataset should not scan sequence files")
+
+    monkeypatch.setattr("chimera_bench.catalog.scan_sequence_group", fail_scan)
+
+    rows = collect_dataset_rows(
+        config_root=config_root,
+        cache_path=tmp_path / "results" / ".cache" / "catalog_cache.json",
+    )
+
+    assert rows == [
+        {
+            "dataset": "real",
+            "dataset_name": "real",
+            "total_size_gb": "1.2",
+            "samples": 1,
+            "input_type": "paired FASTQ",
+            "reads_or_contigs": 2,
+            "base_pairs_bp": 250,
+            "mean_length_bp": 125,
+            "n50_bp": "—",
+            "gc_percent": "—",
+            "q30_percent": "—",
+            "truth": "local per-read + profile",
+        }
+    ]
+
+
+def test_collect_dataset_rows_skips_catalog_excluded_execution_variants(tmp_path: Path):
+    config_root = tmp_path / "configs"
+    datasets_root = config_root / "datasets"
+    datasets_root.mkdir(parents=True)
+
+    r1 = tmp_path / "batch_R1.fastq"
+    r2 = tmp_path / "batch_R2.fastq"
+    r1.write_text("@r/1\nA\n+\nI\n")
+    r2.write_text("@r/2\nT\n+\nI\n")
+    (datasets_root / "batch_variant.yaml").write_text(
+        "\n".join(
+            [
+                "name: batch-variant",
+                "group: strain-madness",
+                "catalog:",
+                "  exclude: true",
+                "samples:",
+                "  - sample_id: batch00",
+                "    paired:",
+                f"      - {r1}",
+                f"      - {r2}",
+            ]
+        )
+        + "\n"
+    )
+
+    rows = collect_dataset_rows(
+        config_root=config_root,
+        cache_path=tmp_path / "results" / ".cache" / "catalog_cache.json",
+        dataset_names=["batch-variant"],
+    )
+
+    assert rows == []
+
+
+def test_collect_dataset_rows_resolves_strain_source_and_text_catalog_fields(tmp_path: Path, monkeypatch):
+    config_root = tmp_path / "configs"
+    datasets_root = config_root / "datasets"
+    datasets_root.mkdir(parents=True)
+
+    source_root = tmp_path / "strain" / "long_read"
+    reads = source_root / "strmgCAMI2_sample_0" / "long_read" / "run0" / "reads" / "anonymous_reads.fq"
+    reads.parent.mkdir(parents=True)
+    reads.write_text("@S0R0\nACGT\n+\nIIII\n")
+    (datasets_root / "strain.yaml").write_text(
+        "\n".join(
+            [
+                "name: strain",
+                "group: strain-madness",
+                "truth_label: per-read mapping; profile from read abundance",
+                "sample_ids: [0]",
+                "catalog:",
+                "  total_size_gb: '4.0'",
+                "  samples: 1",
+                "  input_type: single FASTQ",
+                "  reads_or_contigs: 1",
+                "  base_pairs_bp: '—'",
+                "  mean_length_bp: '—'",
+                "  truth: per-read mapping; profile from read abundance",
+                "source:",
+                "  kind: strain_madness",
+                "  read_type: long",
+                f"  root: {source_root}",
+                f"truth_dir: {source_root}",
+            ]
+        )
+        + "\n"
+    )
+
+    def fail_scan(*_args, **_kwargs):
+        raise AssertionError("catalog metadata dataset should not scan sequence files")
+
+    monkeypatch.setattr("chimera_bench.catalog.scan_sequence_group", fail_scan)
+
+    rows = collect_dataset_rows(
+        config_root=config_root,
+        cache_path=tmp_path / "results" / ".cache" / "catalog_cache.json",
+    )
+
+    assert rows[0]["reads_or_contigs"] == 1
+    assert rows[0]["base_pairs_bp"] == "—"
+    assert rows[0]["mean_length_bp"] == "—"
+    assert rows[0]["truth"] == "per-read mapping; profile from read abundance"
+
+
 def test_collect_build_rows_uses_reference_metadata(tmp_path: Path):
     config_root = tmp_path / "configs"
     builds_root = config_root / "build"

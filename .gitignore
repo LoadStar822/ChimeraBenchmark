@@ -8,6 +8,7 @@ builds/
 reports/
 resources/
 runs/
+tmp/
 DB/
 results/**
 !results/README.md

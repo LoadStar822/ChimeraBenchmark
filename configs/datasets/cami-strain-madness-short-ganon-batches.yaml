@@ -1,0 +1,314 @@
+name: cami-strain-madness-short-ganon-batches
+display_dataset: cami-strain-madness-short
+group: strain-madness
+platform: short-read
+input_type: paired FASTQ
+truth_label: per-read mapping; profile from read abundance
+catalog:
+  exclude: true
+source:
+  kind: strain_madness
+  read_type: short
+  root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+truth_dir: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+samples:
+  - sample_id: batch000
+    batch_id: batch000
+    sample_ids: [0, 1]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch000_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch000_R2.fq
+  - sample_id: batch001
+    batch_id: batch001
+    sample_ids: [2, 3]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch001_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch001_R2.fq
+  - sample_id: batch002
+    batch_id: batch002
+    sample_ids: [4, 5]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch002_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch002_R2.fq
+  - sample_id: batch003
+    batch_id: batch003
+    sample_ids: [6, 7]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch003_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch003_R2.fq
+  - sample_id: batch004
+    batch_id: batch004
+    sample_ids: [8, 9]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch004_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch004_R2.fq
+  - sample_id: batch005
+    batch_id: batch005
+    sample_ids: [10, 11]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch005_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch005_R2.fq
+  - sample_id: batch006
+    batch_id: batch006
+    sample_ids: [12, 13]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch006_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch006_R2.fq
+  - sample_id: batch007
+    batch_id: batch007
+    sample_ids: [14, 15]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch007_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch007_R2.fq
+  - sample_id: batch008
+    batch_id: batch008
+    sample_ids: [16, 17]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch008_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch008_R2.fq
+  - sample_id: batch009
+    batch_id: batch009
+    sample_ids: [18, 19]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch009_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch009_R2.fq
+  - sample_id: batch010
+    batch_id: batch010
+    sample_ids: [20, 21]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch010_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch010_R2.fq
+  - sample_id: batch011
+    batch_id: batch011
+    sample_ids: [22, 23]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch011_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch011_R2.fq
+  - sample_id: batch012
+    batch_id: batch012
+    sample_ids: [24, 25]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch012_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch012_R2.fq
+  - sample_id: batch013
+    batch_id: batch013
+    sample_ids: [26, 27]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch013_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch013_R2.fq
+  - sample_id: batch014
+    batch_id: batch014
+    sample_ids: [28, 29]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch014_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch014_R2.fq
+  - sample_id: batch015
+    batch_id: batch015
+    sample_ids: [30, 31]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch015_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch015_R2.fq
+  - sample_id: batch016
+    batch_id: batch016
+    sample_ids: [32, 33]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch016_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch016_R2.fq
+  - sample_id: batch017
+    batch_id: batch017
+    sample_ids: [34, 35]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch017_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch017_R2.fq
+  - sample_id: batch018
+    batch_id: batch018
+    sample_ids: [36, 37]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch018_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch018_R2.fq
+  - sample_id: batch019
+    batch_id: batch019
+    sample_ids: [38, 39]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch019_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch019_R2.fq
+  - sample_id: batch020
+    batch_id: batch020
+    sample_ids: [40, 41]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch020_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch020_R2.fq
+  - sample_id: batch021
+    batch_id: batch021
+    sample_ids: [42, 43]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch021_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch021_R2.fq
+  - sample_id: batch022
+    batch_id: batch022
+    sample_ids: [44, 45]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch022_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch022_R2.fq
+  - sample_id: batch023
+    batch_id: batch023
+    sample_ids: [46, 47]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch023_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch023_R2.fq
+  - sample_id: batch024
+    batch_id: batch024
+    sample_ids: [48, 49]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch024_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch024_R2.fq
+  - sample_id: batch025
+    batch_id: batch025
+    sample_ids: [50, 51]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch025_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch025_R2.fq
+  - sample_id: batch026
+    batch_id: batch026
+    sample_ids: [52, 53]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch026_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch026_R2.fq
+  - sample_id: batch027
+    batch_id: batch027
+    sample_ids: [54, 55]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch027_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch027_R2.fq
+  - sample_id: batch028
+    batch_id: batch028
+    sample_ids: [56, 57]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch028_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch028_R2.fq
+  - sample_id: batch029
+    batch_id: batch029
+    sample_ids: [58, 59]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch029_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch029_R2.fq
+  - sample_id: batch030
+    batch_id: batch030
+    sample_ids: [60, 61]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch030_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch030_R2.fq
+  - sample_id: batch031
+    batch_id: batch031
+    sample_ids: [62, 63]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch031_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch031_R2.fq
+  - sample_id: batch032
+    batch_id: batch032
+    sample_ids: [64, 65]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch032_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch032_R2.fq
+  - sample_id: batch033
+    batch_id: batch033
+    sample_ids: [66, 67]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch033_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch033_R2.fq
+  - sample_id: batch034
+    batch_id: batch034
+    sample_ids: [68, 69]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch034_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch034_R2.fq
+  - sample_id: batch035
+    batch_id: batch035
+    sample_ids: [70, 71]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch035_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch035_R2.fq
+  - sample_id: batch036
+    batch_id: batch036
+    sample_ids: [72, 73]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch036_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch036_R2.fq
+  - sample_id: batch037
+    batch_id: batch037
+    sample_ids: [74, 75]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch037_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch037_R2.fq
+  - sample_id: batch038
+    batch_id: batch038
+    sample_ids: [76, 77]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch038_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch038_R2.fq
+  - sample_id: batch039
+    batch_id: batch039
+    sample_ids: [78, 79]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch039_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch039_R2.fq
+  - sample_id: batch040
+    batch_id: batch040
+    sample_ids: [80, 81]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch040_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch040_R2.fq
+  - sample_id: batch041
+    batch_id: batch041
+    sample_ids: [82, 83]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch041_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch041_R2.fq
+  - sample_id: batch042
+    batch_id: batch042
+    sample_ids: [84, 85]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch042_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch042_R2.fq
+  - sample_id: batch043
+    batch_id: batch043
+    sample_ids: [86, 87]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch043_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch043_R2.fq
+  - sample_id: batch044
+    batch_id: batch044
+    sample_ids: [88, 89]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch044_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch044_R2.fq
+  - sample_id: batch045
+    batch_id: batch045
+    sample_ids: [90, 91]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch045_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch045_R2.fq
+  - sample_id: batch046
+    batch_id: batch046
+    sample_ids: [92, 93]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch046_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch046_R2.fq
+  - sample_id: batch047
+    batch_id: batch047
+    sample_ids: [94, 95]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch047_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch047_R2.fq
+  - sample_id: batch048
+    batch_id: batch048
+    sample_ids: [96, 97]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch048_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch048_R2.fq
+  - sample_id: batch049
+    batch_id: batch049
+    sample_ids: [98, 99]
+    paired:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch049_R1.fq
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/ganon_batches_2/batch049_R2.fq

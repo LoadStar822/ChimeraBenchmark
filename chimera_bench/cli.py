@@ -5,9 +5,11 @@ import json
 import resource
 from pathlib import Path
 import subprocess
+import sys
 
 from .catalog import write_catalog_outputs
-from .config import load_yaml_dir
+from .config import expand_dataset_config, load_yaml_dir
+from .dataset_prepare import prepare_dataset_inputs
 from .core.runner import Runner, build_run_metrics
 from .core.build_runner import BuildRunner
 from .core.reporter import write_summary
@@ -50,15 +52,22 @@ def _resolve_datasets(exp: dict, datasets: dict, selected: list[str]) -> list[di
         if not exp_dataset:
             raise ValueError("experiment must define dataset or datasets")
         exp_datasets = [exp_dataset]
-    if selected:
-        exp_datasets = [name for name in exp_datasets if name in set(selected)]
+    selected_set = set(selected)
     resolved = []
     for name in exp_datasets:
         if name not in datasets:
             raise KeyError(f"dataset not found: {name}")
-        data = dict(datasets[name])
-        data["name"] = data.get("name", name)
-        resolved.append(data)
+        expanded = expand_dataset_config(name, datasets[name])
+        if selected_set and name not in selected_set:
+            expanded = [
+                data
+                for data in expanded
+                if data.get("name") in selected_set
+                or data.get("sample_id") in selected_set
+                or data.get("dataset_collection") in selected_set
+                or data.get("display_dataset") in selected_set
+            ]
+        resolved.extend(expanded)
     return resolved
 
 
@@ -85,13 +94,24 @@ def run_cmd(args) -> None:
     tool = tool_cls(tool_config)
     executor = _make_executor()
 
+    selected = args.dataset or []
+    resolved_datasets = _resolve_datasets(exp, datasets, selected)
     if args.dry_run:
         Path(args.runs).mkdir(parents=True, exist_ok=True)
         return
 
-    selected = args.dataset or []
-    for dataset in _resolve_datasets(exp, datasets, selected):
-        runner.run(exp=exp, dataset=dataset, tool=tool, executor=executor)
+    failed_datasets = []
+    for dataset in resolved_datasets:
+        dataset = prepare_dataset_inputs(dataset)
+        result = runner.run(exp=exp, dataset=dataset, tool=tool, executor=executor)
+        meta = (result or {}).get("meta") if isinstance(result, dict) else None
+        if isinstance(meta, dict) and meta.get("return_code") not in {None, 0}:
+            failed_datasets.append((dataset.get("name", "dataset"), meta.get("return_code")))
+
+    if failed_datasets:
+        for dataset_name, return_code in failed_datasets:
+            print(f"failed dataset: {dataset_name} return_code={return_code}", file=sys.stderr)
+        raise SystemExit(1)
 
 
 def catalog_cmd(args) -> None:
@@ -122,12 +142,22 @@ def _collect_summary_records(runs_root: Path, exp_name: str, selected: list[str]
                 "exp": meta.get("exp"),
                 "tool": meta.get("tool"),
                 "dataset": meta.get("dataset"),
+                "dataset_collection": meta.get("dataset_collection"),
+                "display_dataset": meta.get("display_dataset"),
+                "sample_id": meta.get("sample_id"),
                 "metrics": metrics,
             }
         )
     if selected:
         allowed = set(selected)
-        run_records = [r for r in run_records if r.get("dataset") in allowed]
+        run_records = [
+            r
+            for r in run_records
+            if r.get("dataset") in allowed
+            or r.get("dataset_collection") in allowed
+            or r.get("display_dataset") in allowed
+            or r.get("sample_id") in allowed
+        ]
     return run_records
 
 

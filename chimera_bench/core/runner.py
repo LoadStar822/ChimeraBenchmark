@@ -117,6 +117,11 @@ class Runner:
         meta = {
             "exp": exp_name,
             "dataset": dataset_name,
+            "dataset_collection": dataset.get("dataset_collection"),
+            "display_dataset": dataset.get("display_dataset"),
+            "sample_id": dataset.get("sample_id"),
+            "sample_ids": dataset.get("sample_ids"),
+            "batch_id": dataset.get("batch_id"),
             "tool": tool.name,
             "db": db_path,
             "db_name": db_name,

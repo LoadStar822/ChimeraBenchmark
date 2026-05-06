@@ -5,11 +5,16 @@ datasets:
   - atcc-illumina
   - cami2-marine-long
   - cami2-marine-short
+  - cami-strain-madness-long-sample0
+  - cami-strain-madness-short-sample0
+  - cami-strain-madness-long
+  - cami-strain-madness-short
   - atcc-hifi
   - zymo-gridion-even
   - zymo-gridion-log
   - zymo-promethion-even
   - zymo-promethion-log
+  - prjna637878-supported19
 db: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/sylph/cami_refseq/DB/cami_refseq
 taxonomy_nodes_dmp: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/taxonomy/ncbi_20260408/nodes.dmp
 taxonomy_names_dmp: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/taxonomy/ncbi_20260408/names.dmp

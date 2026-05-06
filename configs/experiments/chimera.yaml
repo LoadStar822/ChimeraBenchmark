@@ -17,3 +17,8 @@ datasets:
   - zymo-promethion-even
   - cami2-marine-long
   - cami2-marine-short
+  - cami-strain-madness-long-sample0
+  - cami-strain-madness-short-sample0
+  - cami-strain-madness-long
+  - cami-strain-madness-short
+  - prjna637878-supported19

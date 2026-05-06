@@ -1,0 +1,26 @@
+name: cami-strain-madness-short-sample0
+group: strain-madness
+platform: short-read
+input_type: paired FASTQ
+truth_label: per-read mapping; profile from read abundance
+catalog:
+  total_size_gb: "4.2"
+  samples: 1
+  input_type: paired FASTQ
+  reads_or_contigs: 13310046
+  base_pairs_bp: 1996506900
+  mean_length_bp: 150
+  n50_bp: 150
+  gc_percent: "—"
+  q30_percent: "—"
+  truth: per-read mapping; profile from read abundance
+sample_ids: [0]
+paired:
+  - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_0_R1.fq
+  - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_0_R2.fq
+source:
+  kind: strain_madness
+  read_type: short
+  root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+  sample_ids: [0]
+truth_dir: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read

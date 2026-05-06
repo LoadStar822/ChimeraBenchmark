@@ -1,0 +1,23 @@
+name: cami-strain-madness-long
+group: strain-madness
+platform: long-read
+input_type: single FASTQ
+truth_label: per-read mapping; profile from read abundance
+catalog:
+  total_size_gb: "401.1"
+  samples: 100
+  input_type: single FASTQ
+  reads_or_contigs: 69647201
+  base_pairs_bp: "—"
+  mean_length_bp: "—"
+  n50_bp: "—"
+  gc_percent: "—"
+  q30_percent: "—"
+  truth: per-read mapping; profile from read abundance
+sample_ids: &strain_madness_sample_ids [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]
+source:
+  kind: strain_madness
+  read_type: long
+  root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+  sample_ids: *strain_madness_sample_ids
+truth_dir: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read

@@ -46,19 +46,24 @@
 ## Benchmark Dataset Summary
 
 本表概括 benchmark 使用的实际输入文件。
-统计来自 `configs/datasets/*.yaml` 和输入序列文件扫描。
+统计来自 `configs/datasets/*.yaml`、输入序列文件扫描或数据集随附元数据。
 
 | Dataset Name | Total Size (GB) | Samples | Input Type | Reads / Contigs | Base Pairs (bp) | Mean Length (bp) | N50 (bp) | GC (%) | Q30 (%) | Truth |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | CAMI II Marine (long-read contigs, sample 0) | 0.9 | 1 | contig FASTA | 133,050 | 925,503,357 | 6,956 | 10,524 | 49.19 | — | per-read mapping + profile |
 | CAMI II Marine (long-read contigs) | 10.8 | 10 | contig FASTA | 1,622,375 | 10,587,029,583 | 6,526 | 9,364 | 48.12 | — | per-read mapping + profile |
 | CAMI II Marine (short-read contigs) | 10.8 | 10 | contig FASTA | 18,057,427 | 10,389,109,998 | 575 | 770 | 48.11 | — | per-read mapping + profile |
+| CAMI II Strain Madness (long reads, sample 0) | 4.0 | 1 | single FASTQ | 698,731 | 2,000,316,047 | 2,863 | 3,117 | 46.94 | 0.00 | per-read mapping; profile from read abundance |
+| CAMI II Strain Madness (short reads, sample 0) | 4.2 | 1 | paired FASTQ | 13,310,046 | 1,996,506,900 | 150 | 150 | — | — | per-read mapping; profile from read abundance |
+| CAMI II Strain Madness (long reads) | 401.1 | 100 | single FASTQ | 69,647,201 | — | — | — | — | — | per-read mapping; profile from read abundance |
+| CAMI II Strain Madness (short reads) | 424.2 | 100 | paired FASTQ | 1,330,822,164 | 199,623,324,600 | 150 | 150 | — | — | per-read mapping; profile from read abundance |
 | ATCC MSA-1003 (Illumina) | 3.3 | 1 | paired FASTQ | 10,038,314 | 1,254,789,250 | 125 | 125 | 48.91 | 92.54 | profile only |
 | ATCC MSA-1003 (PacBio HiFi) | 41.3 | 1 | single FASTQ | 2,419,037 | 20,543,987,923 | 8,493 | 9,198 | 53.75 | 96.70 | profile only |
 | ZymoBIOMICS Even (GridION) | 28.5 | 1 | single FASTQ | 3,491,078 | 14,007,156,825 | 4,012 | 5,213 | 46.02 | 0.00 | profile only |
 | ZymoBIOMICS Log (GridION) | 32.6 | 1 | single FASTQ | 3,667,007 | 16,032,264,247 | 4,372 | 5,290 | 40.94 | 0.00 | profile only |
 | ZymoBIOMICS Even (PromethION) | 298.4 | 1 | single FASTQ | 36,527,376 | 146,291,709,850 | 4,005 | 5,288 | 46.38 | 0.00 | profile only |
 | ZymoBIOMICS Log (PromethION) | 301.6 | 1 | single FASTQ | 35,118,078 | 148,028,914,788 | 4,215 | 5,219 | 41.41 | 0.00 | profile only |
+| PRJNA637878 Supported Fecal Genomes | 110.5 | 19 | paired FASTQ | 1,355,677,392 | 169,812,107,628 | 125 | — | — | — | local per-read + supported-strain profile |
 
 ## 评估任务与口径
 
@@ -113,6 +118,13 @@ Bracken 基于 Kraken2 输出进行丰度重估，不提供逐读段分类结果
 
 Bracken 的数据库需要额外生成 `database100mers.kmer_distrib`。
 该步骤使用 Bracken 默认读长设置 `read_len=100`。
+
+### ganon2
+
+ganon2 在 CAMI II Strain Madness short reads 上使用固定批次（fixed-size batch）运行，当前为每批 2 个样本。
+原因是默认期望最大化（expectation maximization, EM）重分配在全量拼接输入上超过可用内存。
+该设置保留 ganon2 默认的多匹配处理方式，但 EM 的估计范围为每个 batch 内部。
+结果表中这一路径仍对应 CAMI II Strain Madness short-read dataset；`Samples` 表示完成的 batch 数。
 
 ### Centrifuger
 

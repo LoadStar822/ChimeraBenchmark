@@ -5,6 +5,8 @@ import os
 from pathlib import Path
 from typing import Dict, List
 
+from .metrics import METRIC_VERSION
+
 
 TOOL_DISPLAY_NAMES = {
     # configs/experiments still use "ganon", but the actual software is ganon2.
@@ -133,15 +135,40 @@ CLASSIFY_PUBLIC_NOTE = [
     "例如：真值为某个 species，预测到该 species 下的 strain 时，`species` 列记为正确。",
     "原始真值若为 `strain/subspecies/isolate`，只要能提升到对应 rank，就进入该 rank 分母；原始真值若只有 `family/order/class`，则不进入更细层级分母。",
     "Truth Mapped Rate / Pred Mapped Rate 会同时展示；F1 必须结合映射率一起解读，不能脱离分母单独引用。",
-    "只有满足默认参数合同的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。",
+    "只有满足默认参数设置的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。",
 ]
 
 PROFILE_PUBLIC_NOTE = [
     "本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。",
     "只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。",
-    "只有满足默认参数合同的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。",
+    "只包含当前 profile 评估版本的结果；旧版结果不进入公开表。",
+    "只有满足默认参数设置的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。",
     "Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。",
 ]
+
+COLLECTION_CLASSIFY_NOTE = (
+    "集合聚合（collection aggregate）行的 `Samples` 为已完成 sample 数；"
+    "`Elapsed` 为 sample 运行时间总和，`Max RSS` 为最大值，read 数为总和；"
+    "率值和准确率为 sample 算术平均。"
+)
+
+COLLECTION_PROFILE_NOTE = (
+    "集合聚合（collection aggregate）行的 `Samples` 为已完成 sample 数；"
+    "`Elapsed` 为 sample 运行时间总和，`Max RSS` 为最大值；"
+    "profile 指标为 sample 算术平均。"
+)
+
+SUM_METRIC_KEYS = {
+    "run_elapsed_seconds",
+    "total_reads",
+    "classified_reads",
+    "unclassified_reads",
+}
+
+MAX_METRIC_KEYS = {
+    "resource_max_rss_gb",
+}
+
 
 def _format_value(value):
     if value is None:
@@ -199,6 +226,9 @@ def _collect_runs(root: Path) -> List[Dict]:
                 "exp": meta.get("exp"),
                 "tool": tool,
                 "dataset": meta.get("dataset"),
+                "dataset_collection": meta.get("dataset_collection"),
+                "display_dataset": meta.get("display_dataset"),
+                "sample_id": meta.get("sample_id"),
                 "db_name": db_name,
                 "metrics": metrics,
             }
@@ -473,6 +503,90 @@ def _has_abundance_metrics(metrics: dict) -> bool:
     return False
 
 
+def _has_current_profile_metrics(metrics: dict) -> bool:
+    if not _has_abundance_metrics(metrics):
+        return False
+    return metrics.get("profile_metric_version") == METRIC_VERSION
+
+
+def _numeric_value(value) -> float | None:
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    return None
+
+
+def _aggregate_metric(records: list[Dict], metric_key: str) -> float | int | None:
+    values = []
+    for rec in records:
+        value = _numeric_value((rec.get("metrics") or {}).get(metric_key))
+        if value is not None:
+            values.append(value)
+    if not values:
+        return None
+    if metric_key in SUM_METRIC_KEYS:
+        total = sum(values)
+        return int(total) if total.is_integer() else total
+    if metric_key in MAX_METRIC_KEYS:
+        return max(values)
+    return sum(values) / len(values)
+
+
+def _aggregate_collection_records(records: list[Dict], columns: list[tuple[str, str]]) -> list[Dict]:
+    """Collapse sample-level runs into one display row per collection/tool/DB."""
+    output: list[Dict] = []
+    groups: dict[tuple[str, str, str], list[Dict]] = {}
+    metric_keys = [key for _, key in columns]
+
+    for rec in records:
+        collection = rec.get("dataset_collection")
+        if not collection:
+            item = dict(rec)
+            item["display_dataset"] = rec.get("dataset")
+            output.append(item)
+            continue
+        tool = rec.get("tool")
+        if not tool:
+            continue
+        key = (str(collection), str(tool), str(rec.get("db_name") or ""))
+        groups.setdefault(key, []).append(rec)
+
+    for (collection, tool, db_name), grouped in groups.items():
+        display_dataset = next(
+            (str(rec["display_dataset"]) for rec in grouped if rec.get("display_dataset")),
+            collection,
+        )
+        sample_ids = sorted(
+            {
+                str(rec.get("sample_id") or rec.get("dataset"))
+                for rec in grouped
+                if rec.get("sample_id") or rec.get("dataset")
+            }
+        )
+        metrics = {metric_key: _aggregate_metric(grouped, metric_key) for metric_key in metric_keys}
+        output.append(
+            {
+                "exp": grouped[0].get("exp"),
+                "tool": tool,
+                "dataset": collection,
+                "display_dataset": display_dataset,
+                "dataset_collection": collection,
+                "sample_count": len(sample_ids) or len(grouped),
+                "sample_ids": sample_ids,
+                "db_name": db_name,
+                "metrics": metrics,
+            }
+        )
+
+    return output
+
+
+def _display_dataset(rec: Dict) -> str | None:
+    dataset = rec.get("display_dataset") or rec.get("dataset_collection") or rec.get("dataset")
+    return str(dataset) if dataset else None
+
+
 def _append_table(lines: list[str], title: str, records: list[Dict], columns: list[tuple[str, str]]):
     lines.append(f"### {title}")
     lines.append("")
@@ -489,27 +603,36 @@ def _append_table(lines: list[str], title: str, records: list[Dict], columns: li
 
 def write_classify_readme(root: Path) -> None:
     records = [r for r in _collect_runs(root) if _has_per_read_metrics(r.get("metrics", {}))]
+    records = _aggregate_collection_records(records, PER_READ_MAIN_COLUMNS)
     readme_path = root / "README.md"
     lines = ["# Classify Results", "", "Auto-generated. Do not edit.", ""]
     if not records:
         readme_path.write_text("\n".join(lines) + "\n")
         return
 
-    header = ["Tool", "DB"] + [label for label, _ in PER_READ_MAIN_COLUMNS]
-    datasets = sorted({r.get("dataset") for r in records if r.get("dataset")})
+    datasets = sorted({dataset for r in records if (dataset := _display_dataset(r))})
     for dataset in datasets:
-        rows = [r for r in records if r.get("dataset") == dataset]
+        rows = [r for r in records if _display_dataset(r) == dataset]
+        has_collection_rows = any(r.get("dataset_collection") for r in rows)
+        header = ["Tool", "DB"]
+        if has_collection_rows:
+            header.append("Samples")
+        header.extend([label for label, _ in PER_READ_MAIN_COLUMNS])
         lines.append(f"## Dataset: {dataset}")
         lines.append("")
         lines.append("### Per-read Metrics")
         lines.append("")
         lines.extend(CLASSIFY_PUBLIC_NOTE)
+        if has_collection_rows:
+            lines.append(COLLECTION_CLASSIFY_NOTE)
         lines.append("")
         lines.append("| " + " | ".join(header) + " |")
         lines.append("| " + " | ".join(["---"] * len(header)) + " |")
         for rec in sorted(rows, key=lambda r: (r.get("tool") or "", r.get("db_name") or "")):
             metrics = rec.get("metrics", {})
             row = [rec.get("tool") or "", rec.get("db_name") or ""]
+            if has_collection_rows:
+                row.append(_format_value(rec.get("sample_count")))
             row += [_format_value(metrics.get(key)) for _, key in PER_READ_MAIN_COLUMNS]
             lines.append("| " + " | ".join(row) + " |")
         lines.append("")
@@ -517,7 +640,8 @@ def write_classify_readme(root: Path) -> None:
 
 
 def write_profile_readme(profile_root: Path, runs_root: Path) -> None:
-    records = [r for r in _collect_runs(runs_root) if _has_abundance_metrics(r.get("metrics", {}))]
+    records = [r for r in _collect_runs(runs_root) if _has_current_profile_metrics(r.get("metrics", {}))]
+    records = _aggregate_collection_records(records, ABUNDANCE_MAIN_COLUMNS)
     readme_path = profile_root / "README.md"
 
     lines = ["# Profile Results", "", "Auto-generated. Do not edit.", ""]
@@ -525,21 +649,29 @@ def write_profile_readme(profile_root: Path, runs_root: Path) -> None:
         readme_path.write_text("\n".join(lines) + "\n")
         return
 
-    header = ["Tool", "DB"] + [label for label, _ in ABUNDANCE_MAIN_COLUMNS]
-    datasets = sorted({r.get("dataset") for r in records if r.get("dataset")})
+    datasets = sorted({dataset for r in records if (dataset := _display_dataset(r))})
     for dataset in datasets:
-        rows = [r for r in records if r.get("dataset") == dataset]
+        rows = [r for r in records if _display_dataset(r) == dataset]
+        has_collection_rows = any(r.get("dataset_collection") for r in rows)
+        header = ["Tool", "DB"]
+        if has_collection_rows:
+            header.append("Samples")
+        header.extend([label for label, _ in ABUNDANCE_MAIN_COLUMNS])
         lines.append(f"## Dataset: {dataset}")
         lines.append("")
         lines.append("### Abundance Metrics")
         lines.append("")
         lines.extend(PROFILE_PUBLIC_NOTE)
+        if has_collection_rows:
+            lines.append(COLLECTION_PROFILE_NOTE)
         lines.append("")
         lines.append("| " + " | ".join(header) + " |")
         lines.append("| " + " | ".join(["---"] * len(header)) + " |")
         for rec in sorted(rows, key=lambda r: (r.get("tool") or "", r.get("db_name") or "")):
             metrics = rec.get("metrics", {})
             row = [rec.get("tool") or "", rec.get("db_name") or ""]
+            if has_collection_rows:
+                row.append(_format_value(rec.get("sample_count")))
             row += [_format_value(metrics.get(key)) for _, key in ABUNDANCE_MAIN_COLUMNS]
             lines.append("| " + " | ".join(row) + " |")
         lines.append("")

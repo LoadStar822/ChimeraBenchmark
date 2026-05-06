@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import gzip
 import re
+from functools import lru_cache
 from pathlib import Path
 from typing import Dict, Iterable, Tuple, Union
 
@@ -16,7 +17,7 @@ PROFILE_RANK_PRIORITY = (
     "phylum",
     "superkingdom",
 )
-METRIC_VERSION = "per-read-descendant-aware-v1+profile-opal-v1"
+METRIC_VERSION = "per-read-descendant-aware-v1+profile-opal-v2"
 
 TaxKey = Union[int, str]
 
@@ -31,6 +32,11 @@ NAME_CLASSES = {
     "includes",
 }
 
+_NAME_MAP_CACHE: dict[
+    tuple[str, int | None],
+    tuple[Dict[int, str], Dict[str, str], set[str]],
+] = {}
+
 
 def _open_text(path: Path):
     if path.suffix == ".gz":
@@ -38,6 +44,7 @@ def _open_text(path: Path):
     return path.open("r", encoding="utf-8", errors="ignore")
 
 
+@lru_cache(maxsize=16)
 def load_taxonomy(
     path: Path,
 ) -> tuple[Dict[int, Tuple[int, str]], Dict[str, int], Dict[tuple[str, str], int]]:
@@ -74,6 +81,7 @@ def load_taxonomy(
     return taxonomy, file_to_taxid, name_to_taxid
 
 
+@lru_cache(maxsize=16)
 def load_nodes_taxonomy(path: Path) -> Dict[int, Tuple[int, str]]:
     taxonomy: Dict[int, Tuple[int, str]] = {}
     with path.open("r", encoding="utf-8", errors="ignore") as fh:
@@ -94,12 +102,60 @@ def load_nodes_taxonomy(path: Path) -> Dict[int, Tuple[int, str]]:
     return taxonomy
 
 
-def build_name_maps(names_path: Path):
+def _name_aliases(name: str) -> set[str]:
+    clean = re.sub(r"\s+", " ", name.replace('"', "").strip())
+    if not clean:
+        return set()
+    aliases = {clean}
+
+    no_paren = re.sub(r"\s+\([^)]*\)", "", clean).strip()
+    no_paren = re.sub(r"\s+", " ", no_paren)
+    if no_paren:
+        aliases.add(no_paren)
+
+    tokens = no_paren.split()
+    if len(tokens) >= 2:
+        genus_raw = tokens[0]
+        genus = genus_raw.strip("[]")
+        epithet = tokens[1].strip("[]")
+        blocked = {"sp", "sp.", "cf", "cf.", "aff", "aff.", "bacterium"}
+        if (
+            genus
+            and epithet
+            and epithet.lower() not in blocked
+            and re.match(r"^[A-Za-z][A-Za-z.-]*$", genus)
+            and re.match(r"^[a-z][a-z.-]*$", epithet)
+        ):
+            aliases.add(f"{genus} {epithet}")
+            aliases.add(f"{genus_raw} {epithet}")
+
+    return {alias for alias in aliases if alias}
+
+
+def _species_taxid_for_name_alias(
+    taxid: int,
+    taxonomy: Dict[int, Tuple[int, str]] | None,
+) -> int:
+    if taxonomy is None:
+        return taxid
+    species_taxid = taxid_to_rank(taxid, "species", taxonomy)
+    return species_taxid or taxid
+
+
+def build_name_maps(
+    names_path: Path,
+    taxonomy: Dict[int, Tuple[int, str]] | None = None,
+):
     """
     Build taxid->scientific name and synonym->scientific name mappings from NCBI `names.dmp`.
 
     Mirrors `bench/scripts/eval_abundance.py` logic to mitigate naming drift.
     """
+    cache_key = (str(names_path.resolve()), id(taxonomy) if taxonomy is not None else None)
+    cached = _NAME_MAP_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
+
     sci_for_taxid: Dict[int, str] = {}
     raw_syn: Dict[str, int] = {}
     with names_path.open("r", encoding="utf-8", errors="ignore") as fh:
@@ -117,20 +173,20 @@ def build_name_maps(names_path: Path):
                 continue
             if cls == "scientific name":
                 sci_for_taxid[taxid] = name
+                alias_taxid = _species_taxid_for_name_alias(taxid, taxonomy)
+                for alias in _name_aliases(name):
+                    if alias != name:
+                        raw_syn.setdefault(alias, alias_taxid)
                 continue
             if cls in NAME_CLASSES:
-                raw_syn.setdefault(name, taxid)
-                alt = re.sub(r"\s+\(.*?\)$", "", name)
-                if alt and alt != name:
-                    raw_syn.setdefault(alt, taxid)
-                if "(" in name or ")" in name:
-                    words = name.split()
-                    if len(words) >= 2:
-                        alt2 = " ".join(words[:2])
-                        raw_syn.setdefault(alt2, taxid)
+                alias_taxid = _species_taxid_for_name_alias(taxid, taxonomy)
+                for alias in _name_aliases(name):
+                    raw_syn.setdefault(alias, alias_taxid)
     syn_to_sci = {syn: sci_for_taxid[taxid] for syn, taxid in raw_syn.items() if taxid in sci_for_taxid}
     sci_names = set(sci_for_taxid.values())
-    return sci_for_taxid, syn_to_sci, sci_names
+    result = (sci_for_taxid, syn_to_sci, sci_names)
+    _NAME_MAP_CACHE[cache_key] = result
+    return result
 
 
 def build_name_taxid_maps(sci_for_taxid: Dict[int, str]) -> Dict[str, int]:
@@ -278,6 +334,14 @@ def parse_classify_tsv(path: Path) -> Dict[str, int | None]:
     return preds
 
 
+def _prediction_for_read(preds: Dict[str, int | None], read_id: str) -> int | None:
+    if read_id in preds:
+        return preds[read_id]
+    if read_id.endswith("/1") or read_id.endswith("/2"):
+        return preds.get(read_id[:-2])
+    return None
+
+
 def parse_ganon_one(path: Path, file_to_taxid: Dict[str, int] | None = None) -> Dict[str, int | None]:
     preds: Dict[str, int] = {}
     with _open_text(path) as fh:
@@ -311,6 +375,8 @@ def parse_ganon_one(path: Path, file_to_taxid: Dict[str, int] | None = None) -> 
 def parse_truth_profile(path: Path) -> Dict[str, float]:
     entries: Dict[str, float] = {}
     header = None
+    name_idx = None
+    value_idx = None
     with _open_text(path) as fh:
         for raw in fh:
             line = raw.strip()
@@ -318,18 +384,35 @@ def parse_truth_profile(path: Path) -> Dict[str, float]:
                 continue
             parts = line.split("\t")
             if header is None:
-                if any(token.lower() in {"species", "taxon", "name"} for token in parts):
+                lowered = [p.lower() for p in parts]
+                if any(token in {"species_label", "species_name", "species", "taxon", "name"} for token in lowered):
                     header = [p.lower() for p in parts]
+                    for candidate in ("species_label", "species_name", "taxon", "name", "species"):
+                        if candidate in header:
+                            name_idx = header.index(candidate)
+                            break
+                    for candidate in (
+                        "truth_abundance",
+                        "abundance",
+                        "relative_abundance",
+                        "percentage",
+                        "percent",
+                        "value",
+                    ):
+                        if candidate in header:
+                            value_idx = header.index(candidate)
+                            break
                     continue
                 header = []
             if len(parts) < 2:
                 continue
             if header:
-                try:
-                    name_idx = header.index("species")
-                except ValueError:
+                if name_idx is None:
                     name_idx = 0
-                value_idx = 1 if name_idx == 0 else 0
+                if value_idx is None:
+                    value_idx = 1 if name_idx == 0 else 0
+                if len(parts) <= max(name_idx, value_idx) or name_idx == value_idx:
+                    continue
                 name = parts[name_idx].strip()
                 value_text = parts[value_idx].strip()
             else:
@@ -348,6 +431,60 @@ def parse_truth_profile(path: Path) -> Dict[str, float]:
     if total > 1.5:
         return {k: v / 100.0 for k, v in entries.items()}
     return entries
+
+
+def load_species_label_mapping(
+    paths: Iterable[Path],
+    name_to_taxid: Dict[str, int],
+    syn_to_sci: Dict[str, str],
+    sci_names: set[str],
+) -> tuple[Dict[str, int], Dict[int, int], Dict[str, int], int, int]:
+    truth_map: Dict[str, int] = {}
+    abundance: Dict[int, int] = {}
+    read_weight: Dict[str, int] = {}
+    unmapped: set[str] = set()
+    unmapped_rows = 0
+    for path in paths:
+        with _open_text(path) as fh:
+            header: list[str] | None = None
+            read_idx = None
+            name_idx = None
+            for raw in fh:
+                line = raw.strip()
+                if not line or line.startswith("#"):
+                    continue
+                parts = line.split("\t")
+                if header is None:
+                    header = [p.lower() for p in parts]
+                    if "read_id" not in header:
+                        raise ValueError(f"species-label truth missing read_id column: {path}")
+                    read_idx = header.index("read_id")
+                    for candidate in ("species_label", "species_name", "taxon", "name", "species"):
+                        if candidate in header:
+                            name_idx = header.index(candidate)
+                            break
+                    if name_idx is None:
+                        raise ValueError(f"species-label truth missing species label column: {path}")
+                    continue
+                if read_idx is None or name_idx is None or len(parts) <= max(read_idx, name_idx):
+                    continue
+                read_id = parts[read_idx].strip()
+                species_name = parts[name_idx].strip()
+                if not read_id or not species_name:
+                    continue
+                taxid = taxid_for_name(species_name, name_to_taxid, syn_to_sci, sci_names)
+                if taxid is None:
+                    unmapped.add(species_name)
+                    unmapped_rows += 1
+                    continue
+                previous = truth_map.get(read_id)
+                if previous is not None and previous != taxid:
+                    raise ValueError(f"conflicting species-label truth for read {read_id}: {previous} vs {taxid}")
+                if previous is None:
+                    truth_map[read_id] = taxid
+                    abundance[taxid] = abundance.get(taxid, 0) + 1
+                    read_weight[read_id] = 1
+    return truth_map, abundance, read_weight, unmapped_rows, len(unmapped)
 
 
 def _candidate_genome_ids(raw: str) -> list[str]:
@@ -559,16 +696,19 @@ def load_cami_mapping(paths: Iterable[Path]):
                 if not line or line.startswith("#"):
                     continue
                 parts = line.split("\t")
-                if len(parts) < 5:
+                if len(parts) < 4:
                     continue
                 contig_id = parts[0]
                 try:
                     taxid = int(parts[2])
                 except ValueError:
                     continue
-                try:
-                    reads = int(parts[4])
-                except ValueError:
+                if len(parts) >= 5:
+                    try:
+                        reads = int(parts[4])
+                    except ValueError:
+                        reads = 1
+                else:
                     reads = 1
                 weight = max(1, reads)
                 truth_map[contig_id] = taxid
@@ -707,7 +847,7 @@ def compute_per_read_metrics(
     total = len(truth)
     classified = 0
     for read_id in truth:
-        if preds.get(read_id) is not None:
+        if _prediction_for_read(preds, read_id) is not None:
             classified += 1
     if total > 0:
         metrics["per_read_classified_rate"] = classified / total
@@ -724,7 +864,7 @@ def compute_per_read_metrics(
             if not true_is_mapped:
                 continue
             truth_mapped += 1
-            pred_taxid = preds.get(read_id)
+            pred_taxid = _prediction_for_read(preds, read_id)
             if pred_taxid is not None:
                 pred_mapped += 1
             if pred_taxid is None:
@@ -757,7 +897,7 @@ def compute_per_read_metrics_exact(
     total = len(truth)
     classified = 0
     for read_id, true_taxid in truth.items():
-        pred_taxid = preds.get(read_id)
+        pred_taxid = _prediction_for_read(preds, read_id)
         if pred_taxid is not None:
             classified += 1
     if total > 0:
@@ -771,7 +911,7 @@ def compute_per_read_metrics_exact(
         covered = covered_by_rank.get(rank) if covered_by_rank is not None else None
         for read_id, true_taxid in truth.items():
             true_rank = taxid_to_rank(true_taxid, rank, taxonomy)
-            pred_taxid = preds.get(read_id)
+            pred_taxid = _prediction_for_read(preds, read_id)
             pred_rank = taxid_to_rank(pred_taxid, rank, taxonomy) if pred_taxid is not None else None
             pred_is_mapped = pred_rank is not None and (covered is None or pred_rank in covered)
             if pred_is_mapped:
@@ -943,7 +1083,10 @@ def _resolve_mapping_paths(dataset: dict) -> list[Path]:
     reads = dataset.get("reads") or []
     if truth_dir:
         truth_dir = Path(truth_dir)
-        sample_ids: list[str] = []
+        sample_ids = [str(sid) for sid in (dataset.get("sample_ids") or [])]
+        if not sample_ids:
+            source = dataset.get("source") or {}
+            sample_ids = [str(sid) for sid in (source.get("sample_ids") or [])]
         for read_path in reads:
             match = re.search(r"sample_(\d+)", str(read_path))
             if match:
@@ -963,6 +1106,10 @@ def _resolve_mapping_paths(dataset: dict) -> list[Path]:
                 candidates = list(truth_dir.rglob(f"*sample_{sid}_*gsa_mapping.tsv"))
                 if not candidates:
                     candidates = list(truth_dir.rglob(f"*sample_{sid}_*gsa_mapping.tsv.gz"))
+                if not candidates:
+                    candidates = list(truth_dir.glob(f"*sample_{sid}/**/reads_mapping.tsv"))
+                if not candidates:
+                    candidates = list(truth_dir.glob(f"*sample_{sid}/**/reads_mapping.tsv.gz"))
                 if candidates:
                     paths.extend(sorted(candidates))
             if paths:
@@ -1017,7 +1164,7 @@ def evaluate_with_truth(
     syn_to_sci: Dict[str, str] = {}
     sci_names: set[str] = set()
     if names_path is not None:
-        sci_for_taxid, syn_to_sci, sci_names = build_name_maps(names_path)
+        sci_for_taxid, syn_to_sci, sci_names = build_name_maps(names_path, taxonomy)
         name_to_taxid = build_name_taxid_maps(sci_for_taxid)
     else:
         # Fallback: use DB `.tax` names directly (no synonym collapse).
@@ -1030,7 +1177,27 @@ def evaluate_with_truth(
     truth_abundance: Dict[int, int] = {}
     contig_weight: Dict[str, int] = {}
     if mapping_paths:
-        truth_reads, truth_abundance, contig_weight = load_cami_mapping(mapping_paths)
+        truth_format = str(dataset.get("truth_map_format") or dataset.get("truth_format") or "cami").lower()
+        if truth_format in {"species_label", "species-label", "prjna637878_species_label"}:
+            (
+                truth_reads,
+                truth_abundance,
+                contig_weight,
+                unmapped_rows,
+                unmapped_names,
+            ) = load_species_label_mapping(
+                mapping_paths,
+                name_to_taxid,
+                syn_to_sci,
+                sci_names,
+            )
+            metrics["truth_map_species_label_mapped_rows"] = len(truth_reads)
+            metrics["truth_map_species_label_unmapped_rows"] = unmapped_rows
+            metrics["truth_map_species_label_unmapped_names"] = unmapped_names
+        elif truth_format == "cami":
+            truth_reads, truth_abundance, contig_weight = load_cami_mapping(mapping_paths)
+        else:
+            raise ValueError(f"unsupported truth_map_format: {truth_format}")
 
     classify_path = outputs.get("classify_tsv")
     classify_one = outputs.get("classify_one")
@@ -1200,6 +1367,7 @@ def evaluate_with_truth(
             pred_taxid_profile,
             taxonomy,
         )
+        metrics["profile_metric_version"] = METRIC_VERSION
 
     if metrics:
         metrics.setdefault("metric_version", METRIC_VERSION)

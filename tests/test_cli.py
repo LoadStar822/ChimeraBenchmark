@@ -4,8 +4,11 @@ import json
 from argparse import Namespace
 from pathlib import Path
 
+import pytest
+
 from chimera_bench import cli as cli_mod
 from chimera_bench.cli import recompute_cmd, run_cmd
+from chimera_bench.dataset_prepare import prepare_dataset_inputs
 
 
 def test_recompute_rewrites_metrics_and_skips_failed_runs(tmp_path: Path):
@@ -223,3 +226,333 @@ def test_run_cmd_does_not_skip_large_taxor_dataset(tmp_path: Path, monkeypatch):
     run_cmd(args)
 
     assert calls == [("taxor", "ds1", "taxor", True)]
+
+
+def test_run_cmd_expands_dataset_collection_samples(tmp_path: Path, monkeypatch):
+    config_root = tmp_path / "configs"
+    (config_root / "datasets").mkdir(parents=True)
+    (config_root / "experiments").mkdir(parents=True)
+
+    for name in ("a_R1.fq", "a_R2.fq", "b_R1.fq", "b_R2.fq"):
+        (tmp_path / name).write_text("@r\nA\n+\nI\n")
+    (config_root / "datasets" / "collection.yaml").write_text(
+        "\n".join(
+            [
+                "name: collection",
+                "group: real",
+                "samples:",
+                "  - sample_id: sampleA",
+                "    paired:",
+                f"      - {tmp_path / 'a_R1.fq'}",
+                f"      - {tmp_path / 'a_R2.fq'}",
+                "  - sample_id: sampleB",
+                "    paired:",
+                f"      - {tmp_path / 'b_R1.fq'}",
+                f"      - {tmp_path / 'b_R2.fq'}",
+            ]
+        )
+        + "\n"
+    )
+    (config_root / "experiments" / "chimera.yaml").write_text(
+        "\n".join(
+            [
+                "tool: chimera",
+                "db: /db/cami_refseq",
+                "datasets:",
+                "  - collection",
+            ]
+        )
+        + "\n"
+    )
+
+    calls = []
+
+    class FakeTool:
+        name = "chimera"
+
+        def __init__(self, _config):
+            pass
+
+    class FakeRunner:
+        def __init__(self, _runs_root, _profile_root=None):
+            pass
+
+        def run(self, *, exp, dataset, tool, executor):
+            calls.append(
+                (
+                    dataset["name"],
+                    dataset["dataset_collection"],
+                    dataset["sample_id"],
+                    tuple(Path(p).name for p in dataset["paired"]),
+                )
+            )
+
+    monkeypatch.setattr(cli_mod, "Runner", FakeRunner)
+    monkeypatch.setattr(cli_mod.TOOLS, "get", lambda _name: FakeTool)
+
+    args = Namespace(
+        exp="chimera",
+        config=str(config_root),
+        runs=str(tmp_path / "results" / "classify"),
+        profile=str(tmp_path / "results" / "profile"),
+        chimera_bin="Chimera",
+        ganon_bin="ganon",
+        ganon_env="ganon",
+        sylph_bin="sylph",
+        sylph_env="sylph",
+        dry_run=False,
+        dataset=["collection"],
+    )
+
+    run_cmd(args)
+
+    assert calls == [
+        ("collection.sampleA", "collection", "sampleA", ("a_R1.fq", "a_R2.fq")),
+        ("collection.sampleB", "collection", "sampleB", ("b_R1.fq", "b_R2.fq")),
+    ]
+
+
+def test_run_cmd_selects_dataset_by_display_dataset(tmp_path: Path, monkeypatch):
+    config_root = tmp_path / "configs"
+    (config_root / "datasets").mkdir(parents=True)
+    (config_root / "experiments").mkdir(parents=True)
+
+    for name in ("b0_R1.fq", "b0_R2.fq", "b1_R1.fq", "b1_R2.fq"):
+        (tmp_path / name).write_text("@r\nA\n+\nI\n")
+    (config_root / "datasets" / "batches.yaml").write_text(
+        "\n".join(
+            [
+                "name: ds-ganon-batches",
+                "display_dataset: ds",
+                "samples:",
+                "  - sample_id: batch00",
+                "    paired:",
+                f"      - {tmp_path / 'b0_R1.fq'}",
+                f"      - {tmp_path / 'b0_R2.fq'}",
+                "  - sample_id: batch01",
+                "    paired:",
+                f"      - {tmp_path / 'b1_R1.fq'}",
+                f"      - {tmp_path / 'b1_R2.fq'}",
+            ]
+        )
+        + "\n"
+    )
+    (config_root / "experiments" / "ganon.yaml").write_text(
+        "\n".join(
+            [
+                "tool: ganon",
+                "db: /db/cami_refseq",
+                "datasets:",
+                "  - ds-ganon-batches",
+            ]
+        )
+        + "\n"
+    )
+
+    calls = []
+
+    class FakeTool:
+        name = "ganon"
+
+        def __init__(self, _config):
+            pass
+
+    class FakeRunner:
+        def __init__(self, _runs_root, _profile_root=None):
+            pass
+
+        def run(self, *, exp, dataset, tool, executor):
+            calls.append((dataset["name"], dataset["display_dataset"], dataset["sample_id"]))
+            return {"meta": {"return_code": 0}}
+
+    monkeypatch.setattr(cli_mod, "Runner", FakeRunner)
+    monkeypatch.setattr(cli_mod.TOOLS, "get", lambda _name: FakeTool)
+
+    args = Namespace(
+        exp="ganon",
+        config=str(config_root),
+        runs=str(tmp_path / "results" / "classify"),
+        profile=str(tmp_path / "results" / "profile"),
+        chimera_bin="Chimera",
+        ganon_bin="ganon",
+        ganon_env="ganon",
+        sylph_bin="sylph",
+        sylph_env="sylph",
+        dry_run=False,
+        dataset=["ds"],
+    )
+
+    run_cmd(args)
+
+    assert calls == [
+        ("ds-ganon-batches.batch00", "ds", "batch00"),
+        ("ds-ganon-batches.batch01", "ds", "batch01"),
+    ]
+
+
+def test_run_cmd_returns_nonzero_after_dataset_failures(tmp_path: Path, monkeypatch):
+    config_root = tmp_path / "configs"
+    (config_root / "datasets").mkdir(parents=True)
+    (config_root / "experiments").mkdir(parents=True)
+
+    for name in ("ok.fq", "bad.fq"):
+        (tmp_path / name).write_text("@r\nA\n+\nI\n")
+    (config_root / "datasets" / "ok.yaml").write_text(f"reads:\n  - {tmp_path / 'ok.fq'}\n")
+    (config_root / "datasets" / "bad.yaml").write_text(f"reads:\n  - {tmp_path / 'bad.fq'}\n")
+    (config_root / "experiments" / "ganon.yaml").write_text(
+        "\n".join(
+            [
+                "tool: ganon",
+                "db: /db/cami_refseq",
+                "datasets:",
+                "  - ok",
+                "  - bad",
+            ]
+        )
+        + "\n"
+    )
+
+    calls = []
+
+    class FakeTool:
+        name = "ganon"
+
+        def __init__(self, _config):
+            pass
+
+    class FakeRunner:
+        def __init__(self, _runs_root, _profile_root=None):
+            pass
+
+        def run(self, *, exp, dataset, tool, executor):
+            calls.append(dataset["name"])
+            return {"meta": {"return_code": 137 if dataset["name"] == "bad" else 0}}
+
+    monkeypatch.setattr(cli_mod, "Runner", FakeRunner)
+    monkeypatch.setattr(cli_mod.TOOLS, "get", lambda _name: FakeTool)
+
+    args = Namespace(
+        exp="ganon",
+        config=str(config_root),
+        runs=str(tmp_path / "results" / "classify"),
+        profile=str(tmp_path / "results" / "profile"),
+        chimera_bin="Chimera",
+        ganon_bin="ganon",
+        ganon_env="ganon",
+        sylph_bin="sylph",
+        sylph_env="sylph",
+        dry_run=False,
+        dataset=[],
+    )
+
+    with pytest.raises(SystemExit) as exc:
+        run_cmd(args)
+
+    assert exc.value.code == 1
+    assert calls == ["ok", "bad"]
+
+
+def test_run_cmd_prepares_strain_madness_long_source(tmp_path: Path, monkeypatch):
+    config_root = tmp_path / "configs"
+    (config_root / "datasets").mkdir(parents=True)
+    (config_root / "experiments").mkdir(parents=True)
+
+    source_root = tmp_path / "strain" / "long_read"
+    reads = source_root / "strmgCAMI2_sample_0" / "long_read" / "run0" / "reads" / "anonymous_reads.fq"
+    reads.parent.mkdir(parents=True)
+    reads.write_text("@S0R0\nACGT\n+\nIIII\n")
+
+    (config_root / "datasets" / "strain.yaml").write_text(
+        "\n".join(
+            [
+                "name: strain",
+                "sample_ids: [0]",
+                "source:",
+                "  kind: strain_madness",
+                "  read_type: long",
+                f"  root: {source_root}",
+                f"truth_dir: {source_root}",
+            ]
+        )
+        + "\n"
+    )
+    (config_root / "experiments" / "chimera.yaml").write_text(
+        "\n".join(
+            [
+                "tool: chimera",
+                "db: /db/cami_refseq",
+                "datasets:",
+                "  - strain",
+            ]
+        )
+        + "\n"
+    )
+
+    calls = []
+
+    class FakeTool:
+        name = "chimera"
+
+        def __init__(self, _config):
+            pass
+
+    class FakeRunner:
+        def __init__(self, _runs_root, _profile_root=None):
+            pass
+
+        def run(self, *, exp, dataset, tool, executor):
+            calls.append((dataset["name"], dataset["sample_ids"], dataset["reads"]))
+
+    monkeypatch.setattr(cli_mod, "Runner", FakeRunner)
+    monkeypatch.setattr(cli_mod.TOOLS, "get", lambda _name: FakeTool)
+
+    args = Namespace(
+        exp="chimera",
+        config=str(config_root),
+        runs=str(tmp_path / "results" / "classify"),
+        profile=str(tmp_path / "results" / "profile"),
+        chimera_bin="Chimera",
+        ganon_bin="ganon",
+        ganon_env="ganon",
+        sylph_bin="sylph",
+        sylph_env="sylph",
+        dry_run=False,
+        dataset=[],
+    )
+
+    run_cmd(args)
+
+    assert calls == [("strain", [0], [str(reads)])]
+
+
+def test_prepare_strain_madness_short_source_writes_paired_fastqs(tmp_path: Path):
+    source_root = tmp_path / "strain" / "short_read"
+    interleaved = source_root / "strmgCAMI2_sample_0" / "short_read" / "run0" / "reads" / "anonymous_reads.fq"
+    interleaved.parent.mkdir(parents=True)
+    interleaved.write_text(
+        "@S0R0/1\nACGT\n+\nIIII\n"
+        "@S0R0/2\nTGCA\n+\nJJJJ\n"
+    )
+
+    r1 = tmp_path / "prepared" / "sample_0_R1.fq"
+    r2 = tmp_path / "prepared" / "sample_0_R2.fq"
+    dataset = {
+        "name": "strain-short",
+        "sample_ids": [0],
+        "paired": [str(r1), str(r2)],
+        "source": {
+            "kind": "strain_madness",
+            "read_type": "short",
+            "root": str(source_root),
+            "sample_ids": [0],
+        },
+    }
+
+    prepared = prepare_dataset_inputs(dataset)
+
+    assert prepared["paired"] == [str(r1), str(r2)]
+    assert r1.read_text() == "@S0R0/1\nACGT\n+\nIIII\n"
+    assert r2.read_text() == "@S0R0/2\nTGCA\n+\nJJJJ\n"
+    manifest = json.loads((tmp_path / "prepared" / "sample_0_R1.fq.manifest.json").read_text())
+    assert manifest["inputs"] == [str(interleaved)]
+    assert manifest["records"] == 2

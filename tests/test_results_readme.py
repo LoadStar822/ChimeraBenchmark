@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from chimera_bench.core.metrics import METRIC_VERSION
 from chimera_bench.core.results_readme import write_builds_readme, write_classify_readme, write_profile_readme
 
 
@@ -55,8 +56,35 @@ def test_write_profile_readme_overwrites_and_drops_stale_rows(tmp_path: Path):
         "purity_genus": 0.3,
         "l1_norm_genus": 0.4,
         "weighted_unifrac": 0.123456,
+        "profile_metric_version": METRIC_VERSION,
     }
     (run_dir / "metrics.json").write_text(json.dumps(metrics))
+
+    old_run_dir = runs_root / "centrifuger" / "legacy"
+    old_run_dir.mkdir(parents=True)
+    (old_run_dir / "meta.json").write_text(
+        json.dumps(
+            {
+                "tool": "centrifuger",
+                "dataset": "legacy",
+                "db_name": "cami_refseq",
+                "elapsed_seconds": 1.0,
+                "resource": {"max_rss_kb": 1024},
+                "return_code": 0,
+            }
+        )
+    )
+    (old_run_dir / "metrics.json").write_text(
+        json.dumps(
+            {
+                "completeness_species": 1.0,
+                "purity_species": 1.0,
+                "l1_norm_species": 0.0,
+                "weighted_unifrac": 0.0,
+                "profile_metric_version": "old-profile-version",
+            }
+        )
+    )
 
     write_profile_readme(profile_root, runs_root)
 
@@ -66,6 +94,8 @@ def test_write_profile_readme_overwrites_and_drops_stale_rows(tmp_path: Path):
     assert "本表按 OPAL core 计算 profile 结果" in text
     assert "只统计工具原生输出的 profile 文件" in text
     assert "部分工具的历史结果仍需刷新" in text
+    assert "只包含当前 profile 评估版本的结果" in text
+    assert "legacy" not in text
     assert "| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) |" in text
     assert "| sylph | cami_refseq | 10 | 1 | 0.5 | 0.25 | 0.75 | 0.6 | 0.3 | 0.4 | 0.123456 |" in text
 
@@ -144,6 +174,7 @@ def test_results_readmes_display_ganon_as_ganon2(tmp_path: Path):
                 "purity_genus": 0.3,
                 "l1_norm_genus": 0.4,
                 "weighted_unifrac": 0.125,
+                "profile_metric_version": METRIC_VERSION,
             }
         )
     )
@@ -215,6 +246,7 @@ def test_results_readmes_prefer_public_rank_aligned_metrics_when_available(tmp_p
                 "purity_genus": 0.38,
                 "l1_norm_genus": 0.39,
                 "weighted_unifrac": 0.41,
+                "profile_metric_version": METRIC_VERSION,
             }
         )
     )
@@ -227,6 +259,148 @@ def test_results_readmes_prefer_public_rank_aligned_metrics_when_available(tmp_p
     write_profile_readme(profile_root, runs_root)
     profile_text = (profile_root / "README.md").read_text()
     assert "| chimera | cami_refseq | 10 | 1 | 0.31 | 0.32 | 0.33 | 0.37 | 0.38 | 0.39 | 0.41 |" in profile_text
+
+
+def test_results_readmes_group_dataset_collection_samples(tmp_path: Path):
+    runs_root = tmp_path / "runs"
+    profile_root = tmp_path / "profile"
+    runs_root.mkdir()
+    profile_root.mkdir()
+
+    samples = [
+        (
+            "S1",
+            10.0,
+            1024 * 1024,
+            {
+                "exact_per_read_truth_mapped_rate_species": 0.2,
+                "exact_per_read_pred_mapped_rate_species": 0.4,
+                "exact_per_read_precision_species": 0.5,
+                "exact_per_read_recall_species": 0.6,
+                "exact_per_read_f1_species": 0.7,
+                "exact_per_read_truth_mapped_rate_genus": 0.8,
+                "exact_per_read_pred_mapped_rate_genus": 1.0,
+                "exact_per_read_precision_genus": 0.3,
+                "exact_per_read_recall_genus": 0.4,
+                "exact_per_read_f1_genus": 0.5,
+                "completeness_species": 0.25,
+                "purity_species": 0.1,
+                "l1_norm_species": 1.5,
+                "completeness_genus": 0.5,
+                "purity_genus": 0.2,
+                "l1_norm_genus": 1.0,
+                "weighted_unifrac": 0.9,
+                "profile_metric_version": METRIC_VERSION,
+            },
+        ),
+        (
+            "S2",
+            20.0,
+            3 * 1024 * 1024,
+            {
+                "exact_per_read_truth_mapped_rate_species": 0.6,
+                "exact_per_read_pred_mapped_rate_species": 0.8,
+                "exact_per_read_precision_species": 0.7,
+                "exact_per_read_recall_species": 0.8,
+                "exact_per_read_f1_species": 0.9,
+                "exact_per_read_truth_mapped_rate_genus": 0.4,
+                "exact_per_read_pred_mapped_rate_genus": 0.6,
+                "exact_per_read_precision_genus": 0.5,
+                "exact_per_read_recall_genus": 0.6,
+                "exact_per_read_f1_genus": 0.7,
+                "completeness_species": 0.75,
+                "purity_species": 0.3,
+                "l1_norm_species": 0.5,
+                "completeness_genus": 0.7,
+                "purity_genus": 0.4,
+                "l1_norm_genus": 0.2,
+                "weighted_unifrac": 0.5,
+                "profile_metric_version": METRIC_VERSION,
+            },
+        ),
+    ]
+
+    for sample_id, elapsed_seconds, max_rss_kb, metrics in samples:
+        run_dir = runs_root / "kraken2" / f"real.{sample_id}"
+        run_dir.mkdir(parents=True)
+        (run_dir / "meta.json").write_text(
+            json.dumps(
+                {
+                    "exp": "kraken2",
+                    "tool": "kraken2",
+                    "dataset": f"real.{sample_id}",
+                    "dataset_collection": "real",
+                    "sample_id": sample_id,
+                    "db": "/tmp/cami_refseq",
+                    "db_name": "cami_refseq",
+                    "elapsed_seconds": elapsed_seconds,
+                    "resource": {"max_rss_kb": max_rss_kb},
+                    "return_code": 0,
+                }
+            )
+        )
+        (run_dir / "metrics.json").write_text(json.dumps(metrics))
+
+    write_classify_readme(runs_root)
+    classify_text = (runs_root / "README.md").read_text()
+    assert "## Dataset: real\n" in classify_text
+    assert "## Dataset: real.S1" not in classify_text
+    assert "## Dataset: real.S2" not in classify_text
+    assert "| Tool | DB | Samples | Elapsed (s) | Max RSS (GB) |" in classify_text
+    assert "集合聚合（collection aggregate）行的 `Samples` 为已完成 sample 数" in classify_text
+    assert "| kraken2 | cami_refseq | 2 | 30 | 3 | 0.4 | 0.6 | 0.6 | 0.7 | 0.8 | 0.6 | 0.8 | 0.4 | 0.5 | 0.6 |" in classify_text
+
+    write_profile_readme(profile_root, runs_root)
+    profile_text = (profile_root / "README.md").read_text()
+    assert "## Dataset: real\n" in profile_text
+    assert "## Dataset: real.S1" not in profile_text
+    assert "## Dataset: real.S2" not in profile_text
+    assert "| Tool | DB | Samples | Elapsed (s) | Max RSS (GB) |" in profile_text
+    assert "profile 指标为 sample 算术平均" in profile_text
+    assert "| kraken2 | cami_refseq | 2 | 30 | 3 | 0.5 | 0.2 | 1 | 0.6 | 0.3 | 0.6 | 0.7 |" in profile_text
+
+
+def test_results_readmes_use_collection_display_dataset(tmp_path: Path):
+    runs_root = tmp_path / "runs"
+    runs_root.mkdir()
+
+    run_dir = runs_root / "ganon" / "short-batches.batch00"
+    run_dir.mkdir(parents=True)
+    (run_dir / "meta.json").write_text(
+        json.dumps(
+            {
+                "exp": "ganon",
+                "tool": "ganon",
+                "dataset": "short-batches.batch00",
+                "dataset_collection": "short-batches",
+                "display_dataset": "short",
+                "sample_id": "batch00",
+                "db": "/tmp/cami_refseq",
+                "db_name": "cami_refseq",
+                "elapsed_seconds": 10.0,
+                "resource": {"max_rss_kb": 1024 * 1024},
+                "return_code": 0,
+            }
+        )
+    )
+    (run_dir / "metrics.json").write_text(
+        json.dumps(
+            {
+                "exact_per_read_truth_mapped_rate_species": 1.0,
+                "exact_per_read_pred_mapped_rate_species": 1.0,
+                "exact_per_read_precision_species": 0.5,
+                "exact_per_read_recall_species": 0.5,
+                "exact_per_read_f1_species": 0.5,
+            }
+        )
+    )
+
+    write_classify_readme(runs_root)
+    text = (runs_root / "README.md").read_text()
+
+    assert "## Dataset: short\n" in text
+    assert "## Dataset: short-batches" not in text
+    assert "| ganon2 | cami_refseq | 1 |" in text
 
 
 def test_write_builds_readme_preserves_existing_rows_and_adds_successful_meta(tmp_path: Path):

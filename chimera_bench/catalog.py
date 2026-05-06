@@ -14,30 +14,41 @@ from pathlib import Path
 from typing import Any, Iterable
 
 from .config import load_yaml_dir
+from .dataset_prepare import resolve_strain_madness_reads
 
 
 PUBLIC_DATASET_ORDER = [
     "cami2-marine-long-sample0",
     "cami2-marine-long",
     "cami2-marine-short",
+    "cami-strain-madness-long-sample0",
+    "cami-strain-madness-short-sample0",
+    "cami-strain-madness-long",
+    "cami-strain-madness-short",
     "atcc-illumina",
     "atcc-hifi",
     "zymo-gridion-even",
     "zymo-gridion-log",
     "zymo-promethion-even",
     "zymo-promethion-log",
+    "prjna637878-supported19",
 ]
 PUBLIC_BUILD_DB_ORDER = ["cami_refseq", "refseq_complete"]
 DATASET_DISPLAY_NAMES = {
     "cami2-marine-long-sample0": "CAMI II Marine (long-read contigs, sample 0)",
     "cami2-marine-long": "CAMI II Marine (long-read contigs)",
     "cami2-marine-short": "CAMI II Marine (short-read contigs)",
+    "cami-strain-madness-long-sample0": "CAMI II Strain Madness (long reads, sample 0)",
+    "cami-strain-madness-short-sample0": "CAMI II Strain Madness (short reads, sample 0)",
+    "cami-strain-madness-long": "CAMI II Strain Madness (long reads)",
+    "cami-strain-madness-short": "CAMI II Strain Madness (short reads)",
     "atcc-illumina": "ATCC MSA-1003 (Illumina)",
     "atcc-hifi": "ATCC MSA-1003 (PacBio HiFi)",
     "zymo-gridion-even": "ZymoBIOMICS Even (GridION)",
     "zymo-gridion-log": "ZymoBIOMICS Log (GridION)",
     "zymo-promethion-even": "ZymoBIOMICS Even (PromethION)",
     "zymo-promethion-log": "ZymoBIOMICS Log (PromethION)",
+    "prjna637878-supported19": "PRJNA637878 Supported Fecal Genomes",
 }
 DB_DISPLAY_NAMES = {
     "cami_refseq": "CAMI RefSeq",
@@ -135,6 +146,15 @@ def _format_int(value: int | None) -> str:
     if value is None:
         return MISSING
     return f"{value:,}"
+
+
+def _catalog_number_or_text(value: Any) -> int | str:
+    if isinstance(value, int):
+        return value
+    text = str(value).strip()
+    if text in {"", MISSING}:
+        return MISSING
+    return _parse_int(text)
 
 
 def _n50_from_hist(length_counts: dict[int, int] | Counter[int], total_bases: int) -> int:
@@ -519,6 +539,9 @@ def _db_name_from_path(value: str | Path | None) -> str:
 def _is_public_dataset(name: str, data: dict[str, Any]) -> bool:
     if name == "example":
         return False
+    catalog = data.get("catalog")
+    if isinstance(catalog, dict) and catalog.get("exclude"):
+        return False
     return bool(data.get("group") or data.get("truth_dir") or data.get("truth_profile"))
 
 
@@ -548,20 +571,43 @@ def _ordered_build_db_names(builds: dict[str, dict[str, Any]]) -> list[str]:
 
 
 def _dataset_input_paths(dataset: dict[str, Any]) -> list[Path]:
+    samples = dataset.get("samples")
+    if samples:
+        paths: list[Path] = []
+        for sample in samples:
+            if sample.get("paired"):
+                paths.extend(Path(path) for path in sample["paired"])
+            elif sample.get("reads"):
+                paths.extend(Path(path) for path in sample["reads"])
+            else:
+                raise ValueError(f"dataset sample has no inputs: {dataset.get('name')}:{sample.get('sample_id')}")
+        return paths
     if dataset.get("paired"):
         return [Path(path) for path in dataset["paired"]]
     if dataset.get("reads"):
         return [Path(path) for path in dataset["reads"]]
+    source = dataset.get("source") or {}
+    if source.get("kind") == "strain_madness" and source.get("read_type") == "long":
+        sample_ids = dataset.get("sample_ids") or source.get("sample_ids") or []
+        return resolve_strain_madness_reads(Path(source["root"]), sample_ids)
     return []
 
 
 def _dataset_sample_count(dataset: dict[str, Any]) -> int:
+    if dataset.get("samples"):
+        return len(dataset["samples"])
     if dataset.get("paired"):
         return 1
+    source = dataset.get("source") or {}
+    if source.get("kind") == "strain_madness":
+        sample_ids = dataset.get("sample_ids") or source.get("sample_ids") or []
+        return len(sample_ids)
     return len(dataset.get("reads") or [])
 
 
 def _dataset_truth(dataset: dict[str, Any]) -> str:
+    if dataset.get("truth_label"):
+        return str(dataset["truth_label"])
     if dataset.get("truth_dir"):
         return "per-read mapping + profile"
     if dataset.get("truth_profile"):
@@ -572,6 +618,19 @@ def _dataset_truth(dataset: dict[str, Any]) -> str:
 
 
 def _dataset_input_type(dataset: dict[str, Any], paths: list[Path]) -> str:
+    if dataset.get("input_type"):
+        return str(dataset["input_type"])
+    samples = dataset.get("samples")
+    if samples:
+        if all(sample.get("paired") for sample in samples):
+            return "paired FASTQ"
+        if all(sample.get("reads") for sample in samples):
+            formats = {_detect_sequence_format(Path(path)) for sample in samples for path in sample["reads"]}
+            if formats == {"fastq"}:
+                return "single FASTQ"
+            if formats == {"fasta"}:
+                return "contig FASTA"
+        return "mixed FASTA/FASTQ"
     if dataset.get("paired"):
         return "paired FASTQ"
     formats = {_detect_sequence_format(path) for path in paths}
@@ -580,6 +639,47 @@ def _dataset_input_type(dataset: dict[str, Any], paths: list[Path]) -> str:
     if formats == {"fastq"}:
         return "single FASTQ"
     return "mixed FASTA/FASTQ"
+
+
+def _dataset_catalog_row_from_metadata(
+    name: str,
+    dataset: dict[str, Any],
+    paths: list[Path],
+) -> dict[str, Any] | None:
+    catalog = dataset.get("catalog")
+    if not catalog:
+        return None
+    if not isinstance(catalog, dict):
+        raise ValueError(f"dataset catalog metadata must be an object: {name}")
+    required = [
+        "total_size_gb",
+        "samples",
+        "input_type",
+        "reads_or_contigs",
+        "base_pairs_bp",
+        "mean_length_bp",
+        "truth",
+    ]
+    missing = [key for key in required if key not in catalog]
+    if missing:
+        raise ValueError(f"dataset catalog metadata missing fields for {name}: {', '.join(missing)}")
+    for path in paths:
+        if not path.exists():
+            raise FileNotFoundError(path)
+    return {
+        "dataset": name,
+        "dataset_name": DATASET_DISPLAY_NAMES.get(name, name),
+        "total_size_gb": str(catalog["total_size_gb"]),
+        "samples": int(catalog["samples"]),
+        "input_type": str(catalog["input_type"]),
+        "reads_or_contigs": _catalog_number_or_text(catalog["reads_or_contigs"]),
+        "base_pairs_bp": _catalog_number_or_text(catalog["base_pairs_bp"]),
+        "mean_length_bp": _catalog_number_or_text(catalog["mean_length_bp"]),
+        "n50_bp": catalog.get("n50_bp", MISSING),
+        "gc_percent": catalog.get("gc_percent", MISSING),
+        "q30_percent": catalog.get("q30_percent", MISSING),
+        "truth": str(catalog["truth"]),
+    }
 
 
 def _hist_from_stats(stats: dict[str, Any]) -> Counter[int]:
@@ -633,11 +733,19 @@ def collect_dataset_rows(
         if name not in datasets:
             continue
         dataset = dict(datasets[name])
+        if not _is_public_dataset(name, dataset):
+            continue
         paths = _dataset_input_paths(dataset)
         if not paths:
             raise ValueError(f"dataset has no inputs: {name}")
         if progress:
             print(f"[catalog] dataset={name} start files={len(paths)}")
+        metadata_row = _dataset_catalog_row_from_metadata(name, dataset, paths)
+        if metadata_row is not None:
+            rows.append(metadata_row)
+            if progress:
+                print(f"[catalog] dataset={name} done source=metadata")
+            continue
         for path in paths:
             if not path.exists():
                 raise FileNotFoundError(path)
@@ -894,6 +1002,13 @@ def _results_readme_tail() -> list[str]:
         "Bracken 的数据库需要额外生成 `database100mers.kmer_distrib`。",
         "该步骤使用 Bracken 默认读长设置 `read_len=100`。",
         "",
+        "### ganon2",
+        "",
+        "ganon2 在 CAMI II Strain Madness short reads 上使用固定批次（fixed-size batch）运行，当前为每批 2 个样本。",
+        "原因是默认期望最大化（expectation maximization, EM）重分配在全量拼接输入上超过可用内存。",
+        "该设置保留 ganon2 默认的多匹配处理方式，但 EM 的估计范围为每个 batch 内部。",
+        "结果表中这一路径仍对应 CAMI II Strain Madness short-read dataset；`Samples` 表示完成的 batch 数。",
+        "",
         "### Centrifuger",
         "",
         "Centrifuger 的逐读段分类使用默认推断参数。",
@@ -989,7 +1104,7 @@ def write_results_readme(
             "## Benchmark Dataset Summary",
             "",
             "本表概括 benchmark 使用的实际输入文件。",
-            "统计来自 `configs/datasets/*.yaml` 和输入序列文件扫描。",
+            "统计来自 `configs/datasets/*.yaml`、输入序列文件扫描或数据集随附元数据。",
             "",
         ]
     )
