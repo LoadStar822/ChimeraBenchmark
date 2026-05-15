@@ -49,6 +49,13 @@ class ChimeraTool:
                 return candidate
         return db_path
 
+    @staticmethod
+    def _evidence_tsv_path(out_prefix: str) -> str:
+        classify_tsv = Path(f"{out_prefix}.tsv")
+        if classify_tsv.name == "ChimeraClassify.tsv":
+            return str(classify_tsv.with_name("ChimeraEvidence.tsv"))
+        return str(classify_tsv.with_suffix(".evidence.tsv"))
+
     def build_cmd(
         self,
         *,
@@ -73,7 +80,10 @@ class ChimeraTool:
             raise ValueError("dataset must define reads or paired")
         cmd += tool_args
 
-        outputs = {"classify_tsv": f"{out_prefix}.tsv"}
+        outputs = {
+            "classify_tsv": f"{out_prefix}.tsv",
+            "chimera_evidence_tsv": self._evidence_tsv_path(out_prefix),
+        }
         return cmd, outputs
 
     def build_steps(
@@ -95,10 +105,9 @@ class ChimeraTool:
 
         steps = [{"name": "classify", "cmd": classify_cmd, "outputs": outputs}]
 
-        # Chimera's abundance profiling is implemented in the Python CLI `chimera.py profile`,
-        # which consumes one or more `ChimeraClassify.tsv` files and outputs a species-level TSV.
+        # Chimera's profile CLI consumes the sample-level evidence table emitted by classify.
         if profile_out_prefix:
-            classify_tsv = f"{out_prefix}.tsv"
+            evidence_tsv = self._evidence_tsv_path(out_prefix)
             profile_base = str(Path(profile_out_prefix).resolve())
             profile_tsv = f"{profile_base}.tsv"
             profile_cmd = [
@@ -106,7 +115,7 @@ class ChimeraTool:
                 self._profile_script(),
                 "profile",
                 "-i",
-                classify_tsv,
+                evidence_tsv,
                 "-o",
                 profile_base,
             ]

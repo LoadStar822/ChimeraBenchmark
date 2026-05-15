@@ -103,6 +103,74 @@ def test_evaluate_with_truth_matches_paired_base_prediction_ids(tmp_path: Path):
     assert isclose(metrics["exact_per_read_recall_species"], 1.0, rel_tol=1e-6)
 
 
+def test_evaluate_with_truth_matches_paired_sibling_prediction_ids(tmp_path: Path):
+    tax = tmp_path / "test.tax"
+    tax.write_text(
+        "\n".join(
+            [
+                "1\t1\tno rank\troot\t0",
+                "2\t1\tgenus\tGenusA\t0",
+                "3\t2\tspecies\tSpeciesA\t0",
+            ]
+        )
+        + "\n"
+    )
+
+    mapping = tmp_path / "reads_mapping.tsv"
+    mapping.write_text(
+        "#anonymous_read_id\tgenome_id\ttax_id\tread_id\n"
+        "S0R0/1\tGenome0\t3\tS0R0/1\n"
+        "S0R0/2\tGenome0\t3\tS0R0/2\n"
+    )
+    classify = tmp_path / "pred.tsv"
+    classify.write_text("S0R0/1\t3\n")
+
+    metrics = evaluate_with_truth(
+        {"taxonomy": str(tax)},
+        {"truth_map": str(mapping)},
+        {"classify_tsv": str(classify)},
+    )
+
+    assert isclose(metrics["exact_per_read_classified_rate"], 1.0, rel_tol=1e-6)
+    assert isclose(metrics["exact_per_read_precision_species"], 1.0, rel_tol=1e-6)
+    assert isclose(metrics["exact_per_read_recall_species"], 1.0, rel_tol=1e-6)
+
+
+def test_evaluate_with_truth_does_not_borrow_sibling_for_conflicting_pair_truth(tmp_path: Path):
+    tax = tmp_path / "test.tax"
+    tax.write_text(
+        "\n".join(
+            [
+                "1\t1\tno rank\troot\t0",
+                "2\t1\tgenus\tGenusA\t0",
+                "3\t2\tspecies\tSpeciesA\t0",
+                "4\t1\tgenus\tGenusB\t0",
+                "5\t4\tspecies\tSpeciesB\t0",
+            ]
+        )
+        + "\n"
+    )
+
+    mapping = tmp_path / "reads_mapping.tsv"
+    mapping.write_text(
+        "#anonymous_read_id\tgenome_id\ttax_id\tread_id\n"
+        "S0R0/1\tGenome0\t3\tS0R0/1\n"
+        "S0R0/2\tGenome1\t5\tS0R0/2\n"
+    )
+    classify = tmp_path / "pred.tsv"
+    classify.write_text("S0R0/1\t3\n")
+
+    metrics = evaluate_with_truth(
+        {"taxonomy": str(tax)},
+        {"truth_map": str(mapping)},
+        {"classify_tsv": str(classify)},
+    )
+
+    assert isclose(metrics["exact_per_read_classified_rate"], 0.5, rel_tol=1e-6)
+    assert isclose(metrics["exact_per_read_precision_species"], 1.0, rel_tol=1e-6)
+    assert isclose(metrics["exact_per_read_recall_species"], 0.5, rel_tol=1e-6)
+
+
 def test_evaluate_with_truth_per_read_and_profile(tmp_path: Path):
     tax = tmp_path / "test.tax"
     tax.write_text(
@@ -218,6 +286,43 @@ def test_evaluate_with_species_label_truth_and_truth_abundance_profile(tmp_path:
     assert isclose(metrics["purity_species"], 1.0, rel_tol=1e-6)
     assert isclose(metrics["l1_norm_species"], 0.5, rel_tol=1e-6)
     assert metrics["profile_metric_version"] == metrics["metric_version"]
+
+
+def test_evaluate_with_species_label_truth_matches_fastq_header_description(tmp_path: Path):
+    tax = tmp_path / "test.tax"
+    tax.write_text(
+        "\n".join(
+            [
+                "1\t1\tno rank\troot\t0",
+                "2\t1\tgenus\tGenusA\t0",
+                "3\t2\tspecies\tSpeciesA\t0",
+            ]
+        )
+        + "\n"
+    )
+
+    truth = tmp_path / "template_truth.tsv"
+    truth.write_text(
+        "\n".join(
+            [
+                "read_id\tspecies_label\tsupport_mate_count\tmate_pattern\tsupport_mode",
+                "SRR1.42\tSpeciesA\t2\tR1+R2\tpaired_consistent",
+            ]
+        )
+        + "\n"
+    )
+    classify = tmp_path / "pred.tsv"
+    classify.write_text("SRR1.42 42 length=151\t3:1\n")
+
+    metrics = evaluate_with_truth(
+        {"taxonomy": str(tax)},
+        {"truth_map": str(truth), "truth_map_format": "species_label"},
+        {"classify_tsv": str(classify)},
+    )
+
+    assert isclose(metrics["exact_per_read_classified_rate"], 1.0, rel_tol=1e-6)
+    assert isclose(metrics["exact_per_read_precision_species"], 1.0, rel_tol=1e-6)
+    assert isclose(metrics["exact_per_read_recall_species"], 1.0, rel_tol=1e-6)
 
 
 def test_name_maps_resolve_author_suffixes_and_promote_strain_synonyms(tmp_path: Path):

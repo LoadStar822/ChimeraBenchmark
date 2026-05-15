@@ -320,7 +320,7 @@ def parse_classify_tsv(path: Path) -> Dict[str, int | None]:
             parts = line.split("\t")
             if len(parts) < 2:
                 continue
-            read_id = parts[0]
+            read_id = normalize_read_id(parts[0])
             tokens = [t for t in parts[1:] if t]
             if not tokens or tokens[0] == "unclassified":
                 preds[read_id] = None
@@ -334,11 +334,40 @@ def parse_classify_tsv(path: Path) -> Dict[str, int | None]:
     return preds
 
 
-def _prediction_for_read(preds: Dict[str, int | None], read_id: str) -> int | None:
-    if read_id in preds:
-        return preds[read_id]
-    if read_id.endswith("/1") or read_id.endswith("/2"):
-        return preds.get(read_id[:-2])
+def normalize_read_id(read_id: str) -> str:
+    return read_id.strip().split()[0] if read_id.strip() else ""
+
+
+def _paired_mate_id(read_id: str) -> str | None:
+    if read_id.endswith("/1"):
+        return f"{read_id[:-2]}/2"
+    if read_id.endswith("/2"):
+        return f"{read_id[:-2]}/1"
+    return None
+
+
+def _prediction_for_read(
+    preds: Dict[str, int | None],
+    read_id: str,
+    truth: Dict[str, int] | None = None,
+) -> int | None:
+    normalized = normalize_read_id(read_id)
+    if normalized in preds:
+        return preds[normalized]
+    if normalized.endswith("/1") or normalized.endswith("/2"):
+        base_pred = preds.get(normalized[:-2])
+        if base_pred is not None or normalized[:-2] in preds:
+            return base_pred
+        mate = _paired_mate_id(normalized)
+        if (
+            mate is not None
+            and truth is not None
+            and mate in preds
+            and mate in truth
+            and normalized in truth
+            and truth[mate] == truth[normalized]
+        ):
+            return preds[mate]
     return None
 
 
@@ -847,7 +876,7 @@ def compute_per_read_metrics(
     total = len(truth)
     classified = 0
     for read_id in truth:
-        if _prediction_for_read(preds, read_id) is not None:
+        if _prediction_for_read(preds, read_id, truth) is not None:
             classified += 1
     if total > 0:
         metrics["per_read_classified_rate"] = classified / total
@@ -864,7 +893,7 @@ def compute_per_read_metrics(
             if not true_is_mapped:
                 continue
             truth_mapped += 1
-            pred_taxid = _prediction_for_read(preds, read_id)
+            pred_taxid = _prediction_for_read(preds, read_id, truth)
             if pred_taxid is not None:
                 pred_mapped += 1
             if pred_taxid is None:
@@ -897,7 +926,7 @@ def compute_per_read_metrics_exact(
     total = len(truth)
     classified = 0
     for read_id, true_taxid in truth.items():
-        pred_taxid = _prediction_for_read(preds, read_id)
+        pred_taxid = _prediction_for_read(preds, read_id, truth)
         if pred_taxid is not None:
             classified += 1
     if total > 0:
@@ -911,7 +940,7 @@ def compute_per_read_metrics_exact(
         covered = covered_by_rank.get(rank) if covered_by_rank is not None else None
         for read_id, true_taxid in truth.items():
             true_rank = taxid_to_rank(true_taxid, rank, taxonomy)
-            pred_taxid = _prediction_for_read(preds, read_id)
+            pred_taxid = _prediction_for_read(preds, read_id, truth)
             pred_rank = taxid_to_rank(pred_taxid, rank, taxonomy) if pred_taxid is not None else None
             pred_is_mapped = pred_rank is not None and (covered is None or pred_rank in covered)
             if pred_is_mapped:
