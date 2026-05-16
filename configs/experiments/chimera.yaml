@@ -22,3 +22,4 @@ datasets:
   - cami-strain-madness-long
   - cami-strain-madness-short
   - prjna637878-supported19
+  - prjna637878-supported19-single-read

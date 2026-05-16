@@ -1,0 +1,170 @@
+name: prjna637878-supported19-single-read
+group: real-fecal
+platform: illumina
+input_type: single FASTQ
+truth_label: mate-level per-read + supported-strain profile
+truth_map_format: species_label
+catalog:
+  total_size_gb: "110.5"
+  samples: 19
+  input_type: single FASTQ
+  reads_or_contigs: 1321826777
+  base_pairs_bp: 169812107628
+  mean_length_bp: 128
+  n50_bp: "—"
+  gc_percent: "—"
+  q30_percent: "—"
+  truth: mate-level per-read + supported-strain profile
+samples:
+  - sample_id: 1001713B
+    cohort: healthy
+    supported_strain_count: 35
+    reads:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001713B_R1.single.fastq.gz
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001713B_R2.single.fastq.gz
+    truth_map: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/truth/1001713B.single_read_truth.tsv
+    truth_profile: /mnt/sda/CommonData/TaxonomyDataset/True/真实实验/群落结构线/当前主线/prjna637878_culture_supported_truth_20260411/truth/1001713B.supported_profile_truth.tsv
+  - sample_id: D43_t1
+    cohort: healthy
+    supported_strain_count: 34
+    reads:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/D43_t1_R1.single.fastq.gz
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/D43_t1_R2.single.fastq.gz
+    truth_map: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/truth/D43_t1.single_read_truth.tsv
+    truth_profile: /mnt/sda/CommonData/TaxonomyDataset/True/真实实验/群落结构线/当前主线/prjna637878_culture_supported_truth_20260411/truth/D43_t1.supported_profile_truth.tsv
+  - sample_id: 1001283B
+    cohort: healthy
+    supported_strain_count: 30
+    reads:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001283B_R1.single.fastq.gz
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001283B_R2.single.fastq.gz
+    truth_map: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/truth/1001283B.single_read_truth.tsv
+    truth_profile: /mnt/sda/CommonData/TaxonomyDataset/True/真实实验/群落结构线/当前主线/prjna637878_culture_supported_truth_20260411/truth/1001283B.supported_profile_truth.tsv
+  - sample_id: 1001302B
+    cohort: healthy
+    supported_strain_count: 29
+    reads:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001302B_R1.single.fastq.gz
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001302B_R2.single.fastq.gz
+    truth_map: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/truth/1001302B.single_read_truth.tsv
+    truth_profile: /mnt/sda/CommonData/TaxonomyDataset/True/真实实验/群落结构线/当前主线/prjna637878_culture_supported_truth_20260411/truth/1001302B.supported_profile_truth.tsv
+  - sample_id: 1001217B
+    cohort: healthy
+    supported_strain_count: 27
+    reads:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001217B_R1.single.fastq.gz
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001217B_R2.single.fastq.gz
+    truth_map: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/truth/1001217B.single_read_truth.tsv
+    truth_profile: /mnt/sda/CommonData/TaxonomyDataset/True/真实实验/群落结构线/当前主线/prjna637878_culture_supported_truth_20260411/truth/1001217B.supported_profile_truth.tsv
+  - sample_id: 1001136B
+    cohort: healthy
+    supported_strain_count: 26
+    reads:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001136B_R1.single.fastq.gz
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001136B_R2.single.fastq.gz
+    truth_map: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/truth/1001136B.single_read_truth.tsv
+    truth_profile: /mnt/sda/CommonData/TaxonomyDataset/True/真实实验/群落结构线/当前主线/prjna637878_culture_supported_truth_20260411/truth/1001136B.supported_profile_truth.tsv
+  - sample_id: 1001275B
+    cohort: healthy
+    supported_strain_count: 26
+    reads:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001275B_R1.single.fastq.gz
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001275B_R2.single.fastq.gz
+    truth_map: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/truth/1001275B.single_read_truth.tsv
+    truth_profile: /mnt/sda/CommonData/TaxonomyDataset/True/真实实验/群落结构线/当前主线/prjna637878_culture_supported_truth_20260411/truth/1001275B.supported_profile_truth.tsv
+  - sample_id: 1001175B
+    cohort: healthy
+    supported_strain_count: 24
+    reads:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001175B_R1.single.fastq.gz
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001175B_R2.single.fastq.gz
+    truth_map: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/truth/1001175B.single_read_truth.tsv
+    truth_profile: /mnt/sda/CommonData/TaxonomyDataset/True/真实实验/群落结构线/当前主线/prjna637878_culture_supported_truth_20260411/truth/1001175B.supported_profile_truth.tsv
+  - sample_id: J1101437
+    cohort: ibd
+    supported_strain_count: 22
+    reads:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/J1101437_R1.single.fastq.gz
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/J1101437_R2.single.fastq.gz
+    truth_map: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/truth/J1101437.single_read_truth.tsv
+    truth_profile: /mnt/sda/CommonData/TaxonomyDataset/True/真实实验/群落结构线/当前主线/prjna637878_culture_supported_truth_20260411/truth/J1101437.supported_profile_truth.tsv
+  - sample_id: 1001262B
+    cohort: healthy
+    supported_strain_count: 17
+    reads:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001262B_R1.single.fastq.gz
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001262B_R2.single.fastq.gz
+    truth_map: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/truth/1001262B.single_read_truth.tsv
+    truth_profile: /mnt/sda/CommonData/TaxonomyDataset/True/真实实验/群落结构线/当前主线/prjna637878_culture_supported_truth_20260411/truth/1001262B.supported_profile_truth.tsv
+  - sample_id: 1001099B
+    cohort: healthy
+    supported_strain_count: 15
+    reads:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001099B_R1.single.fastq.gz
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001099B_R2.single.fastq.gz
+    truth_map: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/truth/1001099B.single_read_truth.tsv
+    truth_profile: /mnt/sda/CommonData/TaxonomyDataset/True/真实实验/群落结构线/当前主线/prjna637878_culture_supported_truth_20260411/truth/1001099B.supported_profile_truth.tsv
+  - sample_id: J1101004
+    cohort: ibd
+    supported_strain_count: 15
+    reads:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/J1101004_R1.single.fastq.gz
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/J1101004_R2.single.fastq.gz
+    truth_map: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/truth/J1101004.single_read_truth.tsv
+    truth_profile: /mnt/sda/CommonData/TaxonomyDataset/True/真实实验/群落结构线/当前主线/prjna637878_culture_supported_truth_20260411/truth/J1101004.supported_profile_truth.tsv
+  - sample_id: 1001295B
+    cohort: rcdi
+    supported_strain_count: 14
+    reads:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001295B_R1.single.fastq.gz
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001295B_R2.single.fastq.gz
+    truth_map: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/truth/1001295B.single_read_truth.tsv
+    truth_profile: /mnt/sda/CommonData/TaxonomyDataset/True/真实实验/群落结构线/当前主线/prjna637878_culture_supported_truth_20260411/truth/1001295B.supported_profile_truth.tsv
+  - sample_id: 1001270B
+    cohort: rcdi
+    supported_strain_count: 14
+    reads:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001270B_R1.single.fastq.gz
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001270B_R2.single.fastq.gz
+    truth_map: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/truth/1001270B.single_read_truth.tsv
+    truth_profile: /mnt/sda/CommonData/TaxonomyDataset/True/真实实验/群落结构线/当前主线/prjna637878_culture_supported_truth_20260411/truth/1001270B.supported_profile_truth.tsv
+  - sample_id: 1001216B
+    cohort: rcdi
+    supported_strain_count: 14
+    reads:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001216B_R1.single.fastq.gz
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001216B_R2.single.fastq.gz
+    truth_map: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/truth/1001216B.single_read_truth.tsv
+    truth_profile: /mnt/sda/CommonData/TaxonomyDataset/True/真实实验/群落结构线/当前主线/prjna637878_culture_supported_truth_20260411/truth/1001216B.supported_profile_truth.tsv
+  - sample_id: J1100102
+    cohort: ibd
+    supported_strain_count: 10
+    reads:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/J1100102_R1.single.fastq.gz
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/J1100102_R2.single.fastq.gz
+    truth_map: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/truth/J1100102.single_read_truth.tsv
+    truth_profile: /mnt/sda/CommonData/TaxonomyDataset/True/真实实验/群落结构线/当前主线/prjna637878_culture_supported_truth_20260411/truth/J1100102.supported_profile_truth.tsv
+  - sample_id: 1001254A
+    cohort: rcdi
+    supported_strain_count: 9
+    reads:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001254A_R1.single.fastq.gz
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001254A_R2.single.fastq.gz
+    truth_map: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/truth/1001254A.single_read_truth.tsv
+    truth_profile: /mnt/sda/CommonData/TaxonomyDataset/True/真实实验/群落结构线/当前主线/prjna637878_culture_supported_truth_20260411/truth/1001254A.supported_profile_truth.tsv
+  - sample_id: J1101653
+    cohort: ibd
+    supported_strain_count: 7
+    reads:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/J1101653_R1.single.fastq.gz
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/J1101653_R2.single.fastq.gz
+    truth_map: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/truth/J1101653.single_read_truth.tsv
+    truth_profile: /mnt/sda/CommonData/TaxonomyDataset/True/真实实验/群落结构线/当前主线/prjna637878_culture_supported_truth_20260411/truth/J1101653.supported_profile_truth.tsv
+  - sample_id: 1001095A
+    cohort: rcdi
+    supported_strain_count: 6
+    reads:
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001095A_R1.single.fastq.gz
+      - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/fastq/1001095A_R2.single.fastq.gz
+    truth_map: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/prjna637878-supported19-single-read/truth/1001095A.single_read_truth.tsv
+    truth_profile: /mnt/sda/CommonData/TaxonomyDataset/True/真实实验/群落结构线/当前主线/prjna637878_culture_supported_truth_20260411/truth/1001095A.supported_profile_truth.tsv

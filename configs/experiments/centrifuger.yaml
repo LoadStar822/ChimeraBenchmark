@@ -15,6 +15,7 @@ datasets:
   - zymo-promethion-even
   - zymo-promethion-log
   - prjna637878-supported19
+  - prjna637878-supported19-single-read
 db: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/centrifuger/cami_refseq/DB/cami_refseq/cami_refseq
 taxonomy: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/ganon/cami_refseq/DB/cami_refseq.tax
 taxonomy_nodes_dmp: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/taxonomy/ncbi_20260408/nodes.dmp
