@@ -16,6 +16,9 @@ TOOL_DIR_NAMES = {
     # reverse mapping for looking up run dirs on disk
     "ganon2": "ganon",
 }
+SUPPLEMENTAL_MAIN_RESULT_RUNS = [
+    Path("results/reruns/prjna_single_read_alltools_20260513_163846"),
+]
 BUILD_README_EXCLUDED_TOOLS = {"bracken"}
 
 BUILD_COLUMNS = [
@@ -233,6 +236,23 @@ def _collect_runs(root: Path) -> List[Dict]:
                 "metrics": metrics,
             }
         )
+    return records
+
+
+def _supplemental_classify_roots(root: Path) -> list[Path]:
+    try:
+        is_main_classify = root.resolve() == Path("results/classify").resolve()
+    except OSError:
+        is_main_classify = False
+    if not is_main_classify:
+        return []
+    return [run_root / "classify" for run_root in SUPPLEMENTAL_MAIN_RESULT_RUNS if (run_root / "classify").exists()]
+
+
+def _collect_runs_with_supplements(root: Path) -> list[Dict]:
+    records = _collect_runs(root)
+    for supplemental_root in _supplemental_classify_roots(root):
+        records.extend(_collect_runs(supplemental_root))
     return records
 
 
@@ -602,7 +622,7 @@ def _append_table(lines: list[str], title: str, records: list[Dict], columns: li
 
 
 def write_classify_readme(root: Path) -> None:
-    records = [r for r in _collect_runs(root) if _has_per_read_metrics(r.get("metrics", {}))]
+    records = [r for r in _collect_runs_with_supplements(root) if _has_per_read_metrics(r.get("metrics", {}))]
     records = _aggregate_collection_records(records, PER_READ_MAIN_COLUMNS)
     readme_path = root / "README.md"
     lines = ["# Classify Results", "", "Auto-generated. Do not edit.", ""]
@@ -640,7 +660,11 @@ def write_classify_readme(root: Path) -> None:
 
 
 def write_profile_readme(profile_root: Path, runs_root: Path) -> None:
-    records = [r for r in _collect_runs(runs_root) if _has_current_profile_metrics(r.get("metrics", {}))]
+    records = [
+        r
+        for r in _collect_runs_with_supplements(runs_root)
+        if _has_current_profile_metrics(r.get("metrics", {}))
+    ]
     records = _aggregate_collection_records(records, ABUNDANCE_MAIN_COLUMNS)
     readme_path = profile_root / "README.md"
 

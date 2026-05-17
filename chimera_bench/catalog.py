@@ -32,6 +32,7 @@ PUBLIC_DATASET_ORDER = [
     "zymo-promethion-even",
     "zymo-promethion-log",
     "prjna637878-supported19",
+    "prjna637878-supported19-single-read",
 ]
 PUBLIC_BUILD_DB_ORDER = ["cami_refseq", "refseq_complete"]
 DATASET_DISPLAY_NAMES = {
@@ -49,6 +50,7 @@ DATASET_DISPLAY_NAMES = {
     "zymo-promethion-even": "ZymoBIOMICS Even (PromethION)",
     "zymo-promethion-log": "ZymoBIOMICS Log (PromethION)",
     "prjna637878-supported19": "PRJNA637878 Supported Fecal Genomes",
+    "prjna637878-supported19-single-read": "PRJNA637878 Supported Fecal Genomes (single-read)",
 }
 DB_DISPLAY_NAMES = {
     "cami_refseq": "CAMI RefSeq",
@@ -957,6 +959,14 @@ def _results_readme_tail() -> list[str]:
         "在 `species` 或 `genus` 层级计算逐读段结果时，先将真值分类编号（taxid）和预测 taxid 都提升到同一目标层级，再判断是否一致。",
         "这样可以公平处理原始真值为 strain、subspecies 或 isolate 的情况。",
         "",
+        "## 数据集特定口径",
+        "",
+        "### PRJNA637878",
+        "",
+        "PRJNA637878 的部分测序运行（SRA run）包含未配对读段（singleton reads），表现为 `spots_with_mates` 小于 `spots`。",
+        "`prjna637878-supported19-single-read` 将 R1 和 R2 作为独立单读段评估（single-read evaluation），并在生成 FASTQ 和真值表时为读段标识符（read identifier）增加 `__mate1` 或 `__mate2` 配对端标记（mate tag）。",
+        "该设置不改变原始实验的 paired-end 来源；它只规定评估时所有工具使用同一批单读段输入，且不使用 mate-pair 信息。",
+        "",
         "## 指标说明",
         "",
         "### Per-read 指标",
@@ -1009,6 +1019,10 @@ def _results_readme_tail() -> list[str]:
         "该设置保留 ganon2 默认的多匹配处理方式，但 EM 的估计范围为每个 batch 内部。",
         "结果表中这一路径仍对应 CAMI II Strain Madness short-read dataset；`Samples` 表示完成的 batch 数。",
         "",
+        "ganon2 不报告 PRJNA637878 single-read lane 结果。",
+        "该数据集在默认 EM 重分配阶段峰值内存过高，在当前服务器上未能完成运行。",
+        "失败样本的 Max RSS 约为 `495..596 GB`，进程在 reassigning reads 阶段被系统终止。",
+        "",
         "### Centrifuger",
         "",
         "Centrifuger 的逐读段分类使用默认推断参数。",
@@ -1045,6 +1059,7 @@ def _results_readme_header() -> list[str]:
         "- [Reference Database Summary](#reference-database-summary)",
         "- [Benchmark Dataset Summary](#benchmark-dataset-summary)",
         "- [评估任务与口径](#评估任务与口径)",
+        "- [数据集特定口径](#数据集特定口径)",
         "- [指标说明](#指标说明)",
         "- [工具说明](#工具说明)",
         "- [软件版本](#软件版本)",
