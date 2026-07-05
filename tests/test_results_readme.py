@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from chimera_bench.core.metrics import METRIC_VERSION
+from chimera_bench.core import results_readme as results_readme_module
 from chimera_bench.core.results_readme import write_builds_readme, write_classify_readme, write_profile_readme
 
 
@@ -401,6 +402,147 @@ def test_results_readmes_use_collection_display_dataset(tmp_path: Path):
     assert "## Dataset: short\n" in text
     assert "## Dataset: short-batches" not in text
     assert "| ganon2 | cami_refseq | 1 |" in text
+
+
+def test_main_result_readmes_prefer_supplemental_rerun_over_existing_rows(
+    tmp_path: Path, monkeypatch
+):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        results_readme_module,
+        "SUPPLEMENTAL_MAIN_RESULT_RUNS",
+        [Path("results/reruns/current")],
+    )
+
+    main_run = Path("results/classify/chimera/ds1")
+    main_run.mkdir(parents=True)
+    (main_run / "meta.json").write_text(
+        json.dumps(
+            {
+                "tool": "chimera",
+                "dataset": "ds1",
+                "db_name": "cami_refseq",
+                "elapsed_seconds": 100.0,
+                "resource": {"max_rss_kb": 1024 * 1024},
+                "return_code": 0,
+            }
+        )
+    )
+    (main_run / "metrics.json").write_text(
+        json.dumps(
+            {
+                "exact_per_read_truth_mapped_rate_species": 0.1,
+                "exact_per_read_pred_mapped_rate_species": 0.2,
+                "exact_per_read_precision_species": 0.3,
+                "exact_per_read_recall_species": 0.4,
+                "exact_per_read_f1_species": 0.5,
+                "exact_per_read_truth_mapped_rate_genus": 0.11,
+                "exact_per_read_pred_mapped_rate_genus": 0.21,
+                "exact_per_read_precision_genus": 0.31,
+                "exact_per_read_recall_genus": 0.41,
+                "exact_per_read_f1_genus": 0.51,
+                "completeness_species": 0.1,
+                "purity_species": 0.2,
+                "l1_norm_species": 0.3,
+                "completeness_genus": 0.4,
+                "purity_genus": 0.5,
+                "l1_norm_genus": 0.6,
+                "weighted_unifrac": 0.7,
+                "profile_metric_version": METRIC_VERSION,
+            }
+        )
+    )
+
+    supplemental_run = Path("results/reruns/current/classify/chimera/ds1")
+    supplemental_run.mkdir(parents=True)
+    (supplemental_run / "meta.json").write_text(
+        json.dumps(
+            {
+                "tool": "chimera",
+                "dataset": "ds1",
+                "db_name": "cami_refseq",
+                "elapsed_seconds": 10.0,
+                "resource": {"max_rss_kb": 2 * 1024 * 1024},
+                "return_code": 0,
+            }
+        )
+    )
+    (supplemental_run / "metrics.json").write_text(
+        json.dumps(
+            {
+                "exact_per_read_truth_mapped_rate_species": 0.6,
+                "exact_per_read_pred_mapped_rate_species": 0.7,
+                "exact_per_read_precision_species": 0.8,
+                "exact_per_read_recall_species": 0.9,
+                "exact_per_read_f1_species": 1.0,
+                "exact_per_read_truth_mapped_rate_genus": 0.61,
+                "exact_per_read_pred_mapped_rate_genus": 0.71,
+                "exact_per_read_precision_genus": 0.81,
+                "exact_per_read_recall_genus": 0.91,
+                "exact_per_read_f1_genus": 0.99,
+                "completeness_species": 0.6,
+                "purity_species": 0.7,
+                "l1_norm_species": 0.8,
+                "completeness_genus": 0.61,
+                "purity_genus": 0.71,
+                "l1_norm_genus": 0.81,
+                "weighted_unifrac": 0.91,
+                "profile_metric_version": METRIC_VERSION,
+            }
+        )
+    )
+
+    profile_root = Path("results/profile")
+    profile_root.mkdir(parents=True)
+
+    write_classify_readme(Path("results/classify"))
+    classify_text = Path("results/classify/README.md").read_text()
+    assert classify_text.count("| chimera | cami_refseq |") == 1
+    assert "| chimera | cami_refseq | 10 | 2 | 0.6 | 0.7 | 0.8 | 0.9 | 1 | 0.61 | 0.71 | 0.81 | 0.91 | 0.99 |" in classify_text
+    assert "| chimera | cami_refseq | 100 | 1 | 0.1 |" not in classify_text
+
+    write_profile_readme(profile_root, Path("results/classify"))
+    profile_text = Path("results/profile/README.md").read_text()
+    assert profile_text.count("| chimera | cami_refseq |") == 1
+    assert "| chimera | cami_refseq | 10 | 2 | 0.6 | 0.7 | 0.8 | 0.61 | 0.71 | 0.81 | 0.91 |" in profile_text
+    assert "| chimera | cami_refseq | 100 | 1 | 0.1 |" not in profile_text
+
+    main_build = Path("results/builds/chimera/cami_refseq")
+    main_build.mkdir(parents=True)
+    (main_build / "meta.json").write_text(
+        json.dumps(
+            {
+                "tool": "chimera",
+                "db_name": "cami_refseq",
+                "elapsed_seconds": 100.0,
+                "resource": {"max_rss_kb": 1024},
+                "started_at": "old-start",
+                "finished_at": "old-finish",
+                "return_code": 0,
+            }
+        )
+    )
+    supplemental_build = Path("results/reruns/current/builds/chimera/cami_refseq")
+    supplemental_build.mkdir(parents=True)
+    (supplemental_build / "meta.json").write_text(
+        json.dumps(
+            {
+                "tool": "chimera",
+                "db_name": "cami_refseq",
+                "elapsed_seconds": 10.0,
+                "resource": {"max_rss_kb": 2048},
+                "started_at": "new-start",
+                "finished_at": "new-finish",
+                "return_code": 0,
+            }
+        )
+    )
+
+    write_builds_readme(Path("results/builds"))
+    builds_text = Path("results/builds/README.md").read_text()
+    assert builds_text.count("| chimera | cami_refseq |") == 1
+    assert "| chimera | cami_refseq | 10 | 2048 |  | new-start | new-finish |" in builds_text
+    assert "| chimera | cami_refseq | 100 | 1024 |" not in builds_text
 
 
 def test_write_builds_readme_preserves_existing_rows_and_adds_successful_meta(tmp_path: Path):

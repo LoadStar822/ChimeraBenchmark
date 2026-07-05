@@ -77,7 +77,7 @@ def run_cmd(args) -> None:
     exps = load_yaml_dir(cfg_root / "experiments")
     exp = dict(exps[args.exp])
     exp["name"] = exp.get("name", args.exp)
-    exp["threads"] = DEFAULT_THREADS
+    exp.setdefault("threads", DEFAULT_THREADS)
     tool_name = exp.get("tool", "chimera")
     tool_cls = TOOLS.get(tool_name)
     tool_config = dict(exp.get("tool_config", {}))
@@ -204,7 +204,7 @@ def build_cmd(args) -> None:
     builds = load_yaml_dir(cfg_root / "build")
     build = dict(builds[args.build])
     build["name"] = build.get("name", args.build)
-    build["threads"] = DEFAULT_THREADS
+    build.setdefault("threads", DEFAULT_THREADS)
     tool_name = build.get("tool", "ganon")
     tool_cls = TOOLS.get(tool_name)
     tool_config = dict(build.get("tool_config", {}))
@@ -223,7 +223,14 @@ def build_cmd(args) -> None:
         Path(args.runs).mkdir(parents=True, exist_ok=True)
         return
 
-    runner.run(build=build, tool=tool, executor=executor)
+    result = runner.run(build=build, tool=tool, executor=executor)
+    meta = (result or {}).get("meta") if isinstance(result, dict) else None
+    if isinstance(meta, dict) and meta.get("return_code") not in {None, 0}:
+        print(
+            f"failed build: {build.get('name', args.build)} return_code={meta.get('return_code')}",
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
 
 
 def main() -> None:

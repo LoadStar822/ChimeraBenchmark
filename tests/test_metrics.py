@@ -4,6 +4,9 @@ from pathlib import Path
 from chimera_bench.core.metrics import (
     build_name_maps,
     build_name_taxid_maps,
+    compute_per_read_metrics,
+    compute_per_read_metrics_combined,
+    compute_per_read_metrics_exact,
     compute_weighted_unifrac,
     evaluate_with_truth,
     load_taxonomy,
@@ -382,6 +385,48 @@ def test_parse_ganon_one_uses_file_mapping(tmp_path: Path):
     preds = parse_ganon_one(one, file_map)
 
     assert preds["r1"] == 3
+
+
+def test_parse_ganon_one_uses_numeric_second_column(tmp_path: Path):
+    one = tmp_path / "pred.one"
+    one.write_text("r1\t180722\t9\n")
+
+    preds = parse_ganon_one(one, {})
+
+    assert preds["r1"] == 180722
+
+
+def test_combined_per_read_metrics_matches_existing_exact_and_descendant_modes():
+    taxonomy = {
+        1: (1, "no rank"),
+        10: (1, "genus"),
+        11: (10, "species"),
+        12: (11, "strain"),
+        20: (1, "genus"),
+        21: (20, "species"),
+        30: (1, "family"),
+    }
+    truth = {
+        "r1": 12,
+        "r2": 21,
+        "r3": 30,
+        "r4/1": 12,
+        "r4/2": 12,
+    }
+    preds = {
+        "r1": 11,
+        "r2": 20,
+        "r3": None,
+        "r4/2": 12,
+    }
+    ranks = ("species", "genus")
+
+    descendant = compute_per_read_metrics(truth, preds, taxonomy, ranks)
+    exact = compute_per_read_metrics_exact(truth, preds, taxonomy, ranks)
+    expected = dict(descendant)
+    expected.update({f"exact_{key}": value for key, value in exact.items()})
+
+    assert compute_per_read_metrics_combined(truth, preds, taxonomy, ranks) == expected
 
 
 def test_evaluate_with_truth_profile_only(tmp_path: Path):

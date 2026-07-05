@@ -15,24 +15,6 @@ class ChimeraTool:
     def _bin(self) -> str:
         return self.config.get("bin", "Chimera")
 
-    def _python(self) -> str:
-        return self.config.get("python", "python")
-
-    def _profile_script(self) -> str:
-        script = self.config.get("profile_script") or self.config.get("chimera_py")
-        if script:
-            return str(script)
-
-        bin_path = Path(self._bin())
-        if bin_path.is_absolute():
-            repo_root = bin_path.parent.parent
-            candidate = repo_root / "chimera.py"
-            if candidate.exists():
-                return str(candidate)
-
-        # fallback: rely on PATH/relative resolution
-        return "chimera.py"
-
     @staticmethod
     def _resolve_prefix(path: str | Path, out_dir: Path) -> Path:
         prefix = Path(path)
@@ -41,8 +23,10 @@ class ChimeraTool:
         return prefix
 
     @staticmethod
-    def _resolve_imcf(path: str | Path) -> Path:
+    def _resolve_database_path(path: str | Path) -> Path:
         db_path = Path(path)
+        if db_path.exists():
+            return db_path
         if db_path.suffix != ".imcf":
             candidate = db_path.with_suffix(".imcf")
             if candidate.exists():
@@ -50,11 +34,18 @@ class ChimeraTool:
         return db_path
 
     @staticmethod
-    def _evidence_tsv_path(out_prefix: str) -> str:
+    def _native_profile_tsv_path(out_prefix: str) -> str:
         classify_tsv = Path(f"{out_prefix}.tsv")
         if classify_tsv.name == "ChimeraClassify.tsv":
-            return str(classify_tsv.with_name("ChimeraEvidence.tsv"))
-        return str(classify_tsv.with_suffix(".evidence.tsv"))
+            return str(classify_tsv.with_name("ChimeraProfile.tsv"))
+        return str(classify_tsv.with_suffix(".profile.tsv"))
+
+    @staticmethod
+    def _cami_profile_tsv_path(out_prefix: str) -> str:
+        classify_tsv = Path(f"{out_prefix}.tsv")
+        if classify_tsv.name == "ChimeraClassify.tsv":
+            return str(classify_tsv.with_name("ChimeraProfile.cami.tsv"))
+        return str(classify_tsv.with_suffix(".profile.cami.tsv"))
 
     def build_cmd(
         self,
@@ -67,9 +58,11 @@ class ChimeraTool:
     ) -> Tuple[List[str], Dict[str, str]]:
         bin_path = self._bin()
         db = exp["db"]
-        db_path = self._resolve_imcf(db)
+        db_path = self._resolve_database_path(db)
         threads = str(exp.get("threads", 192))
         tool_args = list(exp.get("tool_args", []))
+        if "--profile-cami" not in tool_args:
+            tool_args.append("--profile-cami")
 
         cmd = [bin_path, "classify", "-d", str(db_path), "-o", out_prefix, "-t", threads]
         if "reads" in dataset:
@@ -82,7 +75,8 @@ class ChimeraTool:
 
         outputs = {
             "classify_tsv": f"{out_prefix}.tsv",
-            "chimera_evidence_tsv": self._evidence_tsv_path(out_prefix),
+            "chimera_profile_tsv": self._native_profile_tsv_path(out_prefix),
+            "cami_profile_tsv": self._cami_profile_tsv_path(out_prefix),
         }
         return cmd, outputs
 
@@ -104,28 +98,6 @@ class ChimeraTool:
         )
 
         steps = [{"name": "classify", "cmd": classify_cmd, "outputs": outputs}]
-
-        # Chimera's profile CLI consumes the sample-level evidence table emitted by classify.
-        if profile_out_prefix:
-            evidence_tsv = self._evidence_tsv_path(out_prefix)
-            profile_base = str(Path(profile_out_prefix).resolve())
-            profile_tsv = f"{profile_base}.tsv"
-            profile_cmd = [
-                self._python(),
-                self._profile_script(),
-                "profile",
-                "-i",
-                evidence_tsv,
-                "-o",
-                profile_base,
-            ]
-            steps.append(
-                {
-                    "name": "profile",
-                    "cmd": profile_cmd,
-                    "outputs": {"chimera_profile_tsv": profile_tsv},
-                }
-            )
 
         return steps
 
@@ -156,13 +128,20 @@ class ChimeraTool:
             "-t",
             threads,
         ] + list(build_cfg.get("args", []))
+        taxonomy_dir = build_cfg.get("taxonomy_dir")
+        if taxonomy_dir:
+            cmd += ["--taxonomy-dir", str(taxonomy_dir)]
 
         steps = [
             {"name": "mkdir_db", "cmd": mkdir_cmd},
             {
                 "name": "build_db",
                 "cmd": cmd,
-                "outputs": {"db_prefix": str(out_base), "db_file": str(out_base.with_suffix(".imcf"))},
+                "outputs": {
+                    "db_prefix": str(out_base),
+                    "db_dir": str(out_base),
+                    "db_file": str(out_base / "core.imcf"),
+                },
             },
         ]
 

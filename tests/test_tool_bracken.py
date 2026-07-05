@@ -28,6 +28,23 @@ def test_bracken_build_steps_run_end_to_end_pipeline():
     assert "results/classify/kraken2" not in " ".join(bracken_cmd)
 
 
+def test_bracken_build_steps_passes_optional_kraken2_args():
+    tool = BrackenTool({"env": "kraken", "bin": "bracken"})
+    steps = tool.build_steps(
+        dataset={"reads": ["reads.fastq"]},
+        exp={
+            "db": "/db/cami_refseq",
+            "threads": 32,
+            "kraken2_tool_args": ["--memory-mapping"],
+        },
+        out_prefix="/tmp/runs/bracken/outputs/bracken",
+        profile_out_prefix="/tmp/profile/bracken/outputs/bracken_abundance",
+    )
+
+    classify_cmd = steps[0]["cmd"]
+    assert classify_cmd[-1] == "--memory-mapping"
+
+
 def test_bracken_build_db_steps_stage_source_db(tmp_path):
     tool = BrackenTool({"env": "kraken", "bin": "bracken"})
     source_db = tmp_path / "kraken2" / "cami_refseq"

@@ -6,5 +6,6 @@ tool_config:
   bin: /mnt/sda/tianqinzhong/code/Chimera/build/Chimera
 build:
   input_tsv: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/target.tsv
+  taxonomy_dir: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/taxonomy/ncbi_20260408
   taxonomy_tax: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/ganon/cami_refseq/DB/cami_refseq.tax
   args: []

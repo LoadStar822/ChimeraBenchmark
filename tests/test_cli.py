@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 from chimera_bench import cli as cli_mod
-from chimera_bench.cli import recompute_cmd, run_cmd
+from chimera_bench.cli import build_cmd, recompute_cmd, run_cmd
 from chimera_bench.dataset_prepare import prepare_dataset_inputs
 
 
@@ -450,6 +450,53 @@ def test_run_cmd_returns_nonzero_after_dataset_failures(tmp_path: Path, monkeypa
 
     assert exc.value.code == 1
     assert calls == ["ok", "bad"]
+
+
+def test_build_cmd_returns_nonzero_after_build_failure(tmp_path: Path, monkeypatch):
+    config_root = tmp_path / "configs"
+    (config_root / "build").mkdir(parents=True)
+    (config_root / "build" / "chimera.yaml").write_text(
+        "\n".join(
+            [
+                "name: chimera-cami-refseq",
+                "tool: chimera",
+                "db_prefix: DB/cami_refseq",
+            ]
+        )
+        + "\n"
+    )
+
+    class FakeTool:
+        name = "chimera"
+
+        def __init__(self, _config):
+            pass
+
+    class FakeBuildRunner:
+        def __init__(self, _runs_root):
+            pass
+
+        def run(self, *, build, tool, executor):
+            return {"meta": {"return_code": 1}}
+
+    monkeypatch.setattr(cli_mod, "BuildRunner", FakeBuildRunner)
+    monkeypatch.setattr(cli_mod.TOOLS, "get", lambda _name: FakeTool)
+
+    args = Namespace(
+        build="chimera-cami-refseq",
+        config=str(config_root),
+        runs=str(tmp_path / "results" / "builds"),
+        ganon_bin="ganon",
+        ganon_env="ganon",
+        sylph_bin="sylph",
+        sylph_env="sylph",
+        dry_run=False,
+    )
+
+    with pytest.raises(SystemExit) as exc:
+        build_cmd(args)
+
+    assert exc.value.code == 1
 
 
 def test_run_cmd_prepares_strain_madness_long_source(tmp_path: Path, monkeypatch):

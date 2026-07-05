@@ -389,6 +389,8 @@ def parse_ganon_one(path: Path, file_to_taxid: Dict[str, int] | None = None) -> 
             taxid = None
             if ref_id and file_to_taxid:
                 taxid = file_to_taxid.get(ref_id)
+            if taxid is None and ref_id and ref_id.isdigit():
+                taxid = int(ref_id)
             if taxid is None:
                 tokens = parts[2:] if len(parts) > 2 else parts[1:]
                 for tok in tokens:
@@ -972,6 +974,118 @@ def compute_per_read_metrics_exact(
     return metrics
 
 
+def compute_per_read_metrics_combined(
+    truth: Dict[str, int],
+    preds: Dict[str, int | None],
+    taxonomy: Dict[int, Tuple[int, str]],
+    ranks: Iterable[str],
+    covered_by_rank: Dict[str, set[int]] | None = None,
+):
+    ranks = tuple(ranks)
+    metrics: Dict[str, float] = {}
+    total = len(truth)
+    classified = 0
+    rank_cache: Dict[tuple[int | None, str], int | None] = {}
+    descendant_cache: Dict[tuple[int | None, int], bool] = {}
+
+    def cached_rank(taxid: int | None, rank: str) -> int | None:
+        key = (taxid, rank)
+        if key not in rank_cache:
+            rank_cache[key] = taxid_to_rank(taxid, rank, taxonomy)
+        return rank_cache[key]
+
+    def cached_descendant(taxid: int | None, ancestor: int) -> bool:
+        key = (taxid, ancestor)
+        if key not in descendant_cache:
+            descendant_cache[key] = is_descendant(taxid, ancestor, taxonomy)
+        return descendant_cache[key]
+
+    desc_counts = {
+        rank: {"tp": 0, "fp": 0, "fn": 0, "truth_mapped": 0, "pred_mapped": 0}
+        for rank in ranks
+    }
+    exact_counts = {
+        rank: {"tp": 0, "fp": 0, "fn": 0, "truth_mapped": 0, "pred_mapped": 0}
+        for rank in ranks
+    }
+
+    for read_id, true_taxid in truth.items():
+        pred_taxid = _prediction_for_read(preds, read_id, truth)
+        if pred_taxid is not None:
+            classified += 1
+        for rank in ranks:
+            covered = covered_by_rank.get(rank) if covered_by_rank is not None else None
+            true_rank = cached_rank(true_taxid, rank)
+            true_is_mapped = true_rank is not None and (covered is None or true_rank in covered)
+
+            pred_rank = cached_rank(pred_taxid, rank) if pred_taxid is not None else None
+            pred_is_mapped = pred_rank is not None and (covered is None or pred_rank in covered)
+            if pred_is_mapped:
+                exact_counts[rank]["pred_mapped"] += 1
+
+            if not true_is_mapped:
+                continue
+
+            desc = desc_counts[rank]
+            exact = exact_counts[rank]
+            desc["truth_mapped"] += 1
+            exact["truth_mapped"] += 1
+
+            if pred_taxid is not None:
+                desc["pred_mapped"] += 1
+
+            if pred_taxid is None:
+                desc["fn"] += 1
+                exact["fn"] += 1
+                continue
+
+            if true_rank is not None and cached_descendant(pred_taxid, true_rank):
+                desc["tp"] += 1
+            else:
+                desc["fp"] += 1
+                desc["fn"] += 1
+
+            if not pred_is_mapped:
+                exact["fp"] += 1
+                exact["fn"] += 1
+                continue
+            if pred_rank is not None and true_rank is not None and pred_rank == true_rank:
+                exact["tp"] += 1
+            else:
+                exact["fp"] += 1
+                exact["fn"] += 1
+
+    if total > 0:
+        classified_rate = classified / total
+        unclassified_rate = (total - classified) / total
+        metrics["per_read_classified_rate"] = classified_rate
+        metrics["per_read_unclassified_rate"] = unclassified_rate
+        metrics["exact_per_read_classified_rate"] = classified_rate
+        metrics["exact_per_read_unclassified_rate"] = unclassified_rate
+
+    for rank in ranks:
+        desc = desc_counts[rank]
+        if total > 0:
+            metrics[f"per_read_truth_mapped_rate_{rank}"] = desc["truth_mapped"] / total
+            metrics[f"per_read_pred_mapped_rate_{rank}"] = desc["pred_mapped"] / total
+        if desc["truth_mapped"] > 0:
+            precision, recall, f1 = _safe_prf(desc["tp"], desc["fp"], desc["fn"])
+            metrics[f"per_read_precision_{rank}"] = precision
+            metrics[f"per_read_recall_{rank}"] = recall
+            metrics[f"per_read_f1_{rank}"] = f1
+
+        exact = exact_counts[rank]
+        if total > 0:
+            metrics[f"exact_per_read_truth_mapped_rate_{rank}"] = exact["truth_mapped"] / total
+            metrics[f"exact_per_read_pred_mapped_rate_{rank}"] = exact["pred_mapped"] / total
+        if exact["truth_mapped"] > 0:
+            precision, recall, f1 = _safe_prf(exact["tp"], exact["fp"], exact["fn"])
+            metrics[f"exact_per_read_precision_{rank}"] = precision
+            metrics[f"exact_per_read_recall_{rank}"] = recall
+            metrics[f"exact_per_read_f1_{rank}"] = f1
+    return metrics
+
+
 def compute_opal_profile_metrics(
     truth: Dict[str, Dict[TaxKey, float]],
     preds: Dict[str, Dict[TaxKey, float]],
@@ -1256,11 +1370,7 @@ def evaluate_with_truth(
     if include_per_read and truth_reads:
         preds = _load_preds()
     if include_per_read and preds is not None and truth_reads:
-        desc_metrics = compute_per_read_metrics(truth_reads, preds, taxonomy, ranks, covered_by_rank)
-        exact_metrics = compute_per_read_metrics_exact(truth_reads, preds, taxonomy, ranks, covered_by_rank)
-        metrics.update(desc_metrics)
-        for key, value in exact_metrics.items():
-            metrics[f"exact_{key}"] = value
+        metrics.update(compute_per_read_metrics_combined(truth_reads, preds, taxonomy, ranks, covered_by_rank))
 
     truth_by_rank: Dict[str, Dict[TaxKey, float]] = {r: {} for r in ranks}
     truth_taxid_profile: Dict[int, float] = {}

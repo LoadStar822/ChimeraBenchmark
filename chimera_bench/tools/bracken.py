@@ -73,6 +73,7 @@ class BrackenTool:
             classify_cmd += ["--paired", str(paired[0]), str(paired[1])]
         else:
             raise ValueError("dataset must define reads or paired")
+        classify_cmd += list(exp.get("kraken2_tool_args", []))
 
         # Use Bracken defaults (fairness): read_len=100, level=S, threshold=10.
         bracken_cmd = self._base_cmd() + [

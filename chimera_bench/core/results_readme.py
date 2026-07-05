@@ -18,6 +18,7 @@ TOOL_DIR_NAMES = {
 }
 SUPPLEMENTAL_MAIN_RESULT_RUNS = [
     Path("results/reruns/prjna_single_read_alltools_20260513_163846"),
+    Path("results/reruns/chimera_1_7_20260701_003612"),
 ]
 BUILD_README_EXCLUDED_TOOLS = {"bracken"}
 
@@ -249,11 +250,52 @@ def _supplemental_classify_roots(root: Path) -> list[Path]:
     return [run_root / "classify" for run_root in SUPPLEMENTAL_MAIN_RESULT_RUNS if (run_root / "classify").exists()]
 
 
+def _supplemental_build_roots(root: Path) -> list[Path]:
+    try:
+        is_main_builds = root.resolve() == Path("results/builds").resolve()
+    except OSError:
+        is_main_builds = False
+    if not is_main_builds:
+        return []
+    return [run_root / "builds" for run_root in SUPPLEMENTAL_MAIN_RESULT_RUNS if (run_root / "builds").exists()]
+
+
+def _record_result_key(rec: Dict) -> tuple[str, str, str, str] | None:
+    tool = rec.get("tool")
+    dataset = rec.get("dataset_collection") or rec.get("display_dataset") or rec.get("dataset")
+    if not tool or not dataset:
+        return None
+    sample_id = ""
+    if rec.get("dataset_collection"):
+        sample_id = str(rec.get("sample_id") or rec.get("dataset") or "")
+    return (
+        str(dataset),
+        sample_id,
+        str(tool),
+        str(rec.get("db_name") or ""),
+    )
+
+
+def _prefer_later_records(records: list[Dict]) -> list[Dict]:
+    ordered_keys: list[tuple[str, str, str, str]] = []
+    rows_by_key: dict[tuple[str, str, str, str], Dict] = {}
+    passthrough: list[Dict] = []
+    for rec in records:
+        key = _record_result_key(rec)
+        if key is None:
+            passthrough.append(rec)
+            continue
+        if key not in rows_by_key:
+            ordered_keys.append(key)
+        rows_by_key[key] = rec
+    return passthrough + [rows_by_key[key] for key in ordered_keys]
+
+
 def _collect_runs_with_supplements(root: Path) -> list[Dict]:
     records = _collect_runs(root)
     for supplemental_root in _supplemental_classify_roots(root):
         records.extend(_collect_runs(supplemental_root))
-    return records
+    return _prefer_later_records(records)
 
 
 def _split_md_row(line: str) -> list[str]:
@@ -712,32 +754,33 @@ def write_builds_readme(root: Path) -> None:
     header = BUILD_COLUMNS
     rows_by_key = _parse_build_readme_rows(readme_path)
     # Build outputs may contain very large DB directories; avoid a full recursive walk.
-    for meta_path in root.glob("*/*/meta.json"):
-        try:
-            meta = json.loads(meta_path.read_text())
-        except json.JSONDecodeError:
-            continue
-        if meta.get("return_code") != 0:
-            continue
-        resource = meta.get("resource", {})
-        tool = meta.get("tool")
-        if isinstance(tool, str):
-            tool = TOOL_DISPLAY_NAMES.get(tool, tool)
-        if not tool:
-            continue
-        if tool in BUILD_README_EXCLUDED_TOOLS:
-            continue
-        db_name = meta.get("db_name") or meta_path.parent.name
-        db_size = _resolve_build_db_size(meta_path, meta)
-        rows_by_key[(str(tool), str(db_name))] = [
-            str(tool),
-            str(db_name),
-            _format_value(meta.get("elapsed_seconds")),
-            _format_value(resource.get("max_rss_kb")),
-            db_size,
-            _format_value(meta.get("started_at")),
-            _format_value(meta.get("finished_at")),
-        ]
+    for build_root in [root, *_supplemental_build_roots(root)]:
+        for meta_path in build_root.glob("*/*/meta.json"):
+            try:
+                meta = json.loads(meta_path.read_text())
+            except json.JSONDecodeError:
+                continue
+            if meta.get("return_code") != 0:
+                continue
+            resource = meta.get("resource", {})
+            tool = meta.get("tool")
+            if isinstance(tool, str):
+                tool = TOOL_DISPLAY_NAMES.get(tool, tool)
+            if not tool:
+                continue
+            if tool in BUILD_README_EXCLUDED_TOOLS:
+                continue
+            db_name = meta.get("db_name") or meta_path.parent.name
+            db_size = _resolve_build_db_size(meta_path, meta)
+            rows_by_key[(str(tool), str(db_name))] = [
+                str(tool),
+                str(db_name),
+                _format_value(meta.get("elapsed_seconds")),
+                _format_value(resource.get("max_rss_kb")),
+                db_size,
+                _format_value(meta.get("started_at")),
+                _format_value(meta.get("finished_at")),
+            ]
 
     # Backfill DB size for preserved rows that don't have current meta.json.
     for (tool, db_name), row in rows_by_key.items():
