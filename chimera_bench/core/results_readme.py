@@ -139,14 +139,14 @@ CLASSIFY_PUBLIC_NOTE = [
     "例如：真值为某个 species，预测到该 species 下的 strain 时，`species` 列记为正确。",
     "原始真值若为 `strain/subspecies/isolate`，只要能提升到对应 rank，就进入该 rank 分母；原始真值若只有 `family/order/class`，则不进入更细层级分母。",
     "Truth Mapped Rate / Pred Mapped Rate 会同时展示；F1 必须结合映射率一起解读，不能脱离分母单独引用。",
-    "只有满足默认参数设置的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。",
+    "跨数据集汇总见 `results/classify/summary.tsv`；本表按数据集展开各工具的详细结果。",
 ]
 
 PROFILE_PUBLIC_NOTE = [
     "本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。",
     "只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。",
     "只包含当前 profile 评估版本的结果；旧版结果不进入公开表。",
-    "只有满足默认参数设置的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。",
+    "跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。",
     "Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。",
 ]
 

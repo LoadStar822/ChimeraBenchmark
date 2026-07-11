@@ -436,6 +436,18 @@ def test_catalog_cmd_writes_paper_reports_and_results_readme(tmp_path: Path):
     assert "## Reference Database Summary" in results_readme
     assert "## Benchmark Dataset Summary" in results_readme
     assert "## 评估任务与口径" in results_readme
+    assert "## 真实队列 clade-level 实验" in results_readme
+    assert "results/real/README.md" in results_readme
+    assert "## 核心结果汇总" in results_readme
+    assert "results/paper_run_manifest.tsv" in results_readme
+    assert "prjna637878-supported19-single-read" in results_readme
+    assert "逐读段分类汇总覆盖" in results_readme
+    assert "论文正文和作图只使用" not in results_readme
+    assert "不承担 Chimera 的主要性能结论" not in results_readme
+    assert "Ganon 因运行成本" not in results_readme
+    assert "results/real/fna_c2_crc3_head3m/README.md" not in results_readme
+    assert "results/real/fna_c2_wirbel_yu_head3m/README.md" not in results_readme
+    assert "results/real/fna_c2_yachida_head3m/README.md" not in results_readme
     assert "## 指标说明" in results_readme
     assert "## 工具说明" in results_readme
     assert "Builder Tools" not in results_readme

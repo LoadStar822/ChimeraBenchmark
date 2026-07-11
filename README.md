@@ -28,8 +28,11 @@ ChimeraBenchmark 汇集了论文中用于评估 Chimera 的宏基因组分类基
 - `results/builds/README.md`：数据库构建结果。
 - `results/classify/README.md`：逐读段分类结果。
 - `results/profile/README.md`：丰度画像结果。
+- `results/real/README.md`：真实队列 clade-level 实验结果。
+- `results/paper_run_manifest.tsv`：汇总结果所对应的运行、工具版本和完成状态。
+- `results/*/summary.tsv`：用于统计分析和作图的机器可读汇总表。
 
-`results/README.md` 中的两张 summary 表可直接对应论文补充材料：
+`results/README.md` 还提供两张数据资源 summary 表：
 
 - Reference Database Summary：参考库规模和来源。
 - Benchmark Dataset Summary：实际输入数据、测序类型、读长和真值类型。
@@ -46,6 +49,12 @@ python -m chimera_bench.cli -h
 
 ```bash
 python -m chimera_bench.cli catalog --config configs --results-root results --resources-root resources
+```
+
+从已完成的 run 重新生成结果汇总表：
+
+```bash
+python -m chimera_bench.cli paper-freeze --config configs --results-root results
 ```
 
 运行核心测试：

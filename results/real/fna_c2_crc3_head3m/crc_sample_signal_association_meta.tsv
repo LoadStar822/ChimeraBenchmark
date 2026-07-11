@@ -1,0 +1,6 @@
+tool	metric	cohorts	matched_samples	n_case	n_control	random_effect_standardized_effect	effect_ci_low	effect_ci_high	wald_p_value	tau_squared	q_value	i_squared
+Chimera	raw_c2_reads_per_million	3	760	392	368	0.091734	-0.051129	0.234598	0.208205	0.000000	0.630683	0.000000
+Centrifuger	raw_c2_reads_per_million	3	760	392	368	-0.034654	-0.340712	0.271403	0.824374	0.050814	5.934960	0.663014
+Kraken2_LF01	raw_c2_reads_per_million	3	760	392	368	-0.263643	-0.771497	0.244211	0.308926	0.177168	14.291151	0.860053
+sylph	raw_c2_sequence_abundance_percent	3	760	392	368	0.283493	0.139966	0.427020	0.000108259	0.000000	1.118588	0.000000
+Published_Fna_C2	published_fna_c2_percent	3	760	392	368	0.383852	0.239772	0.527932	1.77323e-07	0.000000	0.260068	0.000000

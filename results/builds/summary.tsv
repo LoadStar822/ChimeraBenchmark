@@ -1,0 +1,5 @@
+tool	db	elapsed_seconds	max_rss_gb	db_size	started_at	finished_at	status	paper_scope	tool_version
+centrifuger	cami_refseq	937693.595364	643.9087524414062	141 GiB	2026-01-20T12:32:50+08:00	2026-01-31T09:01:03+08:00	complete	supplementary	1.1.0-r291
+chimera	cami_refseq	3209.18188	77.7449722290039	162 GiB	2026-07-01T09:44:48+08:00	2026-07-01T10:38:17+08:00	complete	supplementary	1.7
+kraken2	cami_refseq	119277.976333	122.12616348266602	315 GiB	2026-01-16T19:27:44+08:00	2026-01-18T04:35:42+08:00	complete	supplementary	2.1.3
+sylph	cami_refseq	1810.144336	26.62207794189453	21.6 GiB	2026-01-02T12:49:53+08:00	2026-01-02T13:20:04+08:00	complete	supplementary	0.8.1

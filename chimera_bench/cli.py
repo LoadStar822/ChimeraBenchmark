@@ -10,6 +10,7 @@ import sys
 from .catalog import write_catalog_outputs
 from .config import expand_dataset_config, load_yaml_dir
 from .dataset_prepare import prepare_dataset_inputs
+from .paper_freeze import write_paper_tables
 from .core.runner import Runner, build_run_metrics
 from .core.build_runner import BuildRunner
 from .core.reporter import write_summary
@@ -121,6 +122,14 @@ def catalog_cmd(args) -> None:
         resources_root=Path(getattr(args, "resources_root", "resources")),
         progress=True,
     )
+
+
+def paper_freeze_cmd(args) -> None:
+    counts = write_paper_tables(
+        config_root=Path(args.config),
+        results_root=Path(args.results_root),
+    )
+    print(json.dumps(counts, sort_keys=True))
 
 
 def _collect_summary_records(runs_root: Path, exp_name: str, selected: list[str]) -> list[dict]:
@@ -283,6 +292,11 @@ def main() -> None:
     catalog_p.add_argument("--results-root", default="results")
     catalog_p.add_argument("--resources-root", default="resources")
     catalog_p.set_defaults(func=catalog_cmd)
+
+    paper_p = sub.add_parser("paper-freeze")
+    paper_p.add_argument("--config", default="configs")
+    paper_p.add_argument("--results-root", default="results")
+    paper_p.set_defaults(func=paper_freeze_cmd)
 
     args = p.parse_args()
     args.func(args)

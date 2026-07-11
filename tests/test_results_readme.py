@@ -94,7 +94,9 @@ def test_write_profile_readme_overwrites_and_drops_stale_rows(tmp_path: Path):
     assert "### Abundance Metrics (UNK)" not in text
     assert "本表按 OPAL core 计算 profile 结果" in text
     assert "只统计工具原生输出的 profile 文件" in text
-    assert "部分工具的历史结果仍需刷新" in text
+    assert "results/profile/summary.tsv" in text
+    assert "论文补充表只引用" not in text
+    assert "诊断和历史运行用于追踪" not in text
     assert "只包含当前 profile 评估版本的结果" in text
     assert "legacy" not in text
     assert "| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) |" in text
@@ -185,7 +187,9 @@ def test_results_readmes_display_ganon_as_ganon2(tmp_path: Path):
     assert "本表按 `species/genus` 层级判断分类是否正确" in classify_text
     assert "原始真值若为 `strain/subspecies/isolate`" in classify_text
     assert "Truth Mapped Rate / Pred Mapped Rate 会同时展示" in classify_text
-    assert "部分工具的历史结果仍需刷新" in classify_text
+    assert "results/classify/summary.tsv" in classify_text
+    assert "本表按数据集展开各工具的详细结果" in classify_text
+    assert "论文主表只引用" not in classify_text
     assert "| ganon2 | cami_refseq |" in classify_text
     assert "| ganon | cami_refseq |" not in classify_text
 
@@ -193,7 +197,9 @@ def test_results_readmes_display_ganon_as_ganon2(tmp_path: Path):
     profile_text = (profile_root / "README.md").read_text()
     assert "Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离" in profile_text
     assert "只统计工具原生输出的 profile 文件" in profile_text
-    assert "部分工具的历史结果仍需刷新" in profile_text
+    assert "results/profile/summary.tsv" in profile_text
+    assert "本表按数据集展开各工具的详细结果" in profile_text
+    assert "论文补充表只引用" not in profile_text
     assert "| ganon2 | cami_refseq |" in profile_text
     assert "| ganon | cami_refseq |" not in profile_text
 

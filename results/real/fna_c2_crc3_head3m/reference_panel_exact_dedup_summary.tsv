@@ -1,0 +1,5 @@
+clade	input_records	input_bases	retained_records	retained_bases	duplicate_records	duplicate_bases
+Fna_C1	65	50246273	65	50246273	0	0
+Fna_C2	416	195082378	394	161429394	22	33652984
+non_C1C2	93	161056321	86	150295005	7	10761316
+other_or_unmapped	622	101110369	588	100285476	34	824893

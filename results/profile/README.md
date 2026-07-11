@@ -9,7 +9,7 @@ Auto-generated. Do not edit.
 本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
 只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
 只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-只有满足默认参数设置的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
 Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
 
 | Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
@@ -27,7 +27,7 @@ Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、
 本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
 只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
 只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-只有满足默认参数设置的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
 Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
 
 | Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
@@ -45,7 +45,7 @@ Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、
 本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
 只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
 只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-只有满足默认参数设置的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
 Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
 
 | Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
@@ -63,7 +63,7 @@ Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、
 本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
 只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
 只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-只有满足默认参数设置的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
 Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
 
 | Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
@@ -79,7 +79,7 @@ Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、
 本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
 只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
 只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-只有满足默认参数设置的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
 Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
 集合聚合（collection aggregate）行的 `Samples` 为已完成 sample 数；`Elapsed` 为 sample 运行时间总和，`Max RSS` 为最大值；profile 指标为 sample 算术平均。
 
@@ -98,7 +98,7 @@ Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、
 本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
 只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
 只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-只有满足默认参数设置的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
 Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
 
 | Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
@@ -116,7 +116,7 @@ Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、
 本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
 只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
 只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-只有满足默认参数设置的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
 Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
 
 | Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
@@ -134,7 +134,7 @@ Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、
 本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
 只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
 只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-只有满足默认参数设置的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
 Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
 
 | Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
@@ -151,7 +151,7 @@ Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、
 本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
 只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
 只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-只有满足默认参数设置的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
 Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
 
 | Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
@@ -169,7 +169,7 @@ Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、
 本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
 只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
 只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-只有满足默认参数设置的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
 Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
 集合聚合（collection aggregate）行的 `Samples` 为已完成 sample 数；`Elapsed` 为 sample 运行时间总和，`Max RSS` 为最大值；profile 指标为 sample 算术平均。
 
@@ -187,7 +187,7 @@ Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、
 本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
 只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
 只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-只有满足默认参数设置的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
 Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
 集合聚合（collection aggregate）行的 `Samples` 为已完成 sample 数；`Elapsed` 为 sample 运行时间总和，`Max RSS` 为最大值；profile 指标为 sample 算术平均。
 
@@ -205,7 +205,7 @@ Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、
 本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
 只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
 只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-只有满足默认参数设置的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
 Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
 
 | Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
@@ -223,7 +223,7 @@ Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、
 本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
 只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
 只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-只有满足默认参数设置的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
 Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
 
 | Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
@@ -241,7 +241,7 @@ Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、
 本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
 只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
 只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-只有满足默认参数设置的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
 Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
 
 | Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
@@ -259,7 +259,7 @@ Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、
 本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
 只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
 只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-只有满足默认参数设置的 run 才能作为论文主表结果引用；部分工具的历史结果仍需刷新，请以 `results/README.md` 的状态节为准。
+跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
 Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
 
 | Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |

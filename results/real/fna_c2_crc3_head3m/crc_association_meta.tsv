@@ -1,0 +1,8 @@
+tool	metric	cohorts	matched_samples	n_case	n_control	random_effect_standardized_effect	effect_ci_low	effect_ci_high	wald_p_value	tau_squared	q_value	i_squared
+Centrifuger	strict_c2_best_reads_per_million	3	760	392	368	0.064306	-0.178626	0.307238	0.603886	0.025053	3.642451	0.450919
+Centrifuger	strict_c2_best_rate	3	760	392	368	0.110027	-0.032930	0.252984	0.13143	0.000000	1.904298	0.000000
+Chimera	strict_c2_best_reads_per_million	3	760	392	368	0.336435	0.192584	0.480287	4.5639e-06	0.000000	1.813019	0.000000
+Chimera	strict_c2_best_rate	3	760	392	368	0.466158	0.250982	0.681335	2.17558e-05	0.015545	3.859994	0.481864
+Kraken2_LF01	strict_c2_best_reads_per_million	3	760	392	368	-0.275061	-0.780263	0.230140	0.285918	0.175059	14.239872	0.859549
+Kraken2_LF01	strict_c2_best_rate	3	760	392	368	-0.352732	-0.496678	-0.208786	1.56466e-06	0.000000	1.703935	0.000000
+Published_Fna_C2	published_fna_c2_percent	3	760	392	368	0.383852	0.239772	0.527932	1.77323e-07	0.000000	0.260068	0.000000

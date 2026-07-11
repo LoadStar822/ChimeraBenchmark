@@ -1,7 +1,7 @@
 # Benchmark 数据与结果说明
 
 本文件说明 ChimeraBenchmark 的数据、参考库、评估任务、指标和结果表。
-它面向读完论文后希望进一步查看 benchmark 细节的读者。
+它面向希望复核数据来源、评估口径和结果的读者。
 
 ## 目录
 
@@ -11,6 +11,8 @@
 - [Benchmark Dataset Summary](#benchmark-dataset-summary)
 - [评估任务与口径](#评估任务与口径)
 - [数据集特定口径](#数据集特定口径)
+- [核心结果汇总](#核心结果汇总)
+- [真实队列 clade-level 实验](#真实队列-clade-level-实验)
 - [指标说明](#指标说明)
 - [工具说明](#工具说明)
 - [软件版本](#软件版本)
@@ -20,6 +22,9 @@
 - `results/builds/README.md`：数据库构建成本。
 - `results/classify/README.md`：逐读段分类准确性。
 - `results/profile/README.md`：样本丰度画像准确性。
+- `results/real/README.md`：真实队列 clade-level 实验结果。
+- `results/paper_run_manifest.tsv`：汇总结果所对应的运行、工具版本和完成状态。
+- `results/*/summary.tsv`：build、classify 和 profile 的机器可读汇总表。
 - `resources/reports/db_catalog.tsv`：Reference Database Summary 的 TSV 版本。
 - `resources/reports/dataset_catalog.tsv`：Benchmark Dataset Summary 的 TSV 版本。
 
@@ -27,11 +32,11 @@
 
 ## 结果使用说明
 
-- 所有工具使用相同线程数；当前公开表格按 `threads=32` 解释。
+- 默认 species/genus benchmark 中所有工具使用相同线程数，按 `threads=32` 解释；Fna C2 真实队列实验统一使用 128 threads，并在其 README 中单独记录。
 - 除必要的输出格式选项外，分类和丰度推断使用工具默认参数。
 - 评估统一使用 NCBI 分类体系（NCBI taxonomy）快照 `resources/taxonomy/ncbi_20260408/`。
 - `ganon` 在结果表中显示为 `ganon2`，对应 ganon2 软件版本。
-- Taxor 当前结果来自早期运行；引用主表结论前建议使用同一设置重新运行。
+- Taxor 条目来自较早的运行批次；对应版本和设置见各数据集结果。
 
 ## Reference Database Summary
 
@@ -83,6 +88,24 @@
 PRJNA637878 的部分测序运行（SRA run）包含未配对读段（singleton reads），表现为 `spots_with_mates` 小于 `spots`。
 `prjna637878-supported19-single-read` 将 R1 和 R2 作为独立单读段评估（single-read evaluation），并在生成 FASTQ 和真值表时为读段标识符（read identifier）增加 `__mate1` 或 `__mate2` 配对端标记（mate tag）。
 该设置不改变原始实验的 paired-end 来源；它只规定评估时所有工具使用同一批单读段输入，且不使用 mate-pair 信息。
+
+## 核心结果汇总
+
+跨数据集汇总由输入和评估口径一致、状态为 `complete` 的运行生成；对应运行信息记录在 `results/paper_run_manifest.tsv`。
+逐读段分类汇总覆盖 CAMI II Strain Madness long/short、CAMI II Marine long/short 和 `prjna637878-supported19-single-read`，比较 Chimera、Centrifuger 与 Kraken2。
+丰度画像结果独立汇总工具原生输出的 sample-level abundance estimates。
+
+机器可读结果位于 `results/builds/summary.tsv`、`results/classify/summary.tsv`、`results/classify/sample_metrics.tsv` 和 `results/profile/summary.tsv`。
+
+## 真实队列 clade-level 实验
+
+Fna C2 真实队列实验位于 `results/real/`。
+该实验在默认 `species/genus` benchmark 之外，评估原论文定义的近邻 clade 信号及其 read-level evidence。
+
+`results/real/README.md` 汇总三队列 Fna C2 分析的实验设计、指标、结果和配套机器表。
+
+Detection floor 先根据原论文报告的 C2 abundance 和当前输入深度换算 expected C2 reads，再将达到指定下限的 C2-positive 样本纳入阳性组。
+该口径用于区分“总体是否有 C2 信号”和“当 C2 信号达到可检测强度时，工具是否能把样本拉开”。
 
 ## 指标说明
 
@@ -147,8 +170,7 @@ Profile 结果由 `centrifuger-quant` 从 classify 输出生成，并使用 CAMI
 
 ### Taxor
 
-Taxor 结果来自早期运行，当前表格保留用于追踪已有实验。
-在引用论文主表结论时，建议使用重新运行后的 Taxor 结果。
+Taxor 条目来自早期运行，与当前跨工具汇总的运行批次不同。
 
 ## 软件版本
 

@@ -1,0 +1,71 @@
+task	dataset	tool	db	samples	status	paper_scope	tool_version	parameter_policy	result_file
+classify	cami-strain-madness-long	centrifuger	cami_refseq	100	complete	main	1.1.0-r291	default_except_threads_and_output_paths	results/classify/summary.tsv
+classify	cami-strain-madness-long	chimera	cami_refseq	100	complete	main	1.7	default_except_threads_and_output_paths	results/classify/summary.tsv
+classify	cami-strain-madness-long	kraken2	cami_refseq	100	complete	main	2.1.3	default_except_threads_and_output_paths	results/classify/summary.tsv
+classify	cami-strain-madness-short	centrifuger	cami_refseq	100	complete	main	1.1.0-r291	default_except_threads_and_output_paths	results/classify/summary.tsv
+classify	cami-strain-madness-short	chimera	cami_refseq	100	complete	main	1.7	default_except_threads_and_output_paths	results/classify/summary.tsv
+classify	cami-strain-madness-short	kraken2	cami_refseq	100	complete	main	2.1.3	default_except_threads_and_output_paths	results/classify/summary.tsv
+classify	cami2-marine-long	centrifuger	cami_refseq	10	complete	main	1.1.0-r291	default_except_threads_and_output_paths	results/classify/summary.tsv
+classify	cami2-marine-long	chimera	cami_refseq	10	complete	main	1.7	default_except_threads_and_output_paths	results/classify/summary.tsv
+classify	cami2-marine-long	kraken2	cami_refseq	10	complete	main	2.1.3	default_except_threads_and_output_paths	results/classify/summary.tsv
+classify	cami2-marine-short	centrifuger	cami_refseq	10	complete	main	1.1.0-r291	default_except_threads_and_output_paths	results/classify/summary.tsv
+classify	cami2-marine-short	chimera	cami_refseq	10	complete	main	1.7	default_except_threads_and_output_paths	results/classify/summary.tsv
+classify	cami2-marine-short	kraken2	cami_refseq	10	complete	main	2.1.3	default_except_threads_and_output_paths	results/classify/summary.tsv
+classify	prjna637878-supported19-single-read	centrifuger	cami_refseq	19	complete	main	1.1.0-r291	default_except_threads_and_output_paths	results/classify/summary.tsv
+classify	prjna637878-supported19-single-read	chimera	cami_refseq	19	complete	main	1.7	default_except_threads_and_output_paths	results/classify/summary.tsv
+classify	prjna637878-supported19-single-read	kraken2	cami_refseq	19	complete	main	2.1.3	default_except_threads_and_output_paths	results/classify/summary.tsv
+profile	atcc-hifi	bracken	cami_refseq	1	complete	supplementary	2.9	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	atcc-hifi	centrifuger	cami_refseq	1	complete	supplementary	1.1.0-r291	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	atcc-hifi	chimera	cami_refseq	1	complete	supplementary	1.7	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	atcc-hifi	sylph	cami_refseq	1	complete	supplementary	0.8.1	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	atcc-illumina	bracken	cami_refseq	1	complete	supplementary	2.9	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	atcc-illumina	centrifuger	cami_refseq	1	complete	supplementary	1.1.0-r291	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	atcc-illumina	chimera	cami_refseq	1	complete	supplementary	1.7	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	atcc-illumina	sylph	cami_refseq	1	complete	supplementary	0.8.1	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	cami-strain-madness-long	bracken	cami_refseq	100	complete	supplementary	2.9	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	cami-strain-madness-long	centrifuger	cami_refseq	100	complete	supplementary	1.1.0-r291	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	cami-strain-madness-long	chimera	cami_refseq	100	complete	supplementary	1.7	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	cami-strain-madness-long	sylph	cami_refseq	100	complete	supplementary	0.8.1	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	cami-strain-madness-short	bracken	cami_refseq	100	complete	supplementary	2.9	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	cami-strain-madness-short	centrifuger	cami_refseq	100	complete	supplementary	1.1.0-r291	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	cami-strain-madness-short	chimera	cami_refseq	100	complete	supplementary	1.7	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	cami-strain-madness-short	sylph	cami_refseq	100	complete	supplementary	0.8.1	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	cami2-marine-long	bracken	cami_refseq	10	complete	supplementary	2.9	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	cami2-marine-long	centrifuger	cami_refseq	10	complete	supplementary	1.1.0-r291	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	cami2-marine-long	chimera	cami_refseq	10	complete	supplementary	1.7	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	cami2-marine-long	sylph	cami_refseq	10	complete	supplementary	0.8.1	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	cami2-marine-short	bracken	cami_refseq	10	complete	supplementary	2.9	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	cami2-marine-short	centrifuger	cami_refseq	10	complete	supplementary	1.1.0-r291	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	cami2-marine-short	chimera	cami_refseq	10	complete	supplementary	1.7	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	cami2-marine-short	sylph	cami_refseq	10	complete	supplementary	0.8.1	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	prjna637878-supported19-single-read	bracken	cami_refseq	19	complete	supplementary	2.9	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	prjna637878-supported19-single-read	centrifuger	cami_refseq	19	complete	supplementary	1.1.0-r291	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	prjna637878-supported19-single-read	chimera	cami_refseq	19	complete	supplementary	1.7	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	prjna637878-supported19-single-read	sylph	cami_refseq	19	complete	supplementary	0.8.1	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	zymo-gridion-even	bracken	cami_refseq	1	complete	supplementary	2.9	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	zymo-gridion-even	centrifuger	cami_refseq	1	complete	supplementary	1.1.0-r291	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	zymo-gridion-even	chimera	cami_refseq	1	complete	supplementary	1.7	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	zymo-gridion-even	sylph	cami_refseq	1	complete	supplementary	0.8.1	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	zymo-gridion-log	bracken	cami_refseq	1	complete	supplementary	2.9	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	zymo-gridion-log	centrifuger	cami_refseq	1	complete	supplementary	1.1.0-r291	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	zymo-gridion-log	chimera	cami_refseq	1	complete	supplementary	1.7	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	zymo-gridion-log	sylph	cami_refseq	1	complete	supplementary	0.8.1	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	zymo-promethion-even	bracken	cami_refseq	1	complete	supplementary	2.9	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	zymo-promethion-even	centrifuger	cami_refseq	1	complete	supplementary	1.1.0-r291	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	zymo-promethion-even	chimera	cami_refseq	1	complete	supplementary	1.7	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	zymo-promethion-even	sylph	cami_refseq	1	complete	supplementary	0.8.1	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	zymo-promethion-log	bracken	cami_refseq	1	complete	supplementary	2.9	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	zymo-promethion-log	centrifuger	cami_refseq	1	complete	supplementary	1.1.0-r291	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	zymo-promethion-log	chimera	cami_refseq	1	complete	supplementary	1.7	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	zymo-promethion-log	sylph	cami_refseq	1	complete	supplementary	0.8.1	default_except_threads_and_output_paths	results/profile/summary.tsv
+build	cami_refseq	centrifuger	cami_refseq		complete	supplementary	1.1.0-r291	default_except_threads_and_output_paths	results/builds/summary.tsv
+build	cami_refseq	chimera	cami_refseq		complete	supplementary	1.7	default_except_threads_and_output_paths	results/builds/summary.tsv
+build	cami_refseq	kraken2	cami_refseq		complete	supplementary	2.1.3	default_except_threads_and_output_paths	results/builds/summary.tsv
+build	cami_refseq	sylph	cami_refseq		complete	supplementary	0.8.1	default_except_threads_and_output_paths	results/builds/summary.tsv
+real_sample_signal	fna-c2-crc3-head3m	Centrifuger	frozen_fna_near_neighbor	760	complete	supplementary	v1.0.12-10-gdf5bd32	default_except_threads_and_output_paths	results/real/fna_c2_crc3_head3m/sample_level_signals.tsv
+real_sample_signal	fna-c2-crc3-head3m	Chimera	frozen_fna_near_neighbor	760	complete	supplementary	1.6.3	default_except_threads_and_output_paths	results/real/fna_c2_crc3_head3m/sample_level_signals.tsv
+real_sample_signal	fna-c2-crc3-head3m	Kraken2_LF01	frozen_fna_near_neighbor	760	complete	supplementary	2.1.3	default_except_threads_and_output_paths; db_load_factor_0.1	results/real/fna_c2_crc3_head3m/sample_level_signals.tsv
+real_sample_signal	fna-c2-crc3-head3m	sylph	frozen_fna_near_neighbor	760	complete	supplementary	0.8.1	default_except_threads_and_output_paths	results/real/fna_c2_crc3_head3m/sample_level_signals.tsv
+real_read_audit	fna-c2-crc3-head3m	Centrifuger	frozen_fna_near_neighbor	760	complete	main	v1.0.12-10-gdf5bd32	default_except_threads_and_output_paths	results/real/fna_c2_crc3_head3m/read_audit_sample_metrics.tsv
+real_read_audit	fna-c2-crc3-head3m	Chimera	frozen_fna_near_neighbor	760	complete	main	1.6.3	default_except_threads_and_output_paths	results/real/fna_c2_crc3_head3m/read_audit_sample_metrics.tsv
+real_read_audit	fna-c2-crc3-head3m	Kraken2_LF01	frozen_fna_near_neighbor	760	complete	main	2.1.3	default_except_threads_and_output_paths; db_load_factor_0.1	results/real/fna_c2_crc3_head3m/read_audit_sample_metrics.tsv

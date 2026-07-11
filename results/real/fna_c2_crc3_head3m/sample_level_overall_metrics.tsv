@@ -1,0 +1,5 @@
+tool	unit	n	n_c2_positive	n_zero_fna	c2_positive_mean	zero_fna_mean	c2_positive_median	zero_fna_median	positive_minus_zero_mean	auc_c2_positive_vs_zero	pearson_paper_c2	spearman_paper_c2
+centrifuger_default	reads_per_million	760	137	619	322.944039	241.508922	278.000000	228.000000	81.435117	0.632678	0.526172	0.192169
+chimera_default	reads_per_million	760	137	619	1360.832117	978.245855	1075.666667	999.333333	382.586262	0.613186	0.853206	0.177590
+kraken2_safe_lf01	reads_per_million	760	137	619	79.600973	70.806337	68.000000	65.666667	8.794636	0.532487	0.260050	0.053347
+sylph_default	sequence_abundance_pct	760	137	619	15.299047	0.000000	0.000000	0.000000	15.299047	0.613139	0.587413	0.507129
