@@ -188,46 +188,6 @@ Primary robustness endpoint 仍为 all-positive `strict-C2-best reads/M AUC`：
 Exact dedup 与 per-clade scoring 完整保留 Chimera 的结果；Chimera strict reads/M 的 median absolute change 仅 `2.17 reads/M`。
 Direct all-read alignment 证明高信号样本本身可以被 targeted alignment 恢复，但在覆盖 published abundance range 的 60-sample subset 上，Chimera candidate evidence 给出了更清楚的 positive/zero-Fna separation。
 
-### Reproducing the Statistical Tables
-
-仓库保留了 760 个样本的标准化 manifest、四工具 sample-level signals 和三工具 read-audit metrics。以下命令只读取这些冻结输入，可重建主结果表；固定的 bootstrap 次数与随机种子会逐字段复现已提交的 TSV。
-
-```bash
-BASE=results/real/fna_c2_crc3_head3m
-OUT=tmp/fna_c2_reproduction
-mkdir -p "$OUT"
-
-python scripts/fna_c2/make_detection_floor_tables.py \
-  --sample-manifest "$BASE/sample_manifest.tsv" \
-  --signal-table "$BASE/sample_level_signals.tsv" \
-  --overall-out "$OUT/sample_level_overall_metrics.tsv" \
-  --floor-out "$OUT/sample_level_detection_floor_auc.tsv"
-
-python scripts/fna_c2/bootstrap_read_audit_auc.py \
-  --sample-manifest "$BASE/sample_manifest.tsv" \
-  --audit-table "$BASE/read_audit_sample_metrics.tsv" \
-  --out "$OUT/tool_read_identity_audit/tool_audited_signal_auc_comparison.3tools.tsv" \
-  --bootstrap 10000 --seed 20260710
-
-python scripts/fna_c2/analyze_c2_specificity.py \
-  --sample-manifest "$BASE/sample_manifest.tsv" \
-  --audit-table "$BASE/read_audit_sample_metrics.tsv" \
-  --signal-table "$BASE/sample_level_signals.tsv" \
-  --out-dir "$OUT/specificity"
-
-python scripts/fna_c2/analyze_crc_association.py \
-  --metadata-table "$BASE/sample_manifest.tsv" \
-  --combined-sample-table "$BASE/read_audit_sample_metrics.tsv" \
-  --out-dir "$OUT/crc_read" --bootstrap 10000 --seed 20260710
-
-python scripts/fna_c2/analyze_crc_sample_signal.py \
-  --metadata-table "$BASE/sample_manifest.tsv" \
-  --signal-table "$BASE/sample_level_signals.tsv" \
-  --out-dir "$OUT/crc_signal" --bootstrap 10000 --seed 20260710
-```
-
-从原始 FASTQ 重新执行候选 read 提取、逐 clade alignment audit 和 60-sample robustness analysis 时，使用 `scripts/fna_c2/` 中相应的 audit、reference-build、sample-selection 和 sensitivity scripts。
-
 ### Result Files
 
 | Path | Content |
