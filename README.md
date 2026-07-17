@@ -57,19 +57,12 @@ python -m chimera_bench.cli catalog --config configs --results-root results --re
 python -m chimera_bench.cli paper-freeze --config configs --results-root results
 ```
 
-运行核心测试：
-
-```bash
-pytest -q tests/test_catalog.py tests/test_results_readme.py tests/test_cli.py
-```
-
 ## 仓库结构
 
 - `configs/`：数据集、参考库和工具运行配置。
 - `chimera_bench/`：运行、汇总和评估代码。
 - `results/`：结果表和各工具运行输出。
 - `resources/`：统一分类体系、输入清单和 summary 表。
-- `tests/`：README 生成、指标汇总和命令行行为测试。
 
 ## 方法边界
 

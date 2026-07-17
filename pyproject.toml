@@ -5,7 +5,3 @@ dependencies = ["pyyaml"]
 
 [project.scripts]
 chimera-bench = "chimera_bench.cli:main"
-
-[tool.pytest.ini_options]
-addopts = "-q"
-testpaths = ["tests"]
