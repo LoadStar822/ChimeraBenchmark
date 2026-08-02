@@ -18,6 +18,7 @@ results/**
 results/builds/**
 !results/builds/README.md
 !results/builds/summary.tsv
+!results/builds/refseq_scaling.tsv
 !results/classify/
 results/classify/**
 !results/classify/README.md

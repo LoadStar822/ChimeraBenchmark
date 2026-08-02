@@ -27,7 +27,7 @@ Fna C2 CRC stool metagenome 实验合并 Yachida、Yu 和 Wirbel 三个队列，
 
 | Tool | Version | Run setting |
 | --- | --- | --- |
-| Chimera | 1.6.3, build 2026-06-27 | default `classify`, 128 threads; `--profile-cami` 只请求附加输出，不改变 read classification |
+| Chimera | 1.7.1, build 2026-07-27 | default `classify`, 128 threads; `--profile-cami` 只请求附加输出，不改变 read classification |
 | Centrifuger | source `v1.0.12-10-gdf5bd32` | default single-read classification, 128 threads |
 | Kraken2 | 2.1.3 | default classification, 128 threads; DB build 使用 load factor 0.1，因为 default 和 0.2 build 均触发 compact hash table capacity failure |
 | sylph | 0.8.1 | default genome sketch parameter `c=200` and default `profile`, 128 threads |
@@ -76,7 +76,7 @@ Read-level audit 把工具叫出的 C2 candidate reads 投影到 alignment-suppo
 
 | Tool | all positives | floor >=500 | floor >=1000 | floor >=2000 | floor >=5000 |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Chimera | 0.613 | 0.807 | 0.881 | 0.945 | 0.938 |
+| Chimera | 0.613 | 0.808 | 0.882 | 0.946 | 0.938 |
 | Centrifuger | 0.631 | 0.737 | 0.799 | 0.846 | 0.905 |
 | Kraken2 LF01 | 0.532 | 0.604 | 0.651 | 0.704 | 0.762 |
 
@@ -100,7 +100,7 @@ Read-level audit 把工具叫出的 C2 candidate reads 投影到 alignment-suppo
 
 | Positive set | Tool | AUC (95% CI) | Chimera minus tool (95% CI) |
 | --- | --- | ---: | ---: |
-| all positives | Chimera | **0.881 (0.848 to 0.911)** | - |
+| all positives | Chimera | **0.881 (0.848 to 0.910)** | - |
 | all positives | Centrifuger | 0.669 (0.618 to 0.718) | **0.212 (0.169 to 0.256)** |
 | all positives | Kraken2 LF01 | 0.527 (0.478 to 0.576) | **0.353 (0.301 to 0.404)** |
 | floor >=1000 | Chimera | **0.995 (0.990 to 0.998)** | - |
@@ -115,10 +115,10 @@ Read-level audit 把工具叫出的 C2 candidate reads 投影到 alignment-suppo
 
 | Published abundance predictor | Three-cohort partial beta | 95% CI | P value |
 | --- | ---: | ---: | ---: |
-| Fna C2 | **0.875** | **0.759 to 0.991** | **3.81e-49** |
-| Fna C1 | 0.020 | -0.012 to 0.052 | 0.221 |
+| Fna C2 | **0.875** | **0.759 to 0.991** | **1.87e-49** |
+| Fna C1 | 0.020 | -0.012 to 0.052 | 0.223 |
 
-C2 partial beta 在 Yu、Wirbel 和 Yachida 分别为 `0.766`、`0.976` 和 `0.847`，三个队列均显著；同一模型中的 C1 beta 均不显著。这表明 Chimera 的 strict read evidence 跟随 paper-defined C2 abundance，而不是只跟随非特异的 Fna/C1 signal。
+C2 partial beta 在 Yu、Wirbel 和 Yachida 分别为 `0.768`、`0.976` 和 `0.846`，三个队列均显著；同一模型中的 C1 beta 均不显著。这表明 Chimera 的 strict read evidence 跟随 paper-defined C2 abundance，而不是只跟随非特异的 Fna/C1 signal。
 
 ### CRC Association from Audited Read-level Evidence
 
@@ -131,7 +131,7 @@ sylph 输出样本层面的丰度估计，不提供逐 read assignment，因此�
 | Tool / evidence | Three-cohort effect | 95% CI | P value | I2 |
 | --- | ---: | ---: | ---: | ---: |
 | Published Fna C2 abundance | 0.384 | 0.240 to 0.528 | 1.77e-7 | 0.0% |
-| Chimera strict-C2-best reads/M | **0.336** | **0.193 to 0.480** | **4.56e-6** | **0.0%** |
+| Chimera strict-C2-best reads/M | **0.337** | **0.193 to 0.480** | **4.54e-6** | **0.0%** |
 | Centrifuger strict-C2-best reads/M | 0.064 | -0.179 to 0.307 | 0.604 | 45.1% |
 | Kraken2 LF01 strict-C2-best reads/M | -0.275 | -0.780 to 0.230 | 0.286 | 86.0% |
 
@@ -139,11 +139,11 @@ Chimera 的 adjusted effect 在三个队列中方向一致，并逐队列达到�
 
 | Cohort | Published Fna C2 effect | Chimera strict-read effect | Chimera P value |
 | --- | ---: | ---: | ---: |
-| Yu | 0.437 | **0.532** | 0.00402 |
-| Wirbel | 0.438 | **0.406** | 0.0261 |
-| Yachida | 0.358 | **0.273** | 0.00230 |
+| Yu | 0.437 | **0.529** | 0.00425 |
+| Wirbel | 0.438 | **0.406** | 0.0264 |
+| Yachida | 0.358 | **0.274** | 0.00221 |
 
-Secondary endpoint `strict-C2-best rate` 给出一致结果：Chimera three-cohort effect 为 `0.466`（95% CI `0.251 to 0.681`，P = `2.18e-5`）。
+Secondary endpoint `strict-C2-best rate` 给出一致结果：Chimera three-cohort effect 为 `0.464`（95% CI `0.252 to 0.676`，P = `1.81e-5`）。
 Chimera 因而把该生物学方向转化为逐 read 可审计的证据，并在三个队列中重建接近 published Fna C2 abundance 的 adjusted effect。
 
 ### Sample-level Signals
@@ -153,18 +153,18 @@ Chimera 因而把该生物学方向转化为逐 read 可审计的证据，并在
 | Tool | Signal unit | Samples | C2-positive mean | zero-Fna mean | all-positive AUC | Pearson vs paper C2 |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
 | Centrifuger | reads/M | 760 | 322.944 | 241.509 | 0.633 | 0.526 |
-| Chimera | reads/M | 760 | 1360.832 | 978.246 | 0.613 | 0.853 |
+| Chimera | reads/M | 760 | 1361.217 | 978.621 | 0.613 | 0.853 |
 | Kraken2 LF01 | reads/M | 760 | 79.601 | 70.806 | 0.532 | 0.260 |
 | sylph | sequence abundance % | 760 | 15.299 | 0.000 | 0.613 | 0.587 |
 
 | Tool | all positives (n=137) | floor >=500 (n=50) | floor >=1000 (n=38) | floor >=2000 (n=26) | floor >=5000 (n=12) |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Chimera | 0.613 | 0.807 | 0.881 | 0.945 | 0.938 |
+| Chimera | 0.613 | 0.808 | 0.882 | 0.946 | 0.938 |
 | Centrifuger | 0.633 | 0.738 | 0.800 | 0.847 | 0.906 |
 | sylph | 0.613 | 0.810 | 0.882 | 0.962 | 0.958 |
 | Kraken2 LF01 | 0.532 | 0.604 | 0.651 | 0.704 | 0.762 |
 
-Native sample-level CRC association 中，sylph effect 为 `0.283`（95% CI `0.140 to 0.427`），是该输出层级最强的被测工具。Chimera audited strict-read effect 为 `0.336`，数值上更大且更接近 published effect `0.384`。两者对应不同的输出对象，因此分别作为 sample-level abundance signal 和 audited read-level evidence 报告。
+Native sample-level CRC association 中，sylph effect 为 `0.283`（95% CI `0.140 to 0.427`），是该输出层级最强的被测工具。Chimera audited strict-read effect 为 `0.337`，数值上更大且更接近 published effect `0.384`。两者对应不同的输出对象，因此分别作为 sample-level abundance signal 和 audited read-level evidence 报告。
 
 ### Reference and Direct-alignment Robustness
 

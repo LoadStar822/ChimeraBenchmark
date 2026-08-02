@@ -18,7 +18,7 @@ TOOL_DIR_NAMES = {
 }
 SUPPLEMENTAL_MAIN_RESULT_RUNS = [
     Path("results/reruns/prjna_single_read_alltools_20260513_163846"),
-    Path("results/reruns/chimera_1_7_20260701_003612"),
+    Path("results/reruns/chimera_buildopt_20260724_174411"),
 ]
 BUILD_README_EXCLUDED_TOOLS = {"bracken"}
 

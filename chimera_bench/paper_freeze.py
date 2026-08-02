@@ -44,12 +44,12 @@ FORMAL_BUILD_TOOLS = ("centrifuger", "chimera", "kraken2", "sylph")
 TOOL_VERSIONS = {
     "bracken": "2.9",
     "centrifuger": "1.1.0-r291",
-    "chimera": "1.7",
+    "chimera": "1.7.1",
     "kraken2": "2.1.3",
     "sylph": "0.8.1",
 }
 FNA_TOOL_VERSIONS = {
-    "Chimera": "1.6.3",
+    "Chimera": "1.7.1",
     "Centrifuger": "v1.0.12-10-gdf5bd32",
     "Kraken2_LF01": "2.1.3",
     "sylph": "0.8.1",
