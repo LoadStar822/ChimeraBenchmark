@@ -19,7 +19,18 @@ TOOL_DIR_NAMES = {
 SUPPLEMENTAL_MAIN_RESULT_RUNS = [
     Path("results/reruns/prjna_single_read_alltools_20260513_163846"),
     Path("results/reruns/chimera_buildopt_20260724_174411"),
+    Path("results/reruns/chimera_lpc_ablation_20260809_130354"),
 ]
+LPC_ABLATION_EXPERIMENT = "chimera-no-lpc"
+LPC_ABLATION_TOOL = "chimera-no-lpc"
+LPC_ABLATION_PUBLIC_DATASETS = {
+    "cami-strain-madness-long",
+    "cami-strain-madness-long-sample0",
+    "prjna637878-supported19-single-read",
+}
+LPC_ABLATION_PUBLIC_NOTE = (
+    "`chimera-no-lpc`：classify 时关闭 LPC，其余设置与 `chimera` 相同。"
+)
 BUILD_README_EXCLUDED_TOOLS = {"bracken"}
 
 BUILD_COLUMNS = [
@@ -223,7 +234,9 @@ def _collect_runs(root: Path) -> List[Dict]:
             if db_path:
                 db_name = Path(db_path).name
         tool = meta.get("tool")
-        if isinstance(tool, str):
+        if tool == "chimera" and meta.get("exp") == LPC_ABLATION_EXPERIMENT:
+            tool = LPC_ABLATION_TOOL
+        elif isinstance(tool, str):
             tool = TOOL_DISPLAY_NAMES.get(tool, tool)
         records.append(
             {
@@ -240,24 +253,25 @@ def _collect_runs(root: Path) -> List[Dict]:
     return records
 
 
-def _supplemental_classify_roots(root: Path) -> list[Path]:
-    try:
-        is_main_classify = root.resolve() == Path("results/classify").resolve()
-    except OSError:
-        is_main_classify = False
-    if not is_main_classify:
+def _supplemental_result_roots(root: Path, result_dir: str) -> list[Path]:
+    if root.name != result_dir or root.parent.name != "results":
         return []
-    return [run_root / "classify" for run_root in SUPPLEMENTAL_MAIN_RESULT_RUNS if (run_root / "classify").exists()]
+    project_root = root.parent.parent
+    roots = []
+    for run_root in SUPPLEMENTAL_MAIN_RESULT_RUNS:
+        absolute_run_root = run_root if run_root.is_absolute() else project_root / run_root
+        candidate = absolute_run_root / result_dir
+        if candidate.exists():
+            roots.append(candidate)
+    return roots
+
+
+def _supplemental_classify_roots(root: Path) -> list[Path]:
+    return _supplemental_result_roots(root, "classify")
 
 
 def _supplemental_build_roots(root: Path) -> list[Path]:
-    try:
-        is_main_builds = root.resolve() == Path("results/builds").resolve()
-    except OSError:
-        is_main_builds = False
-    if not is_main_builds:
-        return []
-    return [run_root / "builds" for run_root in SUPPLEMENTAL_MAIN_RESULT_RUNS if (run_root / "builds").exists()]
+    return _supplemental_result_roots(root, "builds")
 
 
 def _record_result_key(rec: Dict) -> tuple[str, str, str, str] | None:
@@ -291,11 +305,18 @@ def _prefer_later_records(records: list[Dict]) -> list[Dict]:
     return passthrough + [rows_by_key[key] for key in ordered_keys]
 
 
+def _is_public_result_record(rec: Dict) -> bool:
+    if rec.get("tool") != LPC_ABLATION_TOOL:
+        return True
+    dataset = rec.get("display_dataset") or rec.get("dataset_collection") or rec.get("dataset")
+    return dataset in LPC_ABLATION_PUBLIC_DATASETS
+
+
 def _collect_runs_with_supplements(root: Path) -> list[Dict]:
     records = _collect_runs(root)
     for supplemental_root in _supplemental_classify_roots(root):
         records.extend(_collect_runs(supplemental_root))
-    return _prefer_later_records(records)
+    return _prefer_later_records([rec for rec in records if _is_public_result_record(rec)])
 
 
 def _split_md_row(line: str) -> list[str]:
@@ -671,6 +692,8 @@ def write_classify_readme(root: Path) -> None:
     if not records:
         readme_path.write_text("\n".join(lines) + "\n")
         return
+    if any(rec.get("tool") == LPC_ABLATION_TOOL for rec in records):
+        lines.extend([LPC_ABLATION_PUBLIC_NOTE, ""])
 
     datasets = sorted({dataset for r in records if (dataset := _display_dataset(r))})
     for dataset in datasets:
@@ -714,6 +737,8 @@ def write_profile_readme(profile_root: Path, runs_root: Path) -> None:
     if not records:
         readme_path.write_text("\n".join(lines) + "\n")
         return
+    if any(rec.get("tool") == LPC_ABLATION_TOOL for rec in records):
+        lines.extend([LPC_ABLATION_PUBLIC_NOTE, ""])
 
     datasets = sorted({dataset for r in records if (dataset := _display_dataset(r))})
     for dataset in datasets:

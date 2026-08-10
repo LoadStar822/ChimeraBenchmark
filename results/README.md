@@ -12,6 +12,7 @@
 - [评估任务与口径](#评估任务与口径)
 - [数据集特定口径](#数据集特定口径)
 - [核心结果汇总](#核心结果汇总)
+- [LPC ablation](#lpc-ablation)
 - [真实队列 clade-level 实验](#真实队列-clade-level-实验)
 - [指标说明](#指标说明)
 - [工具说明](#工具说明)
@@ -96,6 +97,18 @@ PRJNA637878 的部分测序运行（SRA run）包含未配对读段（singleton 
 丰度画像结果独立汇总工具原生输出的 sample-level abundance estimates。
 
 机器可读结果位于 `results/builds/summary.tsv`、`results/classify/summary.tsv`、`results/classify/sample_metrics.tsv` 和 `results/profile/summary.tsv`。
+
+## LPC ablation
+
+`chimera-no-lpc` 表示 classify 时关闭 LPC，其余设置与 `chimera` 相同。
+下表只纳入完整正式数据集；PRJNA637878 指标为 19 个样本的算术平均，其中 LPC 默认策略在 7 个样本实际执行、在 12 个样本按 gate 跳过。
+
+| Dataset | Samples | LPC execution | F1 species (on) | F1 species (off) | F1 delta (on - off) | Weighted UniFrac (on) | Weighted UniFrac (off) | UniFrac improvement (off - on) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| CAMI II Strain Madness long reads | 100 | ran | 0.842437 | 0.062004 | +0.780433 | 0.111134 | 1.051221 | +0.940087 |
+| PRJNA637878 single-read | 19 | 7 ran / 12 skipped | 0.649359 | 0.671576 | -0.022218 | 1.162689 | 1.218137 | +0.055448 |
+
+主 classify/profile 表以 `chimera-no-lpc` 行给出完整指标；PRJNA 逐样本 classify 结果见 `results/classify/sample_metrics.tsv`，运行策略见 `results/paper_run_manifest.tsv`。
 
 ## 真实队列 clade-level 实验
 

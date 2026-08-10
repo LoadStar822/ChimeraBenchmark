@@ -1,6 +1,7 @@
 task	dataset	tool	db	samples	status	paper_scope	tool_version	parameter_policy	result_file
 classify	cami-strain-madness-long	centrifuger	cami_refseq	100	complete	main	1.1.0-r291	default_except_threads_and_output_paths	results/classify/summary.tsv
 classify	cami-strain-madness-long	chimera	cami_refseq	100	complete	main	1.7.1	default_except_threads_and_output_paths	results/classify/summary.tsv
+classify	cami-strain-madness-long	chimera-no-lpc	cami_refseq	100	complete	ablation	1.7.1	classify_time_no_local_resolution;otherwise_default_except_threads_and_output_paths	results/classify/summary.tsv
 classify	cami-strain-madness-long	kraken2	cami_refseq	100	complete	main	2.1.3	default_except_threads_and_output_paths	results/classify/summary.tsv
 classify	cami-strain-madness-short	centrifuger	cami_refseq	100	complete	main	1.1.0-r291	default_except_threads_and_output_paths	results/classify/summary.tsv
 classify	cami-strain-madness-short	chimera	cami_refseq	100	complete	main	1.7.1	default_except_threads_and_output_paths	results/classify/summary.tsv
@@ -13,6 +14,7 @@ classify	cami2-marine-short	chimera	cami_refseq	10	complete	main	1.7.1	default_e
 classify	cami2-marine-short	kraken2	cami_refseq	10	complete	main	2.1.3	default_except_threads_and_output_paths	results/classify/summary.tsv
 classify	prjna637878-supported19-single-read	centrifuger	cami_refseq	19	complete	main	1.1.0-r291	default_except_threads_and_output_paths	results/classify/summary.tsv
 classify	prjna637878-supported19-single-read	chimera	cami_refseq	19	complete	main	1.7.1	default_except_threads_and_output_paths	results/classify/summary.tsv
+classify	prjna637878-supported19-single-read	chimera-no-lpc	cami_refseq	19	complete	ablation	1.7.1	classify_time_no_local_resolution;otherwise_default_except_threads_and_output_paths	results/classify/summary.tsv
 classify	prjna637878-supported19-single-read	kraken2	cami_refseq	19	complete	main	2.1.3	default_except_threads_and_output_paths	results/classify/summary.tsv
 profile	atcc-hifi	bracken	cami_refseq	1	complete	supplementary	2.9	default_except_threads_and_output_paths	results/profile/summary.tsv
 profile	atcc-hifi	centrifuger	cami_refseq	1	complete	supplementary	1.1.0-r291	default_except_threads_and_output_paths	results/profile/summary.tsv
@@ -25,6 +27,7 @@ profile	atcc-illumina	sylph	cami_refseq	1	complete	supplementary	0.8.1	default_e
 profile	cami-strain-madness-long	bracken	cami_refseq	100	complete	supplementary	2.9	default_except_threads_and_output_paths	results/profile/summary.tsv
 profile	cami-strain-madness-long	centrifuger	cami_refseq	100	complete	supplementary	1.1.0-r291	default_except_threads_and_output_paths	results/profile/summary.tsv
 profile	cami-strain-madness-long	chimera	cami_refseq	100	complete	supplementary	1.7.1	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	cami-strain-madness-long	chimera-no-lpc	cami_refseq	100	complete	ablation	1.7.1	classify_time_no_local_resolution;otherwise_default_except_threads_and_output_paths	results/profile/summary.tsv
 profile	cami-strain-madness-long	sylph	cami_refseq	100	complete	supplementary	0.8.1	default_except_threads_and_output_paths	results/profile/summary.tsv
 profile	cami-strain-madness-short	bracken	cami_refseq	100	complete	supplementary	2.9	default_except_threads_and_output_paths	results/profile/summary.tsv
 profile	cami-strain-madness-short	centrifuger	cami_refseq	100	complete	supplementary	1.1.0-r291	default_except_threads_and_output_paths	results/profile/summary.tsv
@@ -41,6 +44,7 @@ profile	cami2-marine-short	sylph	cami_refseq	10	complete	supplementary	0.8.1	def
 profile	prjna637878-supported19-single-read	bracken	cami_refseq	19	complete	supplementary	2.9	default_except_threads_and_output_paths	results/profile/summary.tsv
 profile	prjna637878-supported19-single-read	centrifuger	cami_refseq	19	complete	supplementary	1.1.0-r291	default_except_threads_and_output_paths	results/profile/summary.tsv
 profile	prjna637878-supported19-single-read	chimera	cami_refseq	19	complete	supplementary	1.7.1	default_except_threads_and_output_paths	results/profile/summary.tsv
+profile	prjna637878-supported19-single-read	chimera-no-lpc	cami_refseq	19	complete	ablation	1.7.1	classify_time_no_local_resolution;otherwise_default_except_threads_and_output_paths	results/profile/summary.tsv
 profile	prjna637878-supported19-single-read	sylph	cami_refseq	19	complete	supplementary	0.8.1	default_except_threads_and_output_paths	results/profile/summary.tsv
 profile	zymo-gridion-even	bracken	cami_refseq	1	complete	supplementary	2.9	default_except_threads_and_output_paths	results/profile/summary.tsv
 profile	zymo-gridion-even	centrifuger	cami_refseq	1	complete	supplementary	1.1.0-r291	default_except_threads_and_output_paths	results/profile/summary.tsv

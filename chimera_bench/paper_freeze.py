@@ -13,6 +13,7 @@ from .core.results_readme import (
     _collect_runs_with_supplements,
     _display_dataset,
     _has_current_profile_metrics,
+    LPC_ABLATION_TOOL,
     _has_per_read_metrics,
     _parse_build_readme_rows,
 )
@@ -23,6 +24,10 @@ FORMAL_CLASSIFY_DATASETS = (
     "cami-strain-madness-short",
     "cami2-marine-long",
     "cami2-marine-short",
+    "prjna637878-supported19-single-read",
+)
+LPC_ABLATION_DATASETS = (
+    "cami-strain-madness-long",
     "prjna637878-supported19-single-read",
 )
 FORMAL_CLASSIFY_TOOLS = ("centrifuger", "chimera", "kraken2")
@@ -45,6 +50,7 @@ TOOL_VERSIONS = {
     "bracken": "2.9",
     "centrifuger": "1.1.0-r291",
     "chimera": "1.7.1",
+    LPC_ABLATION_TOOL: "1.7.1",
     "kraken2": "2.1.3",
     "sylph": "0.8.1",
 }
@@ -126,7 +132,9 @@ def build_classify_rows(records: list[dict], dataset_samples: dict[str, int]) ->
     for record in aggregated:
         dataset = _display_dataset(record)
         tool = record.get("tool")
-        if dataset not in FORMAL_CLASSIFY_DATASETS or tool not in FORMAL_CLASSIFY_TOOLS:
+        is_main = dataset in FORMAL_CLASSIFY_DATASETS and tool in FORMAL_CLASSIFY_TOOLS
+        is_ablation = dataset in LPC_ABLATION_DATASETS and tool == LPC_ABLATION_TOOL
+        if not is_main and not is_ablation:
             continue
         if record.get("dataset_collection"):
             observed = int(record.get("sample_count") or 0)
@@ -140,7 +148,7 @@ def build_classify_rows(records: list[dict], dataset_samples: dict[str, int]) ->
             {
                 "samples": dataset_samples[dataset],
                 "status": "complete",
-                "paper_scope": "main",
+                "paper_scope": "main" if is_main else "ablation",
                 "tool_version": TOOL_VERSIONS[str(tool)],
             }
         )
@@ -160,11 +168,11 @@ def build_profile_rows(records: list[dict], dataset_samples: dict[str, int]) -> 
     for record in aggregated:
         dataset = _display_dataset(record)
         tool = record.get("tool")
-        if (
-            not dataset
-            or dataset not in FORMAL_PROFILE_DATASETS
-            or tool not in SUPPLEMENTARY_PROFILE_TOOLS
-        ):
+        is_supplementary = (
+            dataset in FORMAL_PROFILE_DATASETS and tool in SUPPLEMENTARY_PROFILE_TOOLS
+        )
+        is_ablation = dataset in LPC_ABLATION_DATASETS and tool == LPC_ABLATION_TOOL
+        if not is_supplementary and not is_ablation:
             continue
         if record.get("dataset_collection"):
             observed = int(record.get("sample_count") or 0)
@@ -178,7 +186,7 @@ def build_profile_rows(records: list[dict], dataset_samples: dict[str, int]) -> 
             {
                 "samples": dataset_samples[dataset],
                 "status": "complete",
-                "paper_scope": "supplementary",
+                "paper_scope": "supplementary" if is_supplementary else "ablation",
                 "tool_version": TOOL_VERSIONS[str(tool)],
             }
         )
@@ -191,14 +199,18 @@ def build_classify_sample_rows(records: list[dict]) -> list[dict]:
     for record in records:
         dataset = _display_dataset(record)
         tool = record.get("tool")
-        if dataset != "prjna637878-supported19-single-read" or tool not in FORMAL_CLASSIFY_TOOLS:
+        is_main = tool in FORMAL_CLASSIFY_TOOLS
+        if (
+            dataset != "prjna637878-supported19-single-read"
+            or not is_main and tool != LPC_ABLATION_TOOL
+        ):
             continue
         row = _metric_row(record, PER_READ_MAIN_COLUMNS)
         row.update(
             {
                 "sample_id": record.get("sample_id") or record.get("dataset") or "",
                 "status": "complete",
-                "paper_scope": "main",
+                "paper_scope": "main" if is_main else "ablation",
                 "tool_version": TOOL_VERSIONS[str(tool)],
             }
         )
@@ -339,13 +351,13 @@ def write_paper_tables(*, config_root: Path, results_root: Path) -> dict[str, in
     build_rows = _build_rows(results_root)
 
     _validate_complete_matrix(
-        classify_rows,
+        [row for row in classify_rows if row["paper_scope"] == "main"],
         datasets=FORMAL_CLASSIFY_DATASETS,
         tools=FORMAL_CLASSIFY_TOOLS,
         label="classify",
     )
     _validate_complete_matrix(
-        profile_rows,
+        [row for row in profile_rows if row["paper_scope"] == "supplementary"],
         datasets=FORMAL_PROFILE_DATASETS,
         tools=SUPPLEMENTARY_PROFILE_TOOLS,
         label="profile",
@@ -371,6 +383,7 @@ def write_paper_tables(*, config_root: Path, results_root: Path) -> dict[str, in
         [
             {"sample": str(row["sample_id"]), "tool": str(row["tool"])}
             for row in classify_sample_rows
+            if row["paper_scope"] == "main"
         ],
         expected_samples=prjna_samples,
         expected_tools=FORMAL_CLASSIFY_TOOLS,
@@ -426,7 +439,12 @@ def write_paper_tables(*, config_root: Path, results_root: Path) -> dict[str, in
                     "status": row["status"],
                     "paper_scope": row["paper_scope"],
                     "tool_version": row["tool_version"],
-                    "parameter_policy": "default_except_threads_and_output_paths",
+                    "parameter_policy": (
+                        "classify_time_no_local_resolution;"
+                        "otherwise_default_except_threads_and_output_paths"
+                        if row["paper_scope"] == "ablation"
+                        else "default_except_threads_and_output_paths"
+                    ),
                     "result_file": result_file,
                 }
             )
