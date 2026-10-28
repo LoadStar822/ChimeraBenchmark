@@ -1,0 +1,806 @@
+name: cami-strain-madness-long-per-sample
+group: strain-madness
+platform: long-read
+input_type: single FASTQ
+truth_dir: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+samples:
+- sample_id: '0'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_0.tsv
+  sample_ids: [0]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [0]
+- sample_id: '1'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_1.tsv
+  sample_ids: [1]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [1]
+- sample_id: '2'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_2.tsv
+  sample_ids: [2]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [2]
+- sample_id: '3'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_3.tsv
+  sample_ids: [3]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [3]
+- sample_id: '4'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_4.tsv
+  sample_ids: [4]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [4]
+- sample_id: '5'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_5.tsv
+  sample_ids: [5]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [5]
+- sample_id: '6'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_6.tsv
+  sample_ids: [6]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [6]
+- sample_id: '7'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_7.tsv
+  sample_ids: [7]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [7]
+- sample_id: '8'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_8.tsv
+  sample_ids: [8]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [8]
+- sample_id: '9'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_9.tsv
+  sample_ids: [9]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [9]
+- sample_id: '10'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_10.tsv
+  sample_ids: [10]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [10]
+- sample_id: '11'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_11.tsv
+  sample_ids: [11]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [11]
+- sample_id: '12'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_12.tsv
+  sample_ids: [12]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [12]
+- sample_id: '13'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_13.tsv
+  sample_ids: [13]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [13]
+- sample_id: '14'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_14.tsv
+  sample_ids: [14]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [14]
+- sample_id: '15'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_15.tsv
+  sample_ids: [15]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [15]
+- sample_id: '16'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_16.tsv
+  sample_ids: [16]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [16]
+- sample_id: '17'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_17.tsv
+  sample_ids: [17]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [17]
+- sample_id: '18'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_18.tsv
+  sample_ids: [18]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [18]
+- sample_id: '19'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_19.tsv
+  sample_ids: [19]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [19]
+- sample_id: '20'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_20.tsv
+  sample_ids: [20]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [20]
+- sample_id: '21'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_21.tsv
+  sample_ids: [21]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [21]
+- sample_id: '22'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_22.tsv
+  sample_ids: [22]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [22]
+- sample_id: '23'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_23.tsv
+  sample_ids: [23]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [23]
+- sample_id: '24'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_24.tsv
+  sample_ids: [24]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [24]
+- sample_id: '25'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_25.tsv
+  sample_ids: [25]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [25]
+- sample_id: '26'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_26.tsv
+  sample_ids: [26]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [26]
+- sample_id: '27'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_27.tsv
+  sample_ids: [27]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [27]
+- sample_id: '28'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_28.tsv
+  sample_ids: [28]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [28]
+- sample_id: '29'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_29.tsv
+  sample_ids: [29]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [29]
+- sample_id: '30'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_30.tsv
+  sample_ids: [30]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [30]
+- sample_id: '31'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_31.tsv
+  sample_ids: [31]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [31]
+- sample_id: '32'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_32.tsv
+  sample_ids: [32]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [32]
+- sample_id: '33'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_33.tsv
+  sample_ids: [33]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [33]
+- sample_id: '34'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_34.tsv
+  sample_ids: [34]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [34]
+- sample_id: '35'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_35.tsv
+  sample_ids: [35]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [35]
+- sample_id: '36'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_36.tsv
+  sample_ids: [36]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [36]
+- sample_id: '37'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_37.tsv
+  sample_ids: [37]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [37]
+- sample_id: '38'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_38.tsv
+  sample_ids: [38]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [38]
+- sample_id: '39'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_39.tsv
+  sample_ids: [39]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [39]
+- sample_id: '40'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_40.tsv
+  sample_ids: [40]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [40]
+- sample_id: '41'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_41.tsv
+  sample_ids: [41]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [41]
+- sample_id: '42'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_42.tsv
+  sample_ids: [42]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [42]
+- sample_id: '43'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_43.tsv
+  sample_ids: [43]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [43]
+- sample_id: '44'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_44.tsv
+  sample_ids: [44]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [44]
+- sample_id: '45'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_45.tsv
+  sample_ids: [45]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [45]
+- sample_id: '46'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_46.tsv
+  sample_ids: [46]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [46]
+- sample_id: '47'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_47.tsv
+  sample_ids: [47]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [47]
+- sample_id: '48'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_48.tsv
+  sample_ids: [48]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [48]
+- sample_id: '49'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_49.tsv
+  sample_ids: [49]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [49]
+- sample_id: '50'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_50.tsv
+  sample_ids: [50]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [50]
+- sample_id: '51'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_51.tsv
+  sample_ids: [51]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [51]
+- sample_id: '52'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_52.tsv
+  sample_ids: [52]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [52]
+- sample_id: '53'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_53.tsv
+  sample_ids: [53]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [53]
+- sample_id: '54'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_54.tsv
+  sample_ids: [54]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [54]
+- sample_id: '55'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_55.tsv
+  sample_ids: [55]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [55]
+- sample_id: '56'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_56.tsv
+  sample_ids: [56]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [56]
+- sample_id: '57'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_57.tsv
+  sample_ids: [57]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [57]
+- sample_id: '58'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_58.tsv
+  sample_ids: [58]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [58]
+- sample_id: '59'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_59.tsv
+  sample_ids: [59]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [59]
+- sample_id: '60'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_60.tsv
+  sample_ids: [60]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [60]
+- sample_id: '61'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_61.tsv
+  sample_ids: [61]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [61]
+- sample_id: '62'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_62.tsv
+  sample_ids: [62]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [62]
+- sample_id: '63'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_63.tsv
+  sample_ids: [63]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [63]
+- sample_id: '64'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_64.tsv
+  sample_ids: [64]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [64]
+- sample_id: '65'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_65.tsv
+  sample_ids: [65]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [65]
+- sample_id: '66'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_66.tsv
+  sample_ids: [66]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [66]
+- sample_id: '67'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_67.tsv
+  sample_ids: [67]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [67]
+- sample_id: '68'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_68.tsv
+  sample_ids: [68]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [68]
+- sample_id: '69'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_69.tsv
+  sample_ids: [69]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [69]
+- sample_id: '70'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_70.tsv
+  sample_ids: [70]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [70]
+- sample_id: '71'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_71.tsv
+  sample_ids: [71]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [71]
+- sample_id: '72'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_72.tsv
+  sample_ids: [72]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [72]
+- sample_id: '73'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_73.tsv
+  sample_ids: [73]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [73]
+- sample_id: '74'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_74.tsv
+  sample_ids: [74]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [74]
+- sample_id: '75'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_75.tsv
+  sample_ids: [75]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [75]
+- sample_id: '76'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_76.tsv
+  sample_ids: [76]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [76]
+- sample_id: '77'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_77.tsv
+  sample_ids: [77]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [77]
+- sample_id: '78'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_78.tsv
+  sample_ids: [78]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [78]
+- sample_id: '79'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_79.tsv
+  sample_ids: [79]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [79]
+- sample_id: '80'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_80.tsv
+  sample_ids: [80]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [80]
+- sample_id: '81'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_81.tsv
+  sample_ids: [81]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [81]
+- sample_id: '82'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_82.tsv
+  sample_ids: [82]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [82]
+- sample_id: '83'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_83.tsv
+  sample_ids: [83]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [83]
+- sample_id: '84'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_84.tsv
+  sample_ids: [84]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [84]
+- sample_id: '85'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_85.tsv
+  sample_ids: [85]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [85]
+- sample_id: '86'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_86.tsv
+  sample_ids: [86]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [86]
+- sample_id: '87'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_87.tsv
+  sample_ids: [87]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [87]
+- sample_id: '88'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_88.tsv
+  sample_ids: [88]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [88]
+- sample_id: '89'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_89.tsv
+  sample_ids: [89]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [89]
+- sample_id: '90'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_90.tsv
+  sample_ids: [90]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [90]
+- sample_id: '91'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_91.tsv
+  sample_ids: [91]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [91]
+- sample_id: '92'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_92.tsv
+  sample_ids: [92]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [92]
+- sample_id: '93'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_93.tsv
+  sample_ids: [93]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [93]
+- sample_id: '94'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_94.tsv
+  sample_ids: [94]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [94]
+- sample_id: '95'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_95.tsv
+  sample_ids: [95]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [95]
+- sample_id: '96'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_96.tsv
+  sample_ids: [96]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [96]
+- sample_id: '97'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_97.tsv
+  sample_ids: [97]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [97]
+- sample_id: '98'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_98.tsv
+  sample_ids: [98]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [98]
+- sample_id: '99'
+  truth_abundance_table: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/derived/strain_madness_long_bases/sample_99.tsv
+  sample_ids: [99]
+  source:
+    kind: strain_madness
+    read_type: long
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/long_read
+    sample_ids: [99]

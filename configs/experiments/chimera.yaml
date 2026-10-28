@@ -1,13 +1,13 @@
 name: chimera
 tool: chimera
-db: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/chimera/cami_refseq/DB/cami_refseq
-taxonomy: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/chimera/cami_refseq/DB/cami_refseq.tax
+db: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/reruns/r180-20260924/build-chimera/chimera/cami_refseq/DB/cami_refseq
+taxonomy: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/reruns/r180-20260924/build-chimera/chimera/cami_refseq/DB/cami_refseq.tax
 taxonomy_nodes_dmp: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/taxonomy/ncbi_20260408/nodes.dmp
 taxonomy_names_dmp: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/taxonomy/ncbi_20260408/names.dmp
 threads: 32
 tool_args: []
 tool_config:
-  bin: /mnt/sda/tianqinzhong/code/Chimera/build/Chimera
+  bin: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/reruns/r180-20260924/bin/Chimera
 datasets:
   - atcc-hifi
   - atcc-illumina
@@ -15,11 +15,8 @@ datasets:
   - zymo-gridion-even
   - zymo-promethion-log
   - zymo-promethion-even
-  - cami2-marine-long
-  - cami2-marine-short
-  - cami-strain-madness-long-sample0
-  - cami-strain-madness-short-sample0
-  - cami-strain-madness-long
-  - cami-strain-madness-short
-  - prjna637878-supported19
+  - cami2-marine-long-per-sample
+  - cami2-marine-short-per-sample
+  - cami-strain-madness-long-per-sample
+  - cami-strain-madness-short-per-sample
   - prjna637878-supported19-single-read

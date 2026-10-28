@@ -3,4 +3,4 @@ group: atcc
 platform: pacbio-hifi
 reads:
   - /mnt/sda/CommonData/TaxonomyDataset/mock/PacBioHifi-ATCC-MSA-1003.fastq
-truth_profile: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/configs/truth/atcc_mock.tsv
+truth_profile: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/configs/truth/atcc_mock_dna.tsv

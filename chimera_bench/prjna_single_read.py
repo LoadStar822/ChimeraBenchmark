@@ -12,8 +12,7 @@ import yaml
 
 
 DEFAULT_SOURCE_ROOT = Path(
-    "/mnt/sda/CommonData/TaxonomyDataset/True/真实实验/群落结构线/当前主线/"
-    "prjna637878_culture_supported_truth_20260411"
+    "/mnt/sda/CommonData/TaxonomyDataset/True/prjna637878_culture_supported_truth_20260411"
 )
 DEFAULT_SOURCE_CONFIG = Path("configs/datasets/prjna637878-supported19.yaml")
 DEFAULT_OUT_ROOT = Path("resources/derived/prjna637878-supported19-single-read")

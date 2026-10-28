@@ -1,0 +1,807 @@
+name: cami-strain-madness-short-per-sample
+group: strain-madness
+platform: short-read
+input_type: paired FASTQ
+read_length: 150
+truth_dir: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+samples:
+- sample_id: '0'
+  sample_ids: [0]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_0_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_0_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [0]
+- sample_id: '1'
+  sample_ids: [1]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_1_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_1_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [1]
+- sample_id: '2'
+  sample_ids: [2]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_2_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_2_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [2]
+- sample_id: '3'
+  sample_ids: [3]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_3_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_3_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [3]
+- sample_id: '4'
+  sample_ids: [4]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_4_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_4_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [4]
+- sample_id: '5'
+  sample_ids: [5]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_5_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_5_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [5]
+- sample_id: '6'
+  sample_ids: [6]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_6_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_6_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [6]
+- sample_id: '7'
+  sample_ids: [7]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_7_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_7_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [7]
+- sample_id: '8'
+  sample_ids: [8]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_8_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_8_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [8]
+- sample_id: '9'
+  sample_ids: [9]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_9_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_9_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [9]
+- sample_id: '10'
+  sample_ids: [10]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_10_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_10_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [10]
+- sample_id: '11'
+  sample_ids: [11]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_11_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_11_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [11]
+- sample_id: '12'
+  sample_ids: [12]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_12_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_12_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [12]
+- sample_id: '13'
+  sample_ids: [13]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_13_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_13_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [13]
+- sample_id: '14'
+  sample_ids: [14]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_14_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_14_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [14]
+- sample_id: '15'
+  sample_ids: [15]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_15_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_15_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [15]
+- sample_id: '16'
+  sample_ids: [16]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_16_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_16_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [16]
+- sample_id: '17'
+  sample_ids: [17]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_17_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_17_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [17]
+- sample_id: '18'
+  sample_ids: [18]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_18_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_18_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [18]
+- sample_id: '19'
+  sample_ids: [19]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_19_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_19_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [19]
+- sample_id: '20'
+  sample_ids: [20]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_20_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_20_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [20]
+- sample_id: '21'
+  sample_ids: [21]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_21_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_21_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [21]
+- sample_id: '22'
+  sample_ids: [22]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_22_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_22_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [22]
+- sample_id: '23'
+  sample_ids: [23]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_23_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_23_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [23]
+- sample_id: '24'
+  sample_ids: [24]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_24_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_24_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [24]
+- sample_id: '25'
+  sample_ids: [25]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_25_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_25_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [25]
+- sample_id: '26'
+  sample_ids: [26]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_26_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_26_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [26]
+- sample_id: '27'
+  sample_ids: [27]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_27_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_27_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [27]
+- sample_id: '28'
+  sample_ids: [28]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_28_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_28_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [28]
+- sample_id: '29'
+  sample_ids: [29]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_29_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_29_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [29]
+- sample_id: '30'
+  sample_ids: [30]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_30_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_30_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [30]
+- sample_id: '31'
+  sample_ids: [31]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_31_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_31_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [31]
+- sample_id: '32'
+  sample_ids: [32]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_32_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_32_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [32]
+- sample_id: '33'
+  sample_ids: [33]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_33_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_33_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [33]
+- sample_id: '34'
+  sample_ids: [34]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_34_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_34_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [34]
+- sample_id: '35'
+  sample_ids: [35]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_35_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_35_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [35]
+- sample_id: '36'
+  sample_ids: [36]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_36_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_36_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [36]
+- sample_id: '37'
+  sample_ids: [37]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_37_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_37_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [37]
+- sample_id: '38'
+  sample_ids: [38]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_38_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_38_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [38]
+- sample_id: '39'
+  sample_ids: [39]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_39_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_39_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [39]
+- sample_id: '40'
+  sample_ids: [40]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_40_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_40_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [40]
+- sample_id: '41'
+  sample_ids: [41]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_41_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_41_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [41]
+- sample_id: '42'
+  sample_ids: [42]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_42_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_42_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [42]
+- sample_id: '43'
+  sample_ids: [43]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_43_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_43_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [43]
+- sample_id: '44'
+  sample_ids: [44]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_44_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_44_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [44]
+- sample_id: '45'
+  sample_ids: [45]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_45_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_45_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [45]
+- sample_id: '46'
+  sample_ids: [46]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_46_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_46_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [46]
+- sample_id: '47'
+  sample_ids: [47]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_47_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_47_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [47]
+- sample_id: '48'
+  sample_ids: [48]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_48_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_48_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [48]
+- sample_id: '49'
+  sample_ids: [49]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_49_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_49_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [49]
+- sample_id: '50'
+  sample_ids: [50]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_50_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_50_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [50]
+- sample_id: '51'
+  sample_ids: [51]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_51_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_51_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [51]
+- sample_id: '52'
+  sample_ids: [52]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_52_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_52_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [52]
+- sample_id: '53'
+  sample_ids: [53]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_53_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_53_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [53]
+- sample_id: '54'
+  sample_ids: [54]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_54_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_54_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [54]
+- sample_id: '55'
+  sample_ids: [55]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_55_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_55_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [55]
+- sample_id: '56'
+  sample_ids: [56]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_56_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_56_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [56]
+- sample_id: '57'
+  sample_ids: [57]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_57_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_57_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [57]
+- sample_id: '58'
+  sample_ids: [58]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_58_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_58_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [58]
+- sample_id: '59'
+  sample_ids: [59]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_59_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_59_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [59]
+- sample_id: '60'
+  sample_ids: [60]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_60_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_60_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [60]
+- sample_id: '61'
+  sample_ids: [61]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_61_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_61_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [61]
+- sample_id: '62'
+  sample_ids: [62]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_62_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_62_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [62]
+- sample_id: '63'
+  sample_ids: [63]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_63_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_63_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [63]
+- sample_id: '64'
+  sample_ids: [64]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_64_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_64_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [64]
+- sample_id: '65'
+  sample_ids: [65]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_65_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_65_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [65]
+- sample_id: '66'
+  sample_ids: [66]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_66_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_66_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [66]
+- sample_id: '67'
+  sample_ids: [67]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_67_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_67_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [67]
+- sample_id: '68'
+  sample_ids: [68]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_68_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_68_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [68]
+- sample_id: '69'
+  sample_ids: [69]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_69_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_69_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [69]
+- sample_id: '70'
+  sample_ids: [70]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_70_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_70_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [70]
+- sample_id: '71'
+  sample_ids: [71]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_71_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_71_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [71]
+- sample_id: '72'
+  sample_ids: [72]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_72_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_72_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [72]
+- sample_id: '73'
+  sample_ids: [73]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_73_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_73_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [73]
+- sample_id: '74'
+  sample_ids: [74]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_74_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_74_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [74]
+- sample_id: '75'
+  sample_ids: [75]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_75_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_75_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [75]
+- sample_id: '76'
+  sample_ids: [76]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_76_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_76_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [76]
+- sample_id: '77'
+  sample_ids: [77]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_77_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_77_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [77]
+- sample_id: '78'
+  sample_ids: [78]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_78_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_78_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [78]
+- sample_id: '79'
+  sample_ids: [79]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_79_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_79_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [79]
+- sample_id: '80'
+  sample_ids: [80]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_80_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_80_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [80]
+- sample_id: '81'
+  sample_ids: [81]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_81_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_81_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [81]
+- sample_id: '82'
+  sample_ids: [82]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_82_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_82_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [82]
+- sample_id: '83'
+  sample_ids: [83]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_83_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_83_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [83]
+- sample_id: '84'
+  sample_ids: [84]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_84_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_84_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [84]
+- sample_id: '85'
+  sample_ids: [85]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_85_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_85_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [85]
+- sample_id: '86'
+  sample_ids: [86]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_86_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_86_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [86]
+- sample_id: '87'
+  sample_ids: [87]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_87_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_87_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [87]
+- sample_id: '88'
+  sample_ids: [88]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_88_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_88_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [88]
+- sample_id: '89'
+  sample_ids: [89]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_89_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_89_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [89]
+- sample_id: '90'
+  sample_ids: [90]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_90_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_90_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [90]
+- sample_id: '91'
+  sample_ids: [91]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_91_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_91_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [91]
+- sample_id: '92'
+  sample_ids: [92]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_92_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_92_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [92]
+- sample_id: '93'
+  sample_ids: [93]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_93_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_93_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [93]
+- sample_id: '94'
+  sample_ids: [94]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_94_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_94_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [94]
+- sample_id: '95'
+  sample_ids: [95]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_95_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_95_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [95]
+- sample_id: '96'
+  sample_ids: [96]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_96_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_96_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [96]
+- sample_id: '97'
+  sample_ids: [97]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_97_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_97_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [97]
+- sample_id: '98'
+  sample_ids: [98]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_98_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_98_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [98]
+- sample_id: '99'
+  sample_ids: [99]
+  paired: [/mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_99_R1.fq, /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/builds/datasets/strain_madness_cami/short_read/sample_99_R2.fq]
+  source:
+    kind: strain_madness
+    read_type: short
+    root: /mnt/sda/CommonData/TaxonomyDataset/CAMI/strain_madness_cami/extracted/short_read
+    sample_ids: [99]

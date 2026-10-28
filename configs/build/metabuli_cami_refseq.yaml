@@ -1,0 +1,11 @@
+name: metabuli-cami-refseq
+tool: metabuli
+db_prefix: DB/cami_refseq
+threads: 32
+tool_config:
+  env: metabuli
+  bin: metabuli
+build:
+  target_tsv: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/target.tsv
+  taxonomy_dir: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/taxonomy/ncbi_20260408
+  args: []

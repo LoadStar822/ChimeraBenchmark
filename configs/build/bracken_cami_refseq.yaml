@@ -8,3 +8,6 @@ build:
   target_tsv: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/target.tsv
   source_db_prefix: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/kraken2/cami_refseq/DB/cami_refseq
   cleanup_library_fna: true
+  # Bracken's default (100) plus the read lengths of the short-read datasets:
+  # ATCC Illumina 125 bp, PRJNA637878 150/151 bp, CAMI strain madness 2x150 bp.
+  read_lengths: [100, 125, 150]

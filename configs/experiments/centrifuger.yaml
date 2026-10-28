@@ -1,20 +1,16 @@
 name: centrifuger
 tool: centrifuger
 datasets:
-  - cami2-marine-long-sample0
-  - atcc-illumina
-  - cami2-marine-long
-  - cami2-marine-short
-  - cami-strain-madness-long-sample0
-  - cami-strain-madness-short-sample0
-  - cami-strain-madness-long
-  - cami-strain-madness-short
   - atcc-hifi
-  - zymo-gridion-even
+  - atcc-illumina
   - zymo-gridion-log
-  - zymo-promethion-even
+  - zymo-gridion-even
   - zymo-promethion-log
-  - prjna637878-supported19
+  - zymo-promethion-even
+  - cami2-marine-long-per-sample
+  - cami2-marine-short-per-sample
+  - cami-strain-madness-long-per-sample
+  - cami-strain-madness-short-per-sample
   - prjna637878-supported19-single-read
 db: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/centrifuger/cami_refseq/DB/cami_refseq/cami_refseq
 taxonomy: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/ganon/cami_refseq/DB/cami_refseq.tax

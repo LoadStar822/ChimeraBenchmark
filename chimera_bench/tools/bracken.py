@@ -75,7 +75,9 @@ class BrackenTool:
             raise ValueError("dataset must define reads or paired")
         classify_cmd += list(exp.get("kraken2_tool_args", []))
 
-        # Use Bracken defaults (fairness): read_len=100, level=S, threshold=10.
+        # Bracken defaults (level=S, threshold=10); the read length follows the Bracken
+        # manual (the read length of the data) where the dataset states one and a
+        # distribution for it was built, otherwise the default of 100.
         bracken_cmd = self._base_cmd() + [
             "-d",
             str(db_dir),
@@ -84,6 +86,13 @@ class BrackenTool:
             "-o",
             bracken_out,
         ]
+        read_length = dataset.get("read_length")
+        if read_length:
+            read_length = int(read_length)
+            distrib = Path(db_dir) / f"database{read_length}mers.kmer_distrib"
+            if not distrib.exists():
+                raise FileNotFoundError(f"bracken distribution for read length {read_length} not built: {distrib}")
+            bracken_cmd += ["-r", str(read_length)]
 
         convert_script = str(Path(__file__).resolve().with_name("bracken_to_cami.py"))
         convert_cmd = ["python", convert_script, "--input", bracken_out, "--out", cami_profile]
@@ -105,7 +114,8 @@ class BrackenTool:
         Bracken requires `database100mers.kmer_distrib` inside the DB directory.
         If `source_db_prefix` is provided, required Kraken2 index artifacts are linked
         from source DB into Bracken DB to avoid duplicating large files.
-        We intentionally keep Bracken defaults (k=35, read_len=100) for fairness.
+        Distributions are built for every read length in `build.read_lengths` (default
+        [100], Bracken's default); k=35 matches the Kraken2 database.
         """
 
         db_prefix = build.get("db_prefix") or build.get("db")
@@ -130,7 +140,6 @@ class BrackenTool:
         distrib_path = db_dir / "database100mers.kmer_distrib"
         database_kraken = db_dir / "database.kraken"
         database_kraken_tmp = db_dir / "database.kraken.tmp"
-        database_100mers = db_dir / "database100mers.kraken"
 
         out_added = db_dir / "library" / "added"
         library_fna = out_added / "library.fna"
@@ -223,72 +232,79 @@ class BrackenTool:
             ),
         ]
 
-        kmer2read_cmd = [
-            "bash",
-            "-lc",
-            "\n".join(
-                [
-                    "set -euo pipefail",
-                    f"if [ -s {distrib_path!s} ]; then echo '[bracken] kmer_distrib exists, skip kmer2read_distr'; exit 0; fi",
-                    f"if [ ! -s {database_kraken!s} ]; then echo '[bracken] missing database.kraken, run build_database step first' >&2; exit 2; fi",
-                    " ".join(
-                        [
-                            "conda",
-                            "run",
-                            "-n",
-                            self._env(),
-                            "kmer2read_distr",
-                            "--seqid2taxid",
-                            str(db_dir / "seqid2taxid.map"),
-                            "--taxonomy",
-                            str(db_dir / "taxonomy"),
-                            "--kraken",
-                            str(database_kraken),
-                            "--output",
-                            str(database_100mers),
-                            "-k",
-                            "35",
-                            "-l",
-                            "100",
-                            "-t",
-                            threads,
-                        ]
-                    ),
-                ]
-            ),
-        ]
-
-        distrib_cmd = [
-            "bash",
-            "-lc",
-            "\n".join(
-                [
-                    "set -euo pipefail",
-                    f"if [ -s {distrib_path!s} ]; then echo '[bracken] kmer_distrib exists, skip generate'; exit 0; fi",
-                    f"if [ ! -s {database_100mers!s} ]; then echo '[bracken] missing database100mers.kraken, run kmer2read_distr step first' >&2; exit 2; fi",
-                    " ".join(
-                        [
-                            "conda",
-                            "run",
-                            "-n",
-                            self._env(),
-                            "generate_kmer_distribution.py",
-                            "-i",
-                            str(database_100mers),
-                            "-o",
-                            str(distrib_path),
-                        ]
-                    ),
-                ]
-            ),
-        ]
+        read_lengths = [int(x) for x in (build_cfg.get("read_lengths") or [100])]
+        distrib_steps = []
+        for read_len in read_lengths:
+            distrib_path_l = db_dir / f"database{read_len}mers.kmer_distrib"
+            mers_path_l = db_dir / f"database{read_len}mers.kraken"
+            kmer2read_cmd = [
+                "bash",
+                "-lc",
+                "\n".join(
+                    [
+                        "set -euo pipefail",
+                        f"if [ -s {distrib_path_l!s} ]; then echo '[bracken] {distrib_path_l.name} exists, skip kmer2read_distr'; exit 0; fi",
+                        f"if [ ! -s {database_kraken!s} ]; then echo '[bracken] missing database.kraken, run build_database step first' >&2; exit 2; fi",
+                        " ".join(
+                            [
+                                "conda",
+                                "run",
+                                "-n",
+                                self._env(),
+                                "kmer2read_distr",
+                                "--seqid2taxid",
+                                str(db_dir / "seqid2taxid.map"),
+                                "--taxonomy",
+                                str(db_dir / "taxonomy"),
+                                "--kraken",
+                                str(database_kraken),
+                                "--output",
+                                str(mers_path_l),
+                                "-k",
+                                "35",
+                                "-l",
+                                str(read_len),
+                                "-t",
+                                threads,
+                            ]
+                        ),
+                    ]
+                ),
+            ]
+            distrib_cmd = [
+                "bash",
+                "-lc",
+                "\n".join(
+                    [
+                        "set -euo pipefail",
+                        f"if [ -s {distrib_path_l!s} ]; then echo '[bracken] {distrib_path_l.name} exists, skip generate'; exit 0; fi",
+                        f"if [ ! -s {mers_path_l!s} ]; then echo '[bracken] missing {mers_path_l.name}, run kmer2read_distr step first' >&2; exit 2; fi",
+                        " ".join(
+                            [
+                                "conda",
+                                "run",
+                                "-n",
+                                self._env(),
+                                "generate_kmer_distribution.py",
+                                "-i",
+                                str(mers_path_l),
+                                "-o",
+                                str(distrib_path_l),
+                            ]
+                        ),
+                    ]
+                ),
+            ]
+            distrib_steps += [
+                {"name": f"kmer2read_distr_{read_len}", "cmd": kmer2read_cmd},
+                {"name": f"generate_distrib_{read_len}", "cmd": distrib_cmd, "outputs": {f"kmer_distrib_{read_len}": str(distrib_path_l)}},
+            ]
 
         steps.extend(
             [
                 {"name": "prepare_library", "cmd": prepare_cmd},
                 {"name": "build_database", "cmd": build_database_cmd},
-                {"name": "kmer2read_distr", "cmd": kmer2read_cmd},
-                {"name": "generate_distrib", "cmd": distrib_cmd},
+                *distrib_steps,
             ]
         )
 
@@ -300,7 +316,10 @@ class BrackenTool:
                     [
                         "set -euo pipefail",
                         f"if [ -s {distrib_path!s} ] && [ -f {library_fna!s} ]; then rm -f {library_fna!s}; fi",
-                        f"if [ -s {distrib_path!s} ] && [ -f {database_100mers!s} ]; then rm -f {database_100mers!s}; fi",
+                        *[
+                            f"if [ -s {db_dir / f'database{n}mers.kmer_distrib'!s} ] && [ -f {db_dir / f'database{n}mers.kraken'!s} ]; then rm -f {db_dir / f'database{n}mers.kraken'!s}; fi"
+                            for n in read_lengths
+                        ],
                     ]
                 ),
             ]

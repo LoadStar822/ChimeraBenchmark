@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import sys
+from pathlib import Path
 from typing import Any, Dict, List
 
 
@@ -29,6 +31,8 @@ class GanonTool:
             raise ValueError("ganon requires db prefix in experiment config")
         threads = str(exp.get("threads", 192))
         tool_args = list(exp.get("tool_args", []))
+        if self.config.get("separate_binning"):
+            return self._separate_binning_steps(dataset=dataset, db_prefix=db_prefix, threads=threads, tool_args=tool_args, out_prefix=out_prefix)
         output_one = bool(self.config.get("output_one", False))
         output_all = self.config.get("output_all", False)
         output_unclassified = self.config.get("output_unclassified", True)
@@ -120,6 +124,99 @@ class GanonTool:
             },
         ]
 
+    def _read_args(self, dataset: Dict[str, Any]) -> List[str]:
+        if "reads" in dataset:
+            return ["--single-reads", *dataset["reads"]]
+        if "paired" in dataset:
+            return ["--paired-reads", *dataset["paired"]]
+        raise ValueError("dataset must define reads or paired")
+
+    def _report_cmd(self, *, db_prefix: str, rep_path: str, output_prefix: str, report_type: str) -> List[str]:
+        return self._base_cmd() + [
+            "report",
+            "--input",
+            rep_path,
+            "--output-prefix",
+            output_prefix,
+            "--db-prefix",
+            db_prefix,
+            "--output-format",
+            "tsv",
+            "--report-type",
+            report_type,
+        ]
+
+    def _separate_binning_steps(self, *, dataset: Dict[str, Any], db_prefix: str, threads: str, tool_args: List[str], out_prefix: str):
+        """Per-read assignments from ganon's binning preset, the profile from a default run.
+
+        ganon documents `--binning` for read binning and its defaults for profiling, so the
+        two tasks use two classifications of the same reads. The profile is reported as
+        sequence abundance (`--report-type reads`), the unit shared by all tools in the
+        main profile table; the default taxonomic-abundance report is kept alongside.
+        Each step runs through ganon_run.py, so a classification that assigns no reads
+        yields empty outputs instead of ganon's non-zero exit.
+        """
+        read_args = self._read_args(dataset)
+        binning_prefix = f"{out_prefix}_binning"
+        binning_cmd = self._base_cmd() + [
+            "classify",
+            "--db-prefix",
+            db_prefix,
+            "--output-prefix",
+            binning_prefix,
+            "--threads",
+            threads,
+            "--binning",
+            "--output-one",
+            "--output-unclassified",
+            "--skip-report",
+            *read_args,
+            *tool_args,
+        ]
+        profile_cmd = self._base_cmd() + [
+            "classify",
+            "--db-prefix",
+            db_prefix,
+            "--output-prefix",
+            out_prefix,
+            "--threads",
+            threads,
+            *read_args,
+            *tool_args,
+        ]
+        rep_path = f"{out_prefix}.rep"
+        binning_rep = f"{binning_prefix}.rep"
+        reads_prefix = f"{out_prefix}_reads"
+        report_cmd = self._report_cmd(db_prefix=db_prefix, rep_path=rep_path, output_prefix=reads_prefix, report_type="reads")
+        return [
+            {
+                "name": "classify_binning",
+                "cmd": self._tolerate_no_classification(binning_cmd, rep=binning_rep, empty_outputs=[f"{binning_prefix}.one"]),
+                "outputs": {
+                    "classify_one": f"{binning_prefix}.one",
+                    "classify_unc": f"{binning_prefix}.unc",
+                    "binning_rep": binning_rep,
+                },
+            },
+            {
+                "name": "classify_profile",
+                "cmd": self._tolerate_no_classification(profile_cmd, rep=rep_path, empty_outputs=[f"{out_prefix}.tre"]),
+                "outputs": {"rep": rep_path, "report_abundance_tre": f"{out_prefix}.tre"},
+            },
+            {
+                "name": "report_reads",
+                "cmd": self._tolerate_no_classification(report_cmd, rep=rep_path, empty_outputs=[f"{reads_prefix}.tre"]),
+                "outputs": {"report_reads_tre": f"{reads_prefix}.tre"},
+            },
+        ]
+
+    @staticmethod
+    def _tolerate_no_classification(cmd: List[str], *, rep: str, empty_outputs: List[str]) -> List[str]:
+        wrapper = [sys.executable, str(Path(__file__).resolve().with_name("ganon_run.py")), "--rep", rep]
+        for out in empty_outputs:
+            wrapper += ["--empty-output", out]
+        return wrapper + ["--", *cmd]
+
     def build_db_steps(self, *, build: Dict[str, Any], out_dir: str):
         db_prefix = build.get("db_prefix") or build.get("db")
         if not db_prefix:
@@ -129,6 +226,7 @@ class GanonTool:
         mode = build_cfg.get("mode", "custom")
         extra_args = list(build_cfg.get("args", []))
 
+        steps = []
         if mode == "custom":
             cmd = self._base_cmd() + [
                 "build-custom",
@@ -139,6 +237,31 @@ class GanonTool:
             ]
             inputs = build_cfg.get("input") or build_cfg.get("inputs")
             input_file = build_cfg.get("input_file")
+            target_tsv = build_cfg.get("target_tsv")
+            if target_tsv and not inputs and not input_file:
+                taxonomy_files = build_cfg.get("taxonomy_files") or []
+                if isinstance(taxonomy_files, str):
+                    taxonomy_files = [taxonomy_files]
+                nodes = next((f for f in taxonomy_files if Path(f).name == "nodes.dmp"), None)
+                if not nodes:
+                    raise ValueError("ganon build from target_tsv requires nodes.dmp in taxonomy_files")
+                input_file = str(Path(out_dir) / "outputs" / "ganon_input.tsv")
+                steps.append(
+                    {
+                        "name": "prepare_input",
+                        "cmd": [
+                            sys.executable,
+                            str(Path(__file__).resolve().with_name("ganon_prep.py")),
+                            "--target-tsv",
+                            str(target_tsv),
+                            "--nodes",
+                            str(nodes),
+                            "--out",
+                            input_file,
+                        ],
+                        "outputs": {"input_file": input_file},
+                    }
+                )
             if inputs and input_file:
                 raise ValueError("ganon build-custom expects input or input_file, not both")
             if inputs:
@@ -188,10 +311,11 @@ class GanonTool:
             raise ValueError(f"ganon build mode not supported: {mode}")
 
         outputs = {"db_prefix": db_prefix}
-        return [
+        steps.append(
             {
                 "name": "build_db",
                 "cmd": cmd,
                 "outputs": outputs,
             }
-        ]
+        )
+        return steps

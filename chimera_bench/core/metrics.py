@@ -17,7 +17,7 @@ PROFILE_RANK_PRIORITY = (
     "phylum",
     "superkingdom",
 )
-METRIC_VERSION = "per-read-descendant-aware-v1+profile-opal-v2"
+METRIC_VERSION = "per-read-rank-aware-v2+profile-opal-v4"
 
 TaxKey = Union[int, str]
 
@@ -102,8 +102,12 @@ def load_nodes_taxonomy(path: Path) -> Dict[int, Tuple[int, str]]:
     return taxonomy
 
 
+def _clean_name(name: str) -> str:
+    return re.sub(r"\s+", " ", name.replace('"', "").strip())
+
+
 def _name_aliases(name: str) -> set[str]:
-    clean = re.sub(r"\s+", " ", name.replace('"', "").strip())
+    clean = _clean_name(name)
     if not clean:
         return set()
     aliases = {clean}
@@ -157,7 +161,8 @@ def build_name_maps(
         return cached
 
     sci_for_taxid: Dict[int, str] = {}
-    raw_syn: Dict[str, int] = {}
+    exact_syn: Dict[str, int] = {}
+    derived_syn: Dict[str, int] = {}
     with names_path.open("r", encoding="utf-8", errors="ignore") as fh:
         for raw in fh:
             parts = [p.strip() for p in raw.split("|")]
@@ -176,12 +181,16 @@ def build_name_maps(
                 alias_taxid = _species_taxid_for_name_alias(taxid, taxonomy)
                 for alias in _name_aliases(name):
                     if alias != name:
-                        raw_syn.setdefault(alias, alias_taxid)
+                        derived_syn.setdefault(alias, alias_taxid)
                 continue
             if cls in NAME_CLASSES:
                 alias_taxid = _species_taxid_for_name_alias(taxid, taxonomy)
+                exact = _clean_name(name)
                 for alias in _name_aliases(name):
-                    raw_syn.setdefault(alias, alias_taxid)
+                    (exact_syn if alias == exact else derived_syn).setdefault(alias, alias_taxid)
+    # A name listed verbatim for one taxon wins over a shortened form of another taxon's name:
+    # "Lactobacillus fermentum biotype II" (L. reuteri) must not claim "Lactobacillus fermentum".
+    raw_syn = {**derived_syn, **exact_syn}
     syn_to_sci = {syn: sci_for_taxid[taxid] for syn, taxid in raw_syn.items() if taxid in sci_for_taxid}
     sci_names = set(sci_for_taxid.values())
     result = (sci_for_taxid, syn_to_sci, sci_names)
@@ -237,6 +246,24 @@ def build_coverage_sets(
                     continue
                 covered[rank].add(mapped)
     return covered
+
+
+@lru_cache(maxsize=4)
+def load_target_genome_taxids(target_tsv: Path) -> Dict[str, int]:
+    """Genome file -> taxid from the library definition every tool is built from."""
+    genome_taxid: Dict[str, int] = {}
+    with _open_text(target_tsv) as fh:
+        for raw in fh:
+            parts = raw.rstrip("\n").split("\t")
+            if len(parts) < 2:
+                continue
+            try:
+                taxid = int(parts[1])
+            except ValueError:
+                continue
+            for candidate in _candidate_genome_ids(parts[0]):
+                genome_taxid.setdefault(candidate, taxid)
+    return genome_taxid
 
 
 def taxid_to_rank(taxid: int | None, rank: str, taxonomy: Dict[int, Tuple[int, str]]):
@@ -561,10 +588,12 @@ def parse_sylph_profile(
                 lower = [p.lower() for p in header]
                 if "genome_file" in lower:
                     genome_idx = lower.index("genome_file")
-                if "taxonomic_abundance" in lower:
-                    value_idx = lower.index("taxonomic_abundance")
-                elif "sequence_abundance" in lower:
+                # Sequence abundance (share of reads/bases) is the unit of the profile table;
+                # taxonomic abundance (share of genome copies) only when it is the sole column.
+                if "sequence_abundance" in lower:
                     value_idx = lower.index("sequence_abundance")
+                elif "taxonomic_abundance" in lower:
+                    value_idx = lower.index("taxonomic_abundance")
                 continue
             if genome_idx is None or value_idx is None:
                 continue
@@ -593,6 +622,43 @@ def parse_sylph_profile(
         entries = {k: v / 100.0 for k, v in entries.items()}
         unmapped_mass = unmapped_mass / 100.0
     return entries, unmapped_mass, unmapped_count
+
+
+def parse_metaphlan_profile(path: Path) -> Dict[int, float]:
+    """Species rows of a MetaPhlAn 4 profile, keyed by the last taxid of the clade path.
+
+    With `-t rel_ab_w_read_stats` the last column is the estimated number of reads (bases
+    for long reads) from each clade, the sequence-abundance unit; a plain `rel_ab` profile
+    falls back to its relative abundance. Species of unknown SGBs carry no species taxid
+    and keep the most specific taxid of their path.
+    """
+    out: Dict[int, float] = {}
+    value_idx = 2
+    with _open_text(path) as fh:
+        for raw in fh:
+            line = raw.rstrip("\n")
+            if line.startswith("#clade_name"):
+                for idx, column in enumerate(line.lstrip("#").split("\t")):
+                    if column.startswith("estimated_number_of_"):
+                        value_idx = idx
+                continue
+            if not line or line.startswith("#"):
+                continue
+            parts = line.split("\t")
+            if len(parts) <= value_idx or not parts[0].split("|")[-1].startswith("s__"):
+                continue
+            taxids = [t for t in parts[1].split("|") if t.strip().isdigit()]
+            if not taxids:
+                continue
+            try:
+                value = float(parts[value_idx])
+            except ValueError:
+                continue
+            if value <= 0:
+                continue
+            taxid = int(taxids[-1])
+            out[taxid] = out.get(taxid, 0.0) + value
+    return out
 
 
 def parse_cami_profile(path: Path) -> Dict[str, Dict[int, float]]:
@@ -716,6 +782,40 @@ def map_taxid_profile_to_rank(
     return mapped_by_rank, full_by_rank
 
 
+def project_profile_to_ranks(
+    profile: Dict[int, float],
+    taxonomy: Dict[int, Tuple[int, str]],
+    ranks: Iterable[str],
+    covered_by_rank: Dict[str, set[int]] | None = None,
+) -> tuple[Dict[str, Dict[TaxKey, float]], Dict[str, float]]:
+    """Project a taxid profile onto each rank; truth and predictions must both go through this.
+
+    Mass on a taxon above the rank (a genus call at species rank) is left out of that rank and
+    reported as the resolved fraction instead. A taxid missing from the taxonomy keeps its own key,
+    so it still counts as a false positive (prediction) or a miss (truth).
+    """
+    by_rank: Dict[str, Dict[TaxKey, float]] = {r: {} for r in ranks}
+    resolved: Dict[str, float] = {r: 0.0 for r in ranks}
+    total = 0.0
+    for taxid, value in profile.items():
+        if value <= 0:
+            continue
+        total += value
+        for rank in ranks:
+            if taxid not in taxonomy:
+                key = taxid
+            else:
+                key = taxid_to_rank(taxid, rank, taxonomy)
+                if key is None or (
+                    covered_by_rank is not None and key not in covered_by_rank.get(rank, set())
+                ):
+                    continue
+            by_rank[rank][key] = by_rank[rank].get(key, 0.0) + value
+            resolved[rank] += value
+    fraction = {r: (v / total if total > 0 else 0.0) for r, v in resolved.items()}
+    return by_rank, fraction
+
+
 def load_cami_mapping(paths: Iterable[Path]):
     truth_map: Dict[str, int] = {}
     abundance: Dict[int, int] = {}
@@ -746,6 +846,30 @@ def load_cami_mapping(paths: Iterable[Path]):
                 contig_weight[contig_id] = weight
                 abundance[taxid] = abundance.get(taxid, 0) + weight
     return truth_map, abundance, contig_weight
+
+
+def load_truth_abundance_table(path: Path) -> Dict[int, float]:
+    """Per-taxid amount of sequence (`tax_id`, `bases` columns), keyed like the mapping's tax_id.
+
+    Reads of variable length count once each in the mapping; this table carries their bases,
+    the sequence-abundance unit of the profile truth.
+    """
+    out: Dict[int, float] = {}
+    tax_idx = value_idx = None
+    with _open_text(path) as fh:
+        for raw in fh:
+            line = raw.rstrip("\n")
+            if not line or line.startswith("#"):
+                continue
+            parts = line.split("\t")
+            if tax_idx is None:
+                tax_idx, value_idx = parts.index("tax_id"), parts.index("bases")
+                continue
+            value = float(parts[value_idx])
+            if value > 0:
+                taxid = int(parts[tax_idx])
+                out[taxid] = out.get(taxid, 0.0) + value
+    return out
 
 
 def parse_tre_counts(path: Path, ranks: Iterable[str] | None = None) -> Dict[str, Dict[int, float]]:
@@ -791,6 +915,34 @@ def _normalize_profile(profile: Dict[int, float]) -> Dict[int, float]:
     if total <= 0:
         return {}
     return {taxid: value / total for taxid, value in cleaned.items()}
+
+
+def flatten_rank_profile(
+    profile_by_rank: Dict[str, Dict[int, float]],
+    taxonomy: Dict[int, Tuple[int, str]],
+) -> Dict[int, float]:
+    """Turn cumulative multi-rank rows (CAMI/OPAL) into each taxon's own mass.
+
+    A row keeps what its lower-rank rows do not account for, so mass a tool reports only at
+    genus stays at genus instead of being dropped with the genus rows. A profile with a single
+    rank comes back unchanged.
+    """
+    present = [rank for rank in PROFILE_RANK_PRIORITY if profile_by_rank.get(rank)]
+    if len(present) <= 1:
+        return _select_most_specific_profile(profile_by_rank)
+    claimed: Dict[str, Dict[int, float]] = {rank: {} for rank in present}
+    own: Dict[int, float] = {}
+    for i, rank in enumerate(present):
+        for taxid, value in profile_by_rank[rank].items():
+            residual = value - claimed[rank].get(taxid, 0.0)
+            if residual > 0:
+                own[taxid] = own.get(taxid, 0.0) + residual
+            for higher in present[i + 1:]:
+                ancestor = taxid_to_rank(taxid, higher, taxonomy)
+                if ancestor is not None and ancestor in profile_by_rank[higher]:
+                    claimed[higher][ancestor] = claimed[higher].get(ancestor, 0.0) + value
+                    break
+    return own
 
 
 def _select_most_specific_profile(profile_by_rank: Dict[str, Dict[int, float]]) -> Dict[int, float]:
@@ -867,6 +1019,11 @@ def compute_weighted_unifrac(
     return total
 
 
+def _stops_above_rank(taxid: int, rank: str, taxonomy: Dict[int, Tuple[int, str]]) -> bool:
+    """A known taxon without an ancestor at ``rank`` sits above it (e.g. a genus at species rank)."""
+    return taxid in taxonomy and taxid_to_rank(taxid, rank, taxonomy) is None
+
+
 def compute_per_read_metrics(
     truth: Dict[str, int],
     preds: Dict[str, int | None],
@@ -885,7 +1042,7 @@ def compute_per_read_metrics(
         metrics["per_read_unclassified_rate"] = (total - classified) / total
 
     for rank in ranks:
-        tp = fp = fn = 0
+        tp = fp = fn = above_rank = 0
         truth_mapped = 0
         pred_mapped = 0
         covered = covered_by_rank.get(rank) if covered_by_rank is not None else None
@@ -901,6 +1058,10 @@ def compute_per_read_metrics(
             if pred_taxid is None:
                 fn += 1
                 continue
+            if _stops_above_rank(pred_taxid, rank, taxonomy):
+                fn += 1
+                above_rank += 1
+                continue
             if is_descendant(pred_taxid, true_rank, taxonomy):
                 tp += 1
             else:
@@ -914,6 +1075,7 @@ def compute_per_read_metrics(
             metrics[f"per_read_precision_{rank}"] = precision
             metrics[f"per_read_recall_{rank}"] = recall
             metrics[f"per_read_f1_{rank}"] = f1
+            metrics[f"per_read_above_rank_rate_{rank}"] = above_rank / truth_mapped
     return metrics
 
 
@@ -951,7 +1113,7 @@ def compute_per_read_metrics_exact(
             if not true_is_mapped:
                 continue
             truth_mapped += 1
-            if pred_taxid is None:
+            if pred_taxid is None or (pred_rank is None and pred_taxid in taxonomy):
                 fn += 1
                 continue
             if not pred_is_mapped:
@@ -1001,7 +1163,7 @@ def compute_per_read_metrics_combined(
         return descendant_cache[key]
 
     desc_counts = {
-        rank: {"tp": 0, "fp": 0, "fn": 0, "truth_mapped": 0, "pred_mapped": 0}
+        rank: {"tp": 0, "fp": 0, "fn": 0, "truth_mapped": 0, "pred_mapped": 0, "above_rank": 0}
         for rank in ranks
     }
     exact_counts = {
@@ -1039,6 +1201,14 @@ def compute_per_read_metrics_combined(
                 exact["fn"] += 1
                 continue
 
+            if pred_rank is None and pred_taxid in taxonomy:
+                # The prediction stops above this rank (e.g. genus for a species truth):
+                # unclassified at this rank, so FN only, as in the Kraken and Metabuli papers.
+                desc["fn"] += 1
+                exact["fn"] += 1
+                desc["above_rank"] += 1
+                continue
+
             if true_rank is not None and cached_descendant(pred_taxid, true_rank):
                 desc["tp"] += 1
             else:
@@ -1073,6 +1243,7 @@ def compute_per_read_metrics_combined(
             metrics[f"per_read_precision_{rank}"] = precision
             metrics[f"per_read_recall_{rank}"] = recall
             metrics[f"per_read_f1_{rank}"] = f1
+            metrics[f"per_read_above_rank_rate_{rank}"] = desc["above_rank"] / desc["truth_mapped"]
 
         exact = exact_counts[rank]
         if total > 0:
@@ -1205,6 +1376,15 @@ def _resolve_names_path(exp: dict, nodes_path: Path | None = None) -> Path | Non
     return None
 
 
+def _resolve_genome_taxid_target(exp: dict) -> Path | None:
+    value = exp.get("target_tsv")
+    if value:
+        path = Path(value)
+        if path.exists():
+            return path
+    return None
+
+
 def _resolve_coverage_target(exp: dict) -> Path | None:
     for key in ("coverage_target_tsv", "coverage_target", "coverage_tsv"):
         value = exp.get(key)
@@ -1290,6 +1470,11 @@ def evaluate_with_truth(
     if taxonomy_path is None:
         return {}
     taxonomy_db, file_to_taxid, _name_to_taxid = load_taxonomy(taxonomy_path)
+    target_tsv = _resolve_genome_taxid_target(exp)
+    if target_tsv is not None:
+        # Genome files resolve through the library definition, not a tool's copy of the ganon `.tax`,
+        # which lacks genomes withdrawn from RefSeq after the library was frozen.
+        file_to_taxid = {**file_to_taxid, **load_target_genome_taxids(target_tsv)}
     nodes_path = _resolve_nodes_path(exp)
     taxonomy = taxonomy_db
     if nodes_path is not None:
@@ -1341,6 +1526,10 @@ def evaluate_with_truth(
             truth_reads, truth_abundance, contig_weight = load_cami_mapping(mapping_paths)
         else:
             raise ValueError(f"unsupported truth_map_format: {truth_format}")
+    abundance_table = dataset.get("truth_abundance_table")
+    if abundance_table:
+        truth_abundance = load_truth_abundance_table(Path(abundance_table))
+        metrics["truth_abundance_table_taxa"] = len(truth_abundance)
 
     classify_path = outputs.get("classify_tsv")
     classify_one = outputs.get("classify_one")
@@ -1373,6 +1562,7 @@ def evaluate_with_truth(
         metrics.update(compute_per_read_metrics_combined(truth_reads, preds, taxonomy, ranks, covered_by_rank))
 
     truth_by_rank: Dict[str, Dict[TaxKey, float]] = {r: {} for r in ranks}
+    truth_resolved: Dict[str, float] = {}
     truth_taxid_profile: Dict[int, float] = {}
     if include_profile:
         truth_profile_path = dataset.get("truth_profile") or dataset.get("truth_profile_path")
@@ -1395,7 +1585,7 @@ def evaluate_with_truth(
                         syn_to_sci,
                         sci_names,
                     )
-                    truth_by_rank, _truth_by_rank_full = map_taxid_profile_to_rank(
+                    truth_by_rank, truth_resolved = project_profile_to_ranks(
                         truth_taxid_profile,
                         taxonomy,
                         ranks,
@@ -1415,7 +1605,7 @@ def evaluate_with_truth(
                         metrics["truth_profile_mass_mapped_rate"] = (total_mass - unmapped_mass) / total_mass
         elif truth_abundance:
             truth_taxid_profile = {k: float(v) for k, v in truth_abundance.items()}
-            truth_by_rank, _truth_by_rank_full = map_taxid_profile_to_rank(
+            truth_by_rank, truth_resolved = project_profile_to_ranks(
                 truth_taxid_profile,
                 taxonomy,
                 ranks,
@@ -1423,50 +1613,66 @@ def evaluate_with_truth(
             )
 
     pred_by_rank: Dict[str, Dict[TaxKey, float]] | None = None
+    pred_resolved: Dict[str, float] = {}
     pred_taxid_profile: Dict[int, float] = {}
     pred_source = None
     explicit_profile_seen = False
-    if outputs.get("report_abundance_tre"):
-        pred_source = Path(outputs["report_abundance_tre"])
-    elif outputs.get("report_reads_tre"):
+    # ganon writes both reports; the reads report is its sequence abundance, the unit of the profile table.
+    if outputs.get("report_reads_tre"):
         pred_source = Path(outputs["report_reads_tre"])
+    elif outputs.get("report_abundance_tre"):
+        pred_source = Path(outputs["report_abundance_tre"])
     if pred_source and pred_source.exists():
         explicit_profile_seen = True
         pred_taxid_profile = _select_most_specific_profile(parse_tre_counts(pred_source))
         if pred_taxid_profile:
-            _pred_by_rank_mapped, pred_by_rank = map_taxid_profile_to_rank(
+            pred_by_rank, pred_resolved = project_profile_to_ranks(
                 pred_taxid_profile,
                 taxonomy,
                 ranks,
                 covered_by_rank,
             )
+    elif outputs.get("metaphlan_profile"):
+        metaphlan_path = Path(outputs["metaphlan_profile"])
+        if metaphlan_path.exists():
+            explicit_profile_seen = True
+            pred_taxid_profile = parse_metaphlan_profile(metaphlan_path)
+            if pred_taxid_profile:
+                pred_by_rank, pred_resolved = project_profile_to_ranks(
+                    pred_taxid_profile,
+                    taxonomy,
+                    ranks,
+                    covered_by_rank,
+                )
     else:
         profile_path_str = outputs.get("profile_tsv") or outputs.get("sylph_profile_tsv")
         if profile_path_str:
             profile_path = Path(profile_path_str)
             if profile_path.exists():
                 explicit_profile_seen = True
-                pred_taxid_profile, _unmapped_mass, _unmapped_count = parse_sylph_profile(
+                pred_taxid_profile, unmapped_mass, unmapped_count = parse_sylph_profile(
                     profile_path, file_to_taxid
                 )
+                metrics["profile_unmapped_genomes"] = unmapped_count
+                metrics["profile_unmapped_mass"] = unmapped_mass
                 if pred_taxid_profile:
-                    _pred_by_rank_mapped, pred_by_rank = map_taxid_profile_to_rank(
+                    pred_by_rank, pred_resolved = project_profile_to_ranks(
                         pred_taxid_profile,
                         taxonomy,
                         ranks,
                         covered_by_rank,
                     )
         else:
-            cami_profile_path_str = outputs.get("cami_profile_tsv") or outputs.get("taxor_profile_tsv")
+            cami_profile_path_str = outputs.get("cami_profile_tsv")
             if cami_profile_path_str:
                 cami_path = Path(cami_profile_path_str)
                 if cami_path.exists():
                     explicit_profile_seen = True
                     cami_by_rank = parse_cami_profile(cami_path)
                     if cami_by_rank:
-                        pred_taxid_profile = _select_most_specific_profile(cami_by_rank)
+                        pred_taxid_profile = flatten_rank_profile(cami_by_rank, taxonomy)
                         if pred_taxid_profile:
-                            _pred_by_rank_mapped, pred_by_rank = map_taxid_profile_to_rank(
+                            pred_by_rank, pred_resolved = project_profile_to_ranks(
                                 pred_taxid_profile,
                                 taxonomy,
                                 ranks,
@@ -1489,7 +1695,7 @@ def evaluate_with_truth(
                                 sci_names,
                             )
                             if pred_taxid_profile:
-                                _pred_by_rank_mapped, pred_by_rank = map_taxid_profile_to_rank(
+                                pred_by_rank, pred_resolved = project_profile_to_ranks(
                                 pred_taxid_profile,
                                 taxonomy,
                                 ranks,
@@ -1501,6 +1707,13 @@ def evaluate_with_truth(
 
     if include_profile and pred_by_rank is not None and any(truth_by_rank.get(rank) for rank in ranks):
         metrics.update(compute_opal_profile_metrics(truth_by_rank, pred_by_rank, ranks))
+        # Share of each profile's mass that reaches the rank; the rank's vectors are renormalised
+        # over it, so the L1 there is a conditional composition error and needs this next to it.
+        for rank in ranks:
+            if rank in pred_resolved:
+                metrics[f"profile_resolved_fraction_{rank}"] = pred_resolved[rank]
+            if rank in truth_resolved:
+                metrics[f"truth_profile_resolved_fraction_{rank}"] = truth_resolved[rank]
         metrics["weighted_unifrac"] = compute_weighted_unifrac(
             truth_taxid_profile,
             pred_taxid_profile,

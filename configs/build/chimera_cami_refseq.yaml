@@ -3,7 +3,7 @@ tool: chimera
 db_prefix: DB/cami_refseq
 threads: 32
 tool_config:
-  bin: /mnt/sda/tianqinzhong/code/Chimera/build/Chimera
+  bin: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/reruns/r180-20260924/bin/Chimera
 build:
   input_tsv: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/target.tsv
   taxonomy_dir: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/taxonomy/ncbi_20260408

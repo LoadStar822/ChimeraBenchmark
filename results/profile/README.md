@@ -2,276 +2,226 @@
 
 Auto-generated. Do not edit.
 
-`chimera-no-lpc`：classify 时关闭 LPC，其余设置与 `chimera` 相同。
-
 ## Dataset: atcc-hifi
 
 ### Abundance Metrics
 
-本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
-只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
-只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
-Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
+Profiles are scored with the OPAL core metrics; Completeness, Purity and L1 Norm are reported at the `species` rank.
+Only native profile outputs of the tools are counted; tools without a native profile do not appear here.
+Only results of the current profile evaluation version are included; results of earlier versions are not in the public tables.
+The cross-dataset summary is `profile/summary.tsv`; this page breaks down the results of each tool by dataset.
+Weighted UniFrac is a global distance over the whole taxonomy tree; higher Completeness and Purity are better, lower L1 Norm and Weighted UniFrac are better.
 
-| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 285.382327 | 120.900398 | 1 | 0.093897 | 0.53677 | 1 | 0.375 | 0.531091 | 0.662551 |
-| centrifuger | cami_refseq | 2689.701012 | 143.404285 | 1 | 0.210526 | 0.389796 | 1 | 0.545455 | 0.38847 | 0.424866 |
-| chimera | cami_refseq | 2645.767144 | 74.833633 | 0.7 | 1 | 0.167074 | 0.666667 | 1 | 0.167074 | 0.222383 |
-| ganon2 | cami_refseq | 37667.762073 | 213.497807 | 1 | 0.434783 | 0.565472 | 1 | 0.62069 | 0.530838 | 0.66588 |
-| sylph | cami_refseq | 154.929078 | 22.302765 | 0.85 | 0.944444 | 0.266445 | 0.888889 | 1 | 0.266359 | 0.431759 |
+| Tool | DB | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
+| --- | --- | --- | --- | --- | --- | --- |
+| bracken | cami_refseq | 120.806023 | 0.9 | 0.084507 | 0.307591 | 0.28932 |
+| centrifuger | cami_refseq | 147.428425 | 0.9 | 0.189474 | 0.516079 | 0.708767 |
+| chimera | cami_refseq | 75.22604 | 1 | 0.952381 | 0.237973 | 0.310359 |
+| ganon | cami_refseq | 79.523438 | 1 | 0.487805 | 0.281363 | 0.286109 |
+| metabuli | cami_refseq | 128.261719 | 1 | 0.186916 | 0.828272 | 0.723179 |
+| metaphlan | mpa_vJan25_CHOCOPhlAnSGB_202503 | 90.06823 | 0.9 | 0.9 | 0.390159 | 0.372715 |
+| sylph | cami_refseq | 22.291855 | 1 | 0.952381 | 0.246766 | 0.43039 |
 
 ## Dataset: atcc-illumina
 
 ### Abundance Metrics
 
-本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
-只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
-只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
-Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
+Profiles are scored with the OPAL core metrics; Completeness, Purity and L1 Norm are reported at the `species` rank.
+Only native profile outputs of the tools are counted; tools without a native profile do not appear here.
+Only results of the current profile evaluation version are included; results of earlier versions are not in the public tables.
+The cross-dataset summary is `profile/summary.tsv`; this page breaks down the results of each tool by dataset.
+Weighted UniFrac is a global distance over the whole taxonomy tree; higher Completeness and Purity are better, lower L1 Norm and Weighted UniFrac are better.
 
-| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 114.676187 | 121.155163 | 1 | 0.065359 | 0.460124 | 1 | 0.18 | 0.351977 | 0.392745 |
-| centrifuger | cami_refseq | 287.264869 | 141.378284 | 1 | 0.032206 | 0.179798 | 1 | 0.080357 | 0.143373 | 0.164735 |
-| chimera | cami_refseq | 387.701277 | 69.883991 | 0.7 | 0.933333 | 0.066633 | 0.666667 | 0.923077 | 0.05924 | 0.07664 |
-| ganon2 | cami_refseq | 19364.34498 | 379.070454 | 1 | 0.048309 | 0.387492 | 1 | 0.101124 | 0.353129 | 0.38312 |
-| sylph | cami_refseq | 66.459957 | 22.24855 | 0.8 | 0.941176 | 0.090401 | 0.833333 | 1 | 0.089345 | 0.12543 |
+| Tool | DB | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
+| --- | --- | --- | --- | --- | --- | --- |
+| bracken | cami_refseq | 121.079948 | 0.9 | 0.058824 | 0.304062 | 0.123514 |
+| centrifuger | cami_refseq | 141.312386 | 0.9 | 0.028708 | 0.463137 | 0.648673 |
+| chimera | cami_refseq | 70.555012 | 1 | 0.952381 | 0.049511 | 0.05169 |
+| ganon | cami_refseq | 76.368294 | 1 | 0.065789 | 0.126784 | 0.06825 |
+| metabuli | cami_refseq | 128.401966 | 1 | 0.017331 | 0.751987 | 0.581784 |
+| metaphlan | mpa_vJan25_CHOCOPhlAnSGB_202503 | 28.784367 | 0.8 | 0.842105 | 0.168185 | 0.057414 |
+| sylph | cami_refseq | 22.247715 | 1 | 1 | 0.053958 | 0.143199 |
 
-## Dataset: cami-strain-madness-long
-
-### Abundance Metrics
-
-本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
-只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
-只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
-Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
-
-| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 2160.327125 | 126.927647 | 1 | 0.001102 | 0.515282 | 1 | 0.00394 | 0.378006 | 0.277725 |
-| centrifuger | cami_refseq | 13575.142525 | 144.22858 | 1 | 0.001011 | 0.525802 | 1 | 0.003836 | 0.449581 | 0.539694 |
-| chimera | cami_refseq | 7014.772134 | 89.02412 | 0.45 | 0.428571 | 0.185294 | 0.428571 | 0.6 | 0.119572 | 0.111134 |
-| chimera-no-lpc | cami_refseq | 5090.599595 | 71.90535 | 0.4 | 0.103896 | 1.484192 | 0.642857 | 0.183673 | 1.416764 | 1.051221 |
-| ganon2 | cami_refseq | 62372.79518 | 210.946983 | 0.05 | 0.125 | 1.8 | 0.142857 | 0.25 | 1.691085 | 1.104429 |
-| sylph | cami_refseq | 2103.485461 | 33.202637 | 0.45 | 0.473684 | 0.40799 | 0.785714 | 0.916667 | 0.344494 | 0.494026 |
-
-## Dataset: cami-strain-madness-long-sample0
+## Dataset: cami-strain-madness-long-per-sample
 
 ### Abundance Metrics
 
-本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
-只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
-只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
-Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
+Profiles are scored with the OPAL core metrics; Completeness, Purity and L1 Norm are reported at the `species` rank.
+Only native profile outputs of the tools are counted; tools without a native profile do not appear here.
+Only results of the current profile evaluation version are included; results of earlier versions are not in the public tables.
+The cross-dataset summary is `profile/summary.tsv`; this page breaks down the results of each tool by dataset.
+Weighted UniFrac is a global distance over the whole taxonomy tree; higher Completeness and Purity are better, lower L1 Norm and Weighted UniFrac are better.
+In collection aggregate rows, `Samples` is the number of completed samples; `Max RSS` is the maximum; profile metrics are arithmetic means over samples.
 
-| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 136.92686 | 120.898502 | 0.95 | 0.016156 | 0.422389 | 1 | 0.032787 | 0.233945 | 0.171707 |
-| chimera | cami_refseq | 122.417201 | 76.584034 | 0.4 | 0.380952 | 0.34281 | 0.357143 | 0.454545 | 0.326263 | 0.286493 |
-| chimera-no-lpc | cami_refseq | 92.753624 | 70.814388 | 0.4 | 0.1 | 1.493751 | 0.642857 | 0.18 | 1.425295 | 1.207331 |
-| sylph | cami_refseq | 167.428514 | 22.219265 | 0.15 | 0.6 | 0.590237 | 0.357143 | 1 | 0.377068 | 0.490381 |
+| Tool | DB | Samples | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| bracken | cami_refseq | 100 | 120.927948 | 0.8945 | 0.015188 | 0.419369 | 0.169066 |
+| centrifuger | cami_refseq | 100 | 142.94611 | 0.9945 | 0.001682 | 0.495145 | 0.727652 |
+| chimera | cami_refseq | 100 | 79.28957 | 0.305 | 0.505946 | 0.169846 | 0.07124 |
+| ganon | cami_refseq | 100 | 77.28125 | 0.0035 | 0.07 | 1.120811 | 2.672472 |
+| metabuli | cami_refseq | 100 | 118.449013 | 0.963 | 0.004169 | 0.327695 | 0.149245 |
+| metaphlan | mpa_vJan25_CHOCOPhlAnSGB_202503 | 100 | 90.175266 | 0 | 0 | 1 | 2.834096 |
+| sylph | cami_refseq | 100 | 22.258057 | 0.2275 | 0.948381 | 0.283585 | 0.207443 |
 
-## Dataset: cami-strain-madness-short
-
-### Abundance Metrics
-
-本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
-只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
-只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
-Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
-集合聚合（collection aggregate）行的 `Samples` 为已完成 sample 数；`Elapsed` 为 sample 运行时间总和，`Max RSS` 为最大值；profile 指标为 sample 算术平均。
-
-| Tool | DB | Samples | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq |  | 2313.117253 | 131.103638 | 1 | 0.001301 | 0.329091 | 1 | 0.0042 | 0.156847 | 0.071885 |
-| centrifuger | cami_refseq |  | 46035.597943 | 141.273022 | 1 | 0.045147 | 0.624382 | 1 | 0.122807 | 0.504534 | 0.624607 |
-| chimera | cami_refseq |  | 52678.072128 | 70.628822 | 0.6 | 0.705882 | 0.388511 | 0.857143 | 0.923077 | 0.358564 | 0.52746 |
-| ganon2 | cami_refseq | 50 | 433823.63865 | 210.488087 | 0.878 | 0.026237 | 0.171271 | 0.995714 | 0.072867 | 0.120163 | 0.078327 |
-| sylph | cami_refseq |  | 5337.294983 | 32.015274 | 0.6 | 0.6 | 0.441652 | 0.928571 | 0.928571 | 0.399826 | 0.597085 |
-
-## Dataset: cami-strain-madness-short-sample0
+## Dataset: cami-strain-madness-short-per-sample
 
 ### Abundance Metrics
 
-本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
-只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
-只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
-Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
+Profiles are scored with the OPAL core metrics; Completeness, Purity and L1 Norm are reported at the `species` rank.
+Only native profile outputs of the tools are counted; tools without a native profile do not appear here.
+Only results of the current profile evaluation version are included; results of earlier versions are not in the public tables.
+The cross-dataset summary is `profile/summary.tsv`; this page breaks down the results of each tool by dataset.
+Weighted UniFrac is a global distance over the whole taxonomy tree; higher Completeness and Purity are better, lower L1 Norm and Weighted UniFrac are better.
+In collection aggregate rows, `Samples` is the number of completed samples; `Max RSS` is the maximum; profile metrics are arithmetic means over samples.
 
-| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 133.503304 | 121.79274 | 1 | 0.017406 | 0.254618 | 1 | 0.056911 | 0.137557 | 0.062005 |
-| centrifuger | cami_refseq | 1552.178563 | 141.259415 | 0.95 | 0.137681 | 0.620824 | 1 | 0.5 | 0.542741 | 0.702832 |
-| chimera | cami_refseq | 627.527622 | 70.461067 | 0.5 | 0.769231 | 0.324541 | 0.642857 | 1 | 0.30655 | 0.459261 |
-| ganon2 | cami_refseq | 4936.976575 | 210.249363 | 0.9 | 0.033962 | 0.166277 | 1 | 0.089172 | 0.125944 | 0.078316 |
-| sylph | cami_refseq | 75.54429 | 22.385662 | 0.45 | 0.818182 | 0.336633 | 0.642857 | 1 | 0.307804 | 0.482 |
+| Tool | DB | Samples | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| bracken | cami_refseq | 100 | 121.821793 | 0.956 | 0.016538 | 0.330507 | 0.070596 |
+| centrifuger | cami_refseq | 100 | 141.386414 | 0.923921 | 0.148271 | 0.597821 | 0.762162 |
+| chimera | cami_refseq | 100 | 77.162563 | 0.569789 | 0.622851 | 0.146144 | 0.047783 |
+| ganon | cami_refseq | 100 | 76.347656 | 0.926974 | 0.052344 | 0.363653 | 0.178743 |
+| metabuli | cami_refseq | 100 | 128.33522 | 0.999 | 0.012111 | 0.165147 | 0.118899 |
+| metaphlan | mpa_vJan25_CHOCOPhlAnSGB_202503 | 100 | 28.922417 | 0.543789 | 0.62804 | 0.173151 | 0.162584 |
+| sylph | cami_refseq | 100 | 22.390266 | 0.547763 | 0.693241 | 0.198332 | 0.128067 |
 
-## Dataset: cami2-marine-long
-
-### Abundance Metrics
-
-本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
-只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
-只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
-Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
-
-| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 188.384693 | 123.18877 | 0.947589 | 0.326354 | 1.219465 | 0.982818 | 0.662037 | 0.939621 | 0.724807 |
-| centrifuger | cami_refseq | 1327.807372 | 142.294285 | 0.947589 | 0.571429 | 1.235676 | 0.972509 | 0.837278 | 1.030172 | 0.878923 |
-| chimera | cami_refseq | 129.569809 | 71.307812 | 0.8826 | 0.838645 | 1.218547 | 0.934708 | 0.931507 | 0.946613 | 0.71921 |
-| ganon2 | cami_refseq | 4373.419369 | 212.943272 | 0.899371 | 0.426866 | 1.252248 | 0.945017 | 0.797101 | 0.954166 | 0.745256 |
-| sylph | cami_refseq | 109.573765 | 33.309525 | 0.865828 | 0.723292 | 1.343782 | 0.917526 | 0.956989 | 1.053469 | 0.923562 |
-
-## Dataset: cami2-marine-long-sample0
+## Dataset: cami2-marine-long-per-sample
 
 ### Abundance Metrics
 
-本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
-只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
-只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
-Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
+Profiles are scored with the OPAL core metrics; Completeness, Purity and L1 Norm are reported at the `species` rank.
+Only native profile outputs of the tools are counted; tools without a native profile do not appear here.
+Only results of the current profile evaluation version are included; results of earlier versions are not in the public tables.
+The cross-dataset summary is `profile/summary.tsv`; this page breaks down the results of each tool by dataset.
+Weighted UniFrac is a global distance over the whole taxonomy tree; higher Completeness and Purity are better, lower L1 Norm and Weighted UniFrac are better.
+In collection aggregate rows, `Samples` is the number of completed samples; `Max RSS` is the maximum; profile metrics are arithmetic means over samples.
 
-| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 1956.802111 | 122.240528 | 0.846154 | 0.508083 | 1.411304 | 0.893617 | 0.777778 | 1.093833 | 0.863831 |
-| centrifuger | cami_refseq | 262.735984 | 142.185009 | 0.926923 | 0.656676 | 1.424768 | 0.973404 | 0.875598 | 1.194142 | 0.993778 |
-| ganon2 | cami_refseq | 967.721634 | 210.739708 | 0.853846 | 0.458678 | 1.447321 | 0.909574 | 0.830097 | 1.10455 | 0.911679 |
-| sylph | cami_refseq | 51.520681 | 23.42767 | 0.807692 | 0.763636 | 1.528172 | 0.882979 | 0.948571 | 1.214967 | 1.111522 |
+| Tool | DB | Samples | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| bracken | cami_refseq | 10 | 122.55909 | 0.875159 | 0.570742 | 1.342394 | 0.801632 |
+| centrifuger | cami_refseq | 10 | 142.233231 | 0.932093 | 0.665961 | 1.371275 | 0.954991 |
+| chimera | cami_refseq | 10 | 78.540939 | 0.917978 | 0.802806 | 0.963483 | 0.604775 |
+| ganon | cami_refseq | 10 | 77.412407 | 0.903413 | 0.566154 | 1.336373 | 0.815292 |
+| metabuli | cami_refseq | 10 | 128.09882 | 0.935011 | 0.216471 | 1.351363 | 0.79947 |
+| sylph | cami_refseq | 10 | 23.449219 | 0.871758 | 0.782011 | 1.454061 | 0.885361 |
 
-## Dataset: cami2-marine-short
-
-### Abundance Metrics
-
-本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
-只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
-只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
-Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
-
-| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 208.572473 | 123.513264 | 0.957983 | 0.107269 | 1.201877 | 0.989655 | 0.276493 | 0.928795 | 0.726246 |
-| centrifuger | cami_refseq | 1753.243818 | 141.592957 | 0.951681 | 0.337305 | 1.21984 | 0.975862 | 0.683575 | 1.009152 | 0.864291 |
-| chimera | cami_refseq | 356.67631 | 71.301067 | 0.882353 | 0.83004 | 1.202809 | 0.937931 | 0.928328 | 0.929711 | 0.721295 |
-| ganon2 | cami_refseq | 3722.749219 | 210.564232 | 0.903361 | 0.218718 | 1.242685 | 0.965517 | 0.554455 | 0.942854 | 0.743267 |
-| sylph | cami_refseq | 112.983479 | 33.121845 | 0.869748 | 0.735346 | 1.342675 | 0.924138 | 0.960573 | 1.068007 | 0.928923 |
-
-## Dataset: prjna637878-supported19
+## Dataset: cami2-marine-short-per-sample
 
 ### Abundance Metrics
 
-本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
-只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
-只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
-Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
-集合聚合（collection aggregate）行的 `Samples` 为已完成 sample 数；`Elapsed` 为 sample 运行时间总和，`Max RSS` 为最大值；profile 指标为 sample 算术平均。
+Profiles are scored with the OPAL core metrics; Completeness, Purity and L1 Norm are reported at the `species` rank.
+Only native profile outputs of the tools are counted; tools without a native profile do not appear here.
+Only results of the current profile evaluation version are included; results of earlier versions are not in the public tables.
+The cross-dataset summary is `profile/summary.tsv`; this page breaks down the results of each tool by dataset.
+Weighted UniFrac is a global distance over the whole taxonomy tree; higher Completeness and Purity are better, lower L1 Norm and Weighted UniFrac are better.
+In collection aggregate rows, `Samples` is the number of completed samples; `Max RSS` is the maximum; profile metrics are arithmetic means over samples.
 
-| Tool | DB | Samples | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 19 | 5131.54707 | 124.576073 | 0.989419 | 0.002152 | 1.623476 | 0.99723 | 0.005336 | 1.428481 | 1.213848 |
-| chimera | cami_refseq | 19 | 15174.560193 | 71.10574 | 0.793097 | 0.097281 | 1.554089 | 0.883783 | 0.127168 | 1.43679 | 1.236874 |
-| ganon2 | cami_refseq | 16 | 94590.988172 | 294.623417 | 0.984594 | 0.011594 | 1.406744 | 0.991029 | 0.029674 | 1.21249 | 1.084861 |
-| sylph | cami_refseq | 19 | 2810.768519 | 23.557232 | 0.664846 | 0.120119 | 1.414535 | 0.843987 | 0.194306 | 1.245927 | 1.029207 |
+| Tool | DB | Samples | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| bracken | cami_refseq | 10 | 122.396759 | 0.908906 | 0.256356 | 1.333069 | 0.806562 |
+| centrifuger | cami_refseq | 10 | 141.368347 | 0.948077 | 0.410179 | 1.357141 | 0.944017 |
+| chimera | cami_refseq | 10 | 77.784492 | 0.908958 | 0.773893 | 0.982463 | 0.616264 |
+| ganon | cami_refseq | 10 | 76.571072 | 0.920383 | 0.358269 | 1.330662 | 0.817658 |
+| metabuli | cami_refseq | 10 | 128.161247 | 0.947726 | 0.061379 | 1.342244 | 0.807309 |
+| sylph | cami_refseq | 10 | 23.933979 | 0.857123 | 0.785258 | 1.454177 | 0.881671 |
 
 ## Dataset: prjna637878-supported19-single-read
 
 ### Abundance Metrics
 
-本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
-只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
-只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
-Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
-集合聚合（collection aggregate）行的 `Samples` 为已完成 sample 数；`Elapsed` 为 sample 运行时间总和，`Max RSS` 为最大值；profile 指标为 sample 算术平均。
+Profiles are scored with the OPAL core metrics; Completeness, Purity and L1 Norm are reported at the `species` rank.
+Only native profile outputs of the tools are counted; tools without a native profile do not appear here.
+Only results of the current profile evaluation version are included; results of earlier versions are not in the public tables.
+The cross-dataset summary is `profile/summary.tsv`; this page breaks down the results of each tool by dataset.
+Weighted UniFrac is a global distance over the whole taxonomy tree; higher Completeness and Purity are better, lower L1 Norm and Weighted UniFrac are better.
+In collection aggregate rows, `Samples` is the number of completed samples; `Max RSS` is the maximum; profile metrics are arithmetic means over samples.
 
-| Tool | DB | Samples | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 19 | 5706.369328 | 123.8578 | 0.991811 | 0.001931 | 1.624569 | 0.99723 | 0.004928 | 1.430823 | 1.237703 |
-| centrifuger | cami_refseq | 19 | 30255.753284 | 141.351318 | 0.996197 | 0.009549 | 1.444462 | 0.99723 | 0.022861 | 1.258534 | 1.067606 |
-| chimera | cami_refseq | 19 | 30456.460328 | 78.994286 | 0.693153 | 0.117427 | 1.493927 | 0.796342 | 0.166491 | 1.368704 | 1.162689 |
-| chimera-no-lpc | cami_refseq | 19 | 33262.615028 | 72.140121 | 0.806296 | 0.086302 | 1.532648 | 0.902142 | 0.116328 | 1.410993 | 1.218137 |
-| sylph | cami_refseq | 19 | 2248.869347 | 24.456989 | 0.68816 | 0.115611 | 1.411461 | 0.845226 | 0.190143 | 1.265215 | 1.043175 |
+| Tool | DB | Samples | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| bracken | cami_refseq | 19 | 123.877899 | 0.989901 | 0.002044 | 1.596305 | 1.150728 |
+| centrifuger | cami_refseq | 19 | 141.390343 | 0.99395 | 0.010062 | 1.481046 | 1.135458 |
+| chimera | cami_refseq | 19 | 85.92313 | 0.744754 | 0.15387 | 1.391404 | 1.040058 |
+| ganon | cami_refseq | 19 | 77.577396 | 0.989901 | 0.008714 | 1.37134 | 1.023276 |
+| metabuli | cami_refseq | 19 | 131.255684 | 0.998051 | 0.001019 | 1.579523 | 1.201258 |
+| metaphlan | mpa_vJan25_CHOCOPhlAnSGB_202503 | 19 | 28.91674 | 0.803589 | 0.124637 | 1.369741 | 1.008034 |
+| sylph | cami_refseq | 19 | 24.462078 | 0.73473 | 0.101058 | 1.42739 | 1.076882 |
 
 ## Dataset: zymo-gridion-even
 
 ### Abundance Metrics
 
-本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
-只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
-只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
-Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
+Profiles are scored with the OPAL core metrics; Completeness, Purity and L1 Norm are reported at the `species` rank.
+Only native profile outputs of the tools are counted; tools without a native profile do not appear here.
+Only results of the current profile evaluation version are included; results of earlier versions are not in the public tables.
+The cross-dataset summary is `profile/summary.tsv`; this page breaks down the results of each tool by dataset.
+Weighted UniFrac is a global distance over the whole taxonomy tree; higher Completeness and Purity are better, lower L1 Norm and Weighted UniFrac are better.
 
-| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 248.526537 | 121.563915 | 0.8 | 0.004032 | 0.6441 | 0.8 | 0.011923 | 0.401775 | 0.617301 |
-| centrifuger | cami_refseq | 1614.750858 | 142.312016 | 0.8 | 0.00058 | 1.546096 | 0.8 | 0.002521 | 1.488706 | 1.613742 |
-| chimera | cami_refseq | 482.413281 | 72.796185 | 0.6 | 0.428571 | 1.009952 | 0.8 | 0.8 | 0.507607 | 0.678027 |
-| ganon2 | cami_refseq | 3921.410652 | 211.48431 | 0.7 | 0.00691 | 1.960682 | 0.8 | 0.016327 | 1.778506 | 1.709984 |
-| sylph | cami_refseq | 105.779297 | 23.316505 | 0.5 | 0.714286 | 1.028838 | 0.7 | 1 | 0.548838 | 0.881967 |
+| Tool | DB | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
+| --- | --- | --- | --- | --- | --- | --- |
+| bracken | cami_refseq | 121.625435 | 0.7 | 0.003528 | 0.644525 | 0.614682 |
+| centrifuger | cami_refseq | 146.268887 | 0.7 | 0.000505 | 1.535907 | 1.446716 |
+| chimera | cami_refseq | 83.719982 | 0.8 | 1 | 0.198842 | 0.305925 |
+| ganon | cami_refseq | 77.804688 | 0.5 | 0.009823 | 1.774869 | 1.668889 |
+| metabuli | cami_refseq | 128.17828 | 0.8 | 0.0013 | 0.361536 | 0.538383 |
+| metaphlan | mpa_vJan25_CHOCOPhlAnSGB_202503 | 90.422035 | 0.9 | 1 | 0.221086 | 0.320304 |
+| sylph | cami_refseq | 23.300758 | 0.8 | 1 | 0.283743 | 0.437233 |
 
 ## Dataset: zymo-gridion-log
 
 ### Abundance Metrics
 
-本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
-只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
-只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
-Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
+Profiles are scored with the OPAL core metrics; Completeness, Purity and L1 Norm are reported at the `species` rank.
+Only native profile outputs of the tools are counted; tools without a native profile do not appear here.
+Only results of the current profile evaluation version are included; results of earlier versions are not in the public tables.
+The cross-dataset summary is `profile/summary.tsv`; this page breaks down the results of each tool by dataset.
+Weighted UniFrac is a global distance over the whole taxonomy tree; higher Completeness and Purity are better, lower L1 Norm and Weighted UniFrac are better.
 
-| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 241.730585 | 121.519745 | 0.8 | 0.005678 | 0.194044 | 0.8 | 0.015564 | 0.191278 | 0.203876 |
-| centrifuger | cami_refseq | 2018.19876 | 142.391235 | 0.8 | 0.000551 | 1.282689 | 0.8 | 0.002478 | 1.280624 | 1.432399 |
-| chimera | cami_refseq | 419.496855 | 72.405472 | 0.4 | 0.444444 | 0.21483 | 0.5 | 0.833333 | 0.201743 | 0.157896 |
-| ganon2 | cami_refseq | 4411.270175 | 211.667702 | 0.5 | 0.004912 | 1.992404 | 0.7 | 0.014957 | 1.958671 | 2.291503 |
-| sylph | cami_refseq | 116.305271 | 23.317101 | 0.3 | 0.6 | 0.218109 | 0.5 | 1 | 0.199547 | 0.152127 |
+| Tool | DB | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
+| --- | --- | --- | --- | --- | --- | --- |
+| bracken | cami_refseq | 121.464439 | 0.7 | 0.004968 | 0.111184 | 0.134372 |
+| centrifuger | cami_refseq | 149.861969 | 0.7 | 0.00048 | 1.27083 | 1.260841 |
+| chimera | cami_refseq | 83.07423 | 0.5 | 1 | 0.025908 | 0.046927 |
+| ganon | cami_refseq | 77.966797 | 0.4 | 0.008316 | 1.987853 | 2.189865 |
+| metabuli | cami_refseq | 101.861244 | 0.8 | 0.001805 | 0.09416 | 0.138477 |
+| metaphlan | mpa_vJan25_CHOCOPhlAnSGB_202503 | 90.045082 | 0.6 | 1 | 0.018468 | 0.025851 |
+| sylph | cami_refseq | 23.306244 | 0.6 | 1 | 0.059437 | 0.100599 |
 
 ## Dataset: zymo-promethion-even
 
 ### Abundance Metrics
 
-本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
-只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
-只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
-Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
+Profiles are scored with the OPAL core metrics; Completeness, Purity and L1 Norm are reported at the `species` rank.
+Only native profile outputs of the tools are counted; tools without a native profile do not appear here.
+Only results of the current profile evaluation version are included; results of earlier versions are not in the public tables.
+The cross-dataset summary is `profile/summary.tsv`; this page breaks down the results of each tool by dataset.
+Weighted UniFrac is a global distance over the whole taxonomy tree; higher Completeness and Purity are better, lower L1 Norm and Weighted UniFrac are better.
 
-| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 1739.503428 | 124.327122 | 0.8 | 0.00053 | 0.639995 | 0.8 | 0.002394 | 0.396827 | 0.59877 |
-| centrifuger | cami_refseq | 20336.279081 | 143.906261 | 0.8 | 0.003048 | 1.926536 | 0.8 | 0.00949 | 1.776824 | 1.49203 |
-| chimera | cami_refseq | 4471.568818 | 72.919228 | 0.6 | 0.428571 | 1.014194 | 0.8 | 0.8 | 0.503455 | 0.642366 |
-| ganon2 | cami_refseq | 40650.987322 | 211.724251 | 0.8 | 0.001451 | 1.920767 | 0.8 | 0.005215 | 1.803527 | 1.795622 |
-| sylph | cami_refseq | 820.419387 | 34.487347 | 0.5 | 0.714286 | 1.011479 | 0.7 | 1 | 0.531479 | 0.858769 |
+| Tool | DB | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
+| --- | --- | --- | --- | --- | --- | --- |
+| bracken | cami_refseq | 124.461376 | 0.7 | 0.000463 | 0.640559 | 0.596166 |
+| centrifuger | cami_refseq | 151.186806 | 0.7 | 0.002638 | 1.927936 | 1.412162 |
+| chimera | cami_refseq | 86.130608 | 0.8 | 1 | 0.187029 | 0.279039 |
+| ganon | cami_refseq | 77.810711 | 0.8 | 0.001089 | 1.744334 | 1.613646 |
+| metabuli | cami_refseq | 128.365852 | 0.8 | 0.000477 | 0.347398 | 0.517651 |
+| metaphlan | mpa_vJan25_CHOCOPhlAnSGB_202503 | 90.667282 | 0.9 | 1 | 0.207385 | 0.29712 |
+| sylph | cami_refseq | 34.440399 | 0.8 | 0.888889 | 0.261798 | 0.405766 |
 
 ## Dataset: zymo-promethion-log
 
 ### Abundance Metrics
 
-本表按 OPAL core 计算 profile 结果：`species/genus` 两层分别报告 Completeness、Purity、L1 Norm。
-只统计工具原生输出的 profile 文件；没有原生 profile 的工具不会出现在本表里。
-只包含当前 profile 评估版本的结果；旧版结果不进入公开表。
-跨数据集汇总见 `results/profile/summary.tsv`；本表按数据集展开各工具的详细结果。
-Weighted UniFrac 是基于整棵 taxonomy tree 的全局距离；Completeness、Purity 越大越好，L1 Norm、Weighted UniFrac 越小越好。
+Profiles are scored with the OPAL core metrics; Completeness, Purity and L1 Norm are reported at the `species` rank.
+Only native profile outputs of the tools are counted; tools without a native profile do not appear here.
+Only results of the current profile evaluation version are included; results of earlier versions are not in the public tables.
+The cross-dataset summary is `profile/summary.tsv`; this page breaks down the results of each tool by dataset.
+Weighted UniFrac is a global distance over the whole taxonomy tree; higher Completeness and Purity are better, lower L1 Norm and Weighted UniFrac are better.
 
-| Tool | DB | Elapsed (s) | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Completeness (genus) | Purity (genus) | L1 Norm (genus) | Weighted UniFrac |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bracken | cami_refseq | 3246.877782 | 124.719833 | 0.8 | 0.000566 | 0.194002 | 0.8 | 0.002467 | 0.191574 | 0.235134 |
-| centrifuger | cami_refseq | 20472.630834 | 142.917328 | 0.8 | 0.003189 | 1.952713 | 0.8 | 0.009445 | 1.907987 | 2.007529 |
-| chimera | cami_refseq | 3639.138841 | 72.393944 | 0.4 | 0.444444 | 0.214349 | 0.5 | 0.833333 | 0.200083 | 0.164746 |
-| ganon2 | cami_refseq | 47708.910829 | 211.735104 | 0.8 | 0.008024 | 1.994033 | 0.8 | 0.016598 | 1.978402 | 2.489136 |
-| sylph | cami_refseq | 769.728807 | 34.486584 | 0.4 | 0.666667 | 0.218161 | 0.6 | 1 | 0.201088 | 0.157007 |
+| Tool | DB | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
+| --- | --- | --- | --- | --- | --- | --- |
+| bracken | cami_refseq | 124.494038 | 0.7 | 0.000495 | 0.109743 | 0.122673 |
+| centrifuger | cami_refseq | 159.978073 | 0.7 | 0.002758 | 1.938118 | 1.583989 |
+| chimera | cami_refseq | 85.186356 | 0.6 | 1 | 0.025001 | 0.045722 |
+| ganon | cami_refseq | 78.451641 | 0.7 | 0.001121 | 1.992073 | 2.240169 |
+| metabuli | cami_refseq | 104.923595 | 0.8 | 0.000511 | 0.092679 | 0.135412 |
+| metaphlan | mpa_vJan25_CHOCOPhlAnSGB_202503 | 89.940083 | 0.8 | 1 | 0.014503 | 0.011036 |
+| sylph | cami_refseq | 34.480919 | 0.7 | 1 | 0.050735 | 0.089043 |
 

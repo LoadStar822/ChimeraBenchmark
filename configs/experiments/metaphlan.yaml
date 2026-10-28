@@ -1,0 +1,23 @@
+name: metaphlan
+tool: metaphlan
+# MetaPhlAn profiles reads against its own marker database; the CAMI Marine inputs are contigs.
+datasets:
+  - atcc-hifi
+  - atcc-illumina
+  - zymo-gridion-log
+  - zymo-gridion-even
+  - zymo-promethion-log
+  - zymo-promethion-even
+  - cami-strain-madness-long-per-sample
+  - cami-strain-madness-short-per-sample
+  - prjna637878-supported19-single-read
+db_dir: /mnt/sda/tianqinzhong/software/MetaPhlAn/database
+index: mpa_vJan25_CHOCOPhlAnSGB_202503
+taxonomy: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/ganon/cami_refseq/DB/cami_refseq.tax
+taxonomy_nodes_dmp: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/taxonomy/ncbi_20260408/nodes.dmp
+taxonomy_names_dmp: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/taxonomy/ncbi_20260408/names.dmp
+threads: 32
+tool_config:
+  env_prefix: /mnt/sda/tianqinzhong/software/MetaPhlAn/mpa4_env
+  bin: metaphlan
+tool_args: []

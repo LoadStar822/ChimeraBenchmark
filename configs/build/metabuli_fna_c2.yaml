@@ -1,0 +1,11 @@
+name: metabuli-fna-c2
+tool: metabuli
+db_prefix: DB/fna_c2
+threads: 128
+tool_config:
+  env: metabuli
+  bin: metabuli
+build:
+  target_tsv: /mnt/sda/tianqinzhong/code/Chimera/tmp/metabuli_fna_c2_20260822/inputs/target.tsv
+  taxonomy_dir: /mnt/sda/tianqinzhong/code/Chimera/tmp/metabuli_fna_c2_20260822/inputs/taxonomy
+  args: []

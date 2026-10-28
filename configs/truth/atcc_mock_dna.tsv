@@ -1,0 +1,45 @@
+# ATCC MSA-1003 composition as DNA (sequence) percent: the product's genome-copy percent
+# (atcc_mock.tsv) times each strain's genome size, renormalised. Genome size per strain from
+# NCBI assembly_summary_refseq.txt (2025-11): its RefSeq reference genome if designated,
+# otherwise the median (lower) over its complete genomes, otherwise over all its assemblies.
+# Escherichia coli	ATCC 700926	GCF_000005845.2	4641652	reference genome (n=1)
+# Porphyromonas gingivalis	ATCC 33277	GCF_000010505.1	2354886	reference genome (n=1)
+# Luteovulum sphaeroides	ATCC 17029	GCF_000015985.1	4489380	complete genomes (n=1)
+# Staphylococcus epidermidis	ATCC 12228	GCF_009873455.1	2526403	complete genomes (n=2)
+# Streptococcus mutans	ATCC 700610	GCF_000007465.2	2032925	complete genomes (n=1)
+# Bacillus cereus	ATCC 10987	GCF_031316815.1	5428498	all assemblies (n=1)
+# Clostridium beijerinckii	ATCC 35702	GCF_000767745.1	5999050	complete genomes (n=1)
+# Pseudomonas paraeruginosa	ATCC 9027	GCF_002601815.1	6350027	all assemblies (n=5)
+# Staphylococcus aureus	ATCC BAA-1556	GCF_000013465.1	2917469	complete genomes (n=1)
+# Streptococcus agalactiae	ATCC BAA-611	GCF_000007265.1	2160267	complete genomes (n=1)
+# Acinetobacter baumannii	ATCC 17978	GCF_013372085.1	4030054	complete genomes (n=6)
+# Cutibacterium acnes	ATCC 11828	GCF_000231215.1	2488626	complete genomes (n=1)
+# Helicobacter pylori	ATCC 700392	GCF_000307795.1	1667892	complete genomes (n=1)
+# Lactobacillus gasseri	ATCC 33323	GCF_000014425.1	1894360	reference genome (n=1)
+# Neisseria meningitidis	ATCC BAA-335	GCF_000008805.1	2272360	complete genomes (n=1)
+# Phocaeicola vulgatus	ATCC 8482	GCF_000012825.1	5163189	reference genome (n=1)
+# Bifidobacterium adolescentis	ATCC 15703	GCF_000010425.1	2089645	reference genome (n=1)
+# Deinococcus radiodurans	ATCC 13939	GCF_020546685.1	3279598	reference genome (n=1)
+# Enterococcus faecalis	ATCC 47077	GCF_000172575.2	2739625	complete genomes (n=1)
+# Schaalia dentiphila	ATCC 17982	GCF_000154225.1	2393958	reference genome (n=1)
+species	percent
+Escherichia coli	25.1284
+Porphyromonas gingivalis	12.7486
+Luteovulum sphaeroides	24.3041
+Staphylococcus epidermidis	13.6771
+Streptococcus mutans	11.0056
+Bacillus cereus	2.93882
+Clostridium beijerinckii	3.24769
+Pseudomonas paraeruginosa	3.4377
+Staphylococcus aureus	1.57942
+Streptococcus agalactiae	1.1695
+Acinetobacter baumannii	0.218174
+Cutibacterium acnes	0.134726
+Helicobacter pylori	0.0902944
+Lactobacillus gasseri	0.102555
+Neisseria meningitidis	0.123018
+Phocaeicola vulgatus	0.0310576
+Bifidobacterium adolescentis	0.0125696
+Deinococcus radiodurans	0.0197274
+Enterococcus faecalis	0.0164794
+Schaalia dentiphila	0.0144001

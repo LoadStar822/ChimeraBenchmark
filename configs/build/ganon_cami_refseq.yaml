@@ -7,14 +7,14 @@ tool_config:
   bin: ganon
 build:
   mode: custom
-  input:
-    - /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/RefSeq_genomic_20190108
-  input_target: file
+  # One row per library genome (file, accession, library taxid); species-level targets,
+  # the default level of `ganon build`.
+  target_tsv: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/target.tsv
+  level: species
   taxonomy_files:
-    - /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/ncbi_taxonomy/nodes.dmp
-    - /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/ncbi_taxonomy/names.dmp
-    - /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/ncbi_taxonomy/merged.dmp
-    - /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/ncbi_taxonomy/delnodes.dmp
+    - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/taxonomy/ncbi_20260408/nodes.dmp
+    - /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/taxonomy/ncbi_20260408/names.dmp
   args:
-    - --ncbi-file-info
-    - /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/assembly_summary_refseq.txt
+    # Genome sizes only rescale the taxonomic-abundance report; the evaluated sequence
+    # abundance does not use them, and skipping avoids downloading NCBI size tables.
+    - --skip-genome-size

@@ -1,7 +1,8 @@
 name: atcc-illumina
 group: atcc
 platform: illumina
+read_length: 125
 paired:
   - /mnt/sda/CommonData/TaxonomyDataset/mock/IIIumina-ATCC-MSA-1003_1.fastq
   - /mnt/sda/CommonData/TaxonomyDataset/mock/IIIumina-ATCC-MSA-1003_2.fastq
-truth_profile: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/configs/truth/atcc_mock.tsv
+truth_profile: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/configs/truth/atcc_mock_dna.tsv

@@ -1,72 +1,70 @@
 # ChimeraBenchmark
 
-ChimeraBenchmark 汇集了论文中用于评估 Chimera 的宏基因组分类基准测试（metagenomic taxonomic benchmark）。它包含数据集说明、参考库规模、评估任务、结果表和复现脚本。
+ChimeraBenchmark is the metagenomic taxonomic classification benchmark used to evaluate Chimera in the accompanying paper. It contains the dataset descriptions, reference collection sizes, evaluation tasks, result tables and the code that produces them.
 
-如果你是从论文来到这里，建议先阅读 `results/README.md`，再查看具体的 build、classify 和 profile 结果表。
+If you come here from the paper, read `results/README.md` first, then the build, classify and profile result tables.
 
-## 目录
+## Contents
 
-- [Benchmark 设计](#benchmark-设计)
-- [数据与结果](#数据与结果)
-- [复现方式](#复现方式)
-- [仓库结构](#仓库结构)
-- [方法边界](#方法边界)
+- [Benchmark design](#benchmark-design)
+- [Data and results](#data-and-results)
+- [Reproduction](#reproduction)
+- [Repository layout](#repository-layout)
+- [Scope](#scope)
+- [License](#license)
 
-## Benchmark 设计
+## Benchmark design
 
-本 benchmark 覆盖三类任务：
+The benchmark covers three tasks:
 
-- 数据库构建（build）：比较不同工具在同一参考库上的构建成本。
-- 逐读段分类（per-read classify）：比较每条 read 或 contig 在目标层级上的分类准确性。
-- 丰度画像（profile）：比较样本层面的物种组成估计。
+- Database build: the cost of building each tool's database from the same reference collection.
+- Per-read classification: the accuracy of the assignment of each read or contig at the target rank.
+- Abundance profiling: the estimated species composition of each sample.
 
-公开评估默认报告 `species` 和 `genus` 两个层级。逐读段结果使用真值映射，丰度结果使用样本组成真值。
+Results are reported at the `species` rank. Per-read results are scored against per-read truth mappings, and profiles against the composition truth of each sample.
 
-## 数据与结果
+## Data and results
 
-- `results/README.md`：数据集、参考库、评估口径和指标说明。
-- `results/builds/README.md`：数据库构建结果。
-- `results/classify/README.md`：逐读段分类结果。
-- `results/profile/README.md`：丰度画像结果。
-- `results/real/README.md`：真实队列 clade-level 实验结果。
-- `results/paper_run_manifest.tsv`：汇总结果所对应的运行、工具版本和完成状态。
-- `results/*/summary.tsv`：用于统计分析和作图的机器可读汇总表。
+- `results/README.md`: datasets, reference collections, evaluation rules and metrics.
+- `results/builds/summary.tsv`, `results/classify/summary.tsv`, `results/classify/sample_metrics.tsv`, `results/profile/summary.tsv`: the result tables used for statistics and figures.
+- `results/paper_run_manifest.tsv`: the runs behind the result tables, with tool versions, parameter policies and completion status.
+- `results/real/README.md`: design and results of the real-cohort experiment (the *Fusobacterium animalis* signal in colorectal cancer cohorts); its tables are in `results/real/fna_c2_crc3_head3m/`.
+- `results/builds/README.md`: database build cost and the RefSeq scaling experiment. `results/classify/README.md` and `results/profile/README.md`: the result tables broken down by dataset.
+- Resources that are too large for this repository, such as the NCBI taxonomy snapshot and the derived truth tables, are archived at Zenodo ([doi:10.5281/zenodo.23124825](https://doi.org/10.5281/zenodo.23124825)) and unpack under `resources/`.
+- The Chimera database used for all results can be downloaded pre-built; see [Pre-built Database](https://github.com/LoadStar822/Chimera#pre-built-database) in the Chimera README.
 
-`results/README.md` 还提供两张数据资源 summary 表：
+Results come in three layers: a run is one execution in an experiment directory; an evaluation is the set of metrics scored for that run; the result tables include only runs that were explicitly selected and passed validation, and these runs are listed in `results/paper_run_manifest.tsv`. Running and evaluating never modify the result tables, and generating the result tables never reruns a tool.
 
-- Reference Database Summary：参考库规模和来源。
-- Benchmark Dataset Summary：实际输入数据、测序类型、读长和真值类型。
+## Reproduction
 
-## 复现方式
-
-查看可用命令：
+List the available commands:
 
 ```bash
 python -m chimera_bench.cli -h
 ```
 
-重新生成数据集与参考库 summary 表：
+Regenerate the data resource catalog (writes only to `resources/reports/`):
 
 ```bash
-python -m chimera_bench.cli catalog --config configs --results-root results --resources-root resources
+python -m chimera_bench.cli catalog --config configs --resources-root resources
 ```
 
-从已完成的 run 重新生成结果汇总表：
+The configurations in `configs/` record the input, truth and database paths used on the benchmark server; point them to local copies before running.
 
-```bash
-python -m chimera_bench.cli paper-freeze --config configs --results-root results
-```
+## Repository layout
 
-## 仓库结构
+- `configs/`: dataset, reference database and tool run configurations.
+- `chimera_bench/`: code for running, summarising and evaluating.
+- `results/`: result tables, per-dataset breakdowns and experiment notes.
+- `resources/` (not tracked; see the Zenodo archive above): the taxonomy snapshot, input lists, derived truth tables, the reference genomes of the real-cohort experiment and the data resource catalog.
 
-- `configs/`：数据集、参考库和工具运行配置。
-- `chimera_bench/`：运行、汇总和评估代码。
-- `results/`：结果表和各工具运行输出。
-- `resources/`：统一分类体系、输入清单和 summary 表。
+## Scope
 
-## 方法边界
+- Apart from thread count and output paths, every tool runs with its default parameters. Settings chosen by input or output type, such as Metabuli's `--seq-mode` and the `--binning` preset used for ganon's per-read results, are listed in `results/README.md`.
+- Peak memory of multi-step tools is measured over the whole pipeline, for example `kraken2 -> bracken`.
+- All evaluations use the NCBI taxonomy snapshot `resources/taxonomy/ncbi_20260408/`.
+- Per-read F1 should be read together with the `Truth Mapped Rate`: when the mapped rate is low, the result describes only the mappable subset.
 
-- 除线程数外，公开比较尽量使用各工具默认推断参数。
-- 多步工具按端到端流程（end-to-end pipeline）统计运行时间和内存，例如 `kraken2 -> bracken`。
-- 公开评估统一使用 NCBI 分类体系（NCBI taxonomy）快照 `resources/taxonomy/ncbi_20260408/`。
-- 逐读段 F1 需要结合 `Truth Mapped Rate` 解读；当映射率不足时，结论只代表可映射子集。
+## License
+
+The code in this repository is released under the MIT License (see `LICENSE`).

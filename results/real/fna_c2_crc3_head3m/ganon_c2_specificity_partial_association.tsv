@@ -1,0 +1,9 @@
+scope	cohort	predictor	samples	standardized_beta	ci_low	ci_high	p_value	tau_squared	i_squared
+cohort	2015 Yu et al	published_fna_c2	127	0.682492	0.525867	0.839117	5.17976e-14	NA	NA
+cohort	2015 Yu et al	published_fna_c1	127	0.115056	-0.037063	0.267175	0.14087	NA	NA
+cohort	2018 Wirbel et al	published_fna_c2	125	0.979655	0.919856	1.039454	7.45508e-60	NA	NA
+cohort	2018 Wirbel et al	published_fna_c1	125	0.038525	-0.017646	0.094696	0.181462	NA	NA
+cohort	YachidaS_2019	published_fna_c2	508	0.791537	0.732709	0.850365	1.06864e-96	NA	NA
+cohort	YachidaS_2019	published_fna_c1	508	-0.018818	-0.076357	0.038721	0.521802	NA	NA
+three_cohort_meta	all	published_fna_c2	760	0.828064	0.659984	0.996143	4.6357e-22	0.019598	0.920810
+three_cohort_meta	all	published_fna_c1	760	0.024025	-0.037642	0.085693	0.445114	0.001441	0.451843
