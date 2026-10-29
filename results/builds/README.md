@@ -63,7 +63,7 @@ Metabuli builds from an assembly list with `--gtdb 1`. To match the frozen `ncbi
 | Complete | 2024-10-07 | 58,672 | 189.36 Gbp | ganon | 2.1.0 (IBF mode) | 2 h 50 min | 991.10 | 322.20 | measured |
 | Complete | 2024-10-07 | 58,672 | 189.36 Gbp | ganon2 | 2.1.0 | 2 h 05 min | 65.40 | 46.10 | measured |
 | RefSeq | 2024-10-16 | 403,263 | 3.43 Tbp | chimera | 1.8.0 | 8 h 26 min | 84.75 | 1,119.84 | measured |
-| RefSeq | 2024-10-16 | 403,263 | 3.43 Tbp | centrifuger | v1.0.12 | - | - | - | not run |
+| RefSeq | 2024-10-16 | 403,263 | 3.43 Tbp | centrifuger | v1.0.12 | - | - | - | OOM |
 | RefSeq | 2024-10-16 | 403,263 | 3.43 Tbp | metabuli | 1.2.0 | 71 h 44 min | 403.31 | - | OOM |
 | RefSeq | 2024-10-16 | 403,263 | 3.43 Tbp | sylph | 0.8.1 | 42 min 00 s | 130.25 | 108.69 | measured |
 | RefSeq | 2024-10-16 | 403,253 | 3.43 Tbp | kraken2 | 2.1.3 | - | - | - | OOM |
@@ -76,5 +76,5 @@ Metabuli builds from an assembly list with `--gtdb 1`. To match the frozen `ncbi
 - On the three levels that the read classifiers completed, Chimera builds 23.1x, 57.1x and 104.6x faster than Centrifuger.
 - At the Complete level, Chimera's peak RSS is 35.75 GiB against 213.68 GiB for Centrifuger, about 1/6.0 of it.
 - Chimera completes the 3.43 Tbp full RefSeq with default parameters in 8 h 26 min at 84.75 GiB peak RSS. The final 1.09 TiB database consists of a 542.46 GiB core filter, 553.18 GiB of PROVE data (`local` in the `db_size_components` column), a 23.75 GiB presence sketch and the taxonomy.
-- Metabuli completes Archaea, CompleteONE and Complete; its RefSeq build fails with OOM.
+- Centrifuger and Metabuli complete Archaea, CompleteONE and Complete; their RefSeq builds fail with OOM.
 - sylph is faster and smaller at every shared level; its result corresponds to genome sketch construction. Chimera's build advantage concerns a full index that supports per-read classification and PROVE.
