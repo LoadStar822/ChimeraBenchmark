@@ -15,7 +15,7 @@ Weighted UniFrac is a global distance over the whole taxonomy tree; higher Compl
 | Tool | DB | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
 | --- | --- | --- | --- | --- | --- | --- |
 | bracken | cami_refseq | 120.806023 | 0.9 | 0.084507 | 0.307591 | 0.28932 |
-| centrifuger | cami_refseq | 147.428425 | 0.9 | 0.189474 | 0.516079 | 0.708767 |
+| centrifuger | cami_refseq | 147.428425 | 0.9 | 0.080717 | 0.29174 | 0.307075 |
 | chimera | cami_refseq | 75.22604 | 1 | 0.952381 | 0.237973 | 0.310359 |
 | ganon | cami_refseq | 79.523438 | 1 | 0.487805 | 0.281363 | 0.286109 |
 | metabuli | cami_refseq | 128.261719 | 1 | 0.186916 | 0.828272 | 0.723179 |
@@ -35,7 +35,7 @@ Weighted UniFrac is a global distance over the whole taxonomy tree; higher Compl
 | Tool | DB | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
 | --- | --- | --- | --- | --- | --- | --- |
 | bracken | cami_refseq | 121.079948 | 0.9 | 0.058824 | 0.304062 | 0.123514 |
-| centrifuger | cami_refseq | 141.312386 | 0.9 | 0.028708 | 0.463137 | 0.648673 |
+| centrifuger | cami_refseq | 141.312386 | 0.9 | 0.007891 | 0.338873 | 0.225449 |
 | chimera | cami_refseq | 70.555012 | 1 | 0.952381 | 0.049511 | 0.05169 |
 | ganon | cami_refseq | 76.368294 | 1 | 0.065789 | 0.126784 | 0.06825 |
 | metabuli | cami_refseq | 128.401966 | 1 | 0.017331 | 0.751987 | 0.581784 |
@@ -56,7 +56,7 @@ In collection aggregate rows, `Samples` is the number of completed samples; `Max
 | Tool | DB | Samples | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | bracken | cami_refseq | 100 | 120.927948 | 0.8945 | 0.015188 | 0.419369 | 0.169066 |
-| centrifuger | cami_refseq | 100 | 142.94611 | 0.9945 | 0.001682 | 0.495145 | 0.727652 |
+| centrifuger | cami_refseq | 100 | 142.94611 | 0.9945 | 0.00169 | 0.359013 | 0.26656 |
 | chimera | cami_refseq | 100 | 79.28957 | 0.305 | 0.505946 | 0.169846 | 0.07124 |
 | ganon | cami_refseq | 100 | 77.28125 | 0.0035 | 0.07 | 1.120811 | 2.672472 |
 | metabuli | cami_refseq | 100 | 118.449013 | 0.963 | 0.004169 | 0.327695 | 0.149245 |
@@ -77,7 +77,7 @@ In collection aggregate rows, `Samples` is the number of completed samples; `Max
 | Tool | DB | Samples | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | bracken | cami_refseq | 100 | 121.821793 | 0.956 | 0.016538 | 0.330507 | 0.070596 |
-| centrifuger | cami_refseq | 100 | 141.386414 | 0.923921 | 0.148271 | 0.597821 | 0.762162 |
+| centrifuger | cami_refseq | 100 | 141.386414 | 0.9995 | 0.007638 | 0.143947 | 0.119357 |
 | chimera | cami_refseq | 100 | 77.162563 | 0.569789 | 0.622851 | 0.146144 | 0.047783 |
 | ganon | cami_refseq | 100 | 76.347656 | 0.926974 | 0.052344 | 0.363653 | 0.178743 |
 | metabuli | cami_refseq | 100 | 128.33522 | 0.999 | 0.012111 | 0.165147 | 0.118899 |
@@ -98,7 +98,7 @@ In collection aggregate rows, `Samples` is the number of completed samples; `Max
 | Tool | DB | Samples | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | bracken | cami_refseq | 10 | 122.55909 | 0.875159 | 0.570742 | 1.342394 | 0.801632 |
-| centrifuger | cami_refseq | 10 | 142.233231 | 0.932093 | 0.665961 | 1.371275 | 0.954991 |
+| centrifuger | cami_refseq | 10 | 142.233231 | 0.950058 | 0.128476 | 1.348947 | 0.797888 |
 | chimera | cami_refseq | 10 | 78.540939 | 0.917978 | 0.802806 | 0.963483 | 0.604775 |
 | ganon | cami_refseq | 10 | 77.412407 | 0.903413 | 0.566154 | 1.336373 | 0.815292 |
 | metabuli | cami_refseq | 10 | 128.09882 | 0.935011 | 0.216471 | 1.351363 | 0.79947 |
@@ -118,7 +118,7 @@ In collection aggregate rows, `Samples` is the number of completed samples; `Max
 | Tool | DB | Samples | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | bracken | cami_refseq | 10 | 122.396759 | 0.908906 | 0.256356 | 1.333069 | 0.806562 |
-| centrifuger | cami_refseq | 10 | 141.368347 | 0.948077 | 0.410179 | 1.357141 | 0.944017 |
+| centrifuger | cami_refseq | 10 | 141.368347 | 0.95709 | 0.039031 | 1.336294 | 0.799448 |
 | chimera | cami_refseq | 10 | 77.784492 | 0.908958 | 0.773893 | 0.982463 | 0.616264 |
 | ganon | cami_refseq | 10 | 76.571072 | 0.920383 | 0.358269 | 1.330662 | 0.817658 |
 | metabuli | cami_refseq | 10 | 128.161247 | 0.947726 | 0.061379 | 1.342244 | 0.807309 |
@@ -138,7 +138,7 @@ In collection aggregate rows, `Samples` is the number of completed samples; `Max
 | Tool | DB | Samples | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | bracken | cami_refseq | 19 | 123.877899 | 0.989901 | 0.002044 | 1.596305 | 1.150728 |
-| centrifuger | cami_refseq | 19 | 141.390343 | 0.99395 | 0.010062 | 1.481046 | 1.135458 |
+| centrifuger | cami_refseq | 19 | 141.390343 | 0.996456 | 0.00093 | 1.593109 | 1.219999 |
 | chimera | cami_refseq | 19 | 85.92313 | 0.744754 | 0.15387 | 1.391404 | 1.040058 |
 | ganon | cami_refseq | 19 | 77.577396 | 0.989901 | 0.008714 | 1.37134 | 1.023276 |
 | metabuli | cami_refseq | 19 | 131.255684 | 0.998051 | 0.001019 | 1.579523 | 1.201258 |
@@ -158,7 +158,7 @@ Weighted UniFrac is a global distance over the whole taxonomy tree; higher Compl
 | Tool | DB | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
 | --- | --- | --- | --- | --- | --- | --- |
 | bracken | cami_refseq | 121.625435 | 0.7 | 0.003528 | 0.644525 | 0.614682 |
-| centrifuger | cami_refseq | 146.268887 | 0.7 | 0.000505 | 1.535907 | 1.446716 |
+| centrifuger | cami_refseq | 146.268887 | 0.7 | 0.000432 | 0.659888 | 0.619904 |
 | chimera | cami_refseq | 83.719982 | 0.8 | 1 | 0.198842 | 0.305925 |
 | ganon | cami_refseq | 77.804688 | 0.5 | 0.009823 | 1.774869 | 1.668889 |
 | metabuli | cami_refseq | 128.17828 | 0.8 | 0.0013 | 0.361536 | 0.538383 |
@@ -178,7 +178,7 @@ Weighted UniFrac is a global distance over the whole taxonomy tree; higher Compl
 | Tool | DB | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
 | --- | --- | --- | --- | --- | --- | --- |
 | bracken | cami_refseq | 121.464439 | 0.7 | 0.004968 | 0.111184 | 0.134372 |
-| centrifuger | cami_refseq | 149.861969 | 0.7 | 0.00048 | 1.27083 | 1.260841 |
+| centrifuger | cami_refseq | 149.861969 | 0.7 | 0.000472 | 0.11628 | 0.1348 |
 | chimera | cami_refseq | 83.07423 | 0.5 | 1 | 0.025908 | 0.046927 |
 | ganon | cami_refseq | 77.966797 | 0.4 | 0.008316 | 1.987853 | 2.189865 |
 | metabuli | cami_refseq | 101.861244 | 0.8 | 0.001805 | 0.09416 | 0.138477 |
@@ -198,7 +198,7 @@ Weighted UniFrac is a global distance over the whole taxonomy tree; higher Compl
 | Tool | DB | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
 | --- | --- | --- | --- | --- | --- | --- |
 | bracken | cami_refseq | 124.461376 | 0.7 | 0.000463 | 0.640559 | 0.596166 |
-| centrifuger | cami_refseq | 151.186806 | 0.7 | 0.002638 | 1.927936 | 1.412162 |
+| centrifuger | cami_refseq | 151.186806 | 0.7 | 0.000355 | 0.651447 | 0.602314 |
 | chimera | cami_refseq | 86.130608 | 0.8 | 1 | 0.187029 | 0.279039 |
 | ganon | cami_refseq | 77.810711 | 0.8 | 0.001089 | 1.744334 | 1.613646 |
 | metabuli | cami_refseq | 128.365852 | 0.8 | 0.000477 | 0.347398 | 0.517651 |
@@ -218,7 +218,7 @@ Weighted UniFrac is a global distance over the whole taxonomy tree; higher Compl
 | Tool | DB | Max RSS (GB) | Completeness (species) | Purity (species) | L1 Norm (species) | Weighted UniFrac |
 | --- | --- | --- | --- | --- | --- | --- |
 | bracken | cami_refseq | 124.494038 | 0.7 | 0.000495 | 0.109743 | 0.122673 |
-| centrifuger | cami_refseq | 159.978073 | 0.7 | 0.002758 | 1.938118 | 1.583989 |
+| centrifuger | cami_refseq | 159.978073 | 0.7 | 0.00036 | 0.115021 | 0.128615 |
 | chimera | cami_refseq | 85.186356 | 0.6 | 1 | 0.025001 | 0.045722 |
 | ganon | cami_refseq | 78.451641 | 0.7 | 0.001121 | 1.992073 | 2.240169 |
 | metabuli | cami_refseq | 104.923595 | 0.8 | 0.000511 | 0.092679 | 0.135412 |

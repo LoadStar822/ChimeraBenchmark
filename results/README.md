@@ -105,7 +105,7 @@ Truth and predicted profiles are both compared as sequence abundance (the share 
 - ATCC MSA-1003 and ZymoBIOMICS use DNA-based compositions; see [Dataset-specific rules](#dataset-specific-rules).
 - The PRJNA637878 profile truth counts reads of the same per-read labels.
 
-Predicted abundances are taken from each tool's native output without unit conversion: Chimera reports abundance by bases; Sylph uses the `Sequence_abundance` column; MetaPhlAn 4 uses the estimated read counts (bases for long reads) of `-t rel_ab_w_read_stats`; ganon uses `ganon report --report-type reads`; Bracken, Metabuli and Centrifuger use their default abundance outputs.
+Predicted abundances are taken from each tool's native output without unit conversion: Chimera reports abundance by bases; Sylph uses the `Sequence_abundance` column; MetaPhlAn 4 uses the estimated read counts (bases for long reads) of `-t rel_ab_w_read_stats`; ganon uses `ganon report --report-type reads`; Bracken and Metabuli use their default abundance outputs; Centrifuger uses the species-level read counts (`numReads`) of `centrifuger-quant`.
 
 ## Dataset-specific rules
 
@@ -243,7 +243,7 @@ Following the Bracken manual, datasets with a stated read length use the matchin
 ### Centrifuger
 
 Centrifuger's per-read classification uses the default inference parameters.
-Profiles are produced by `centrifuger-quant` from the classification output and exported in CAMI profile format.
+Profiles are the species-level read counts (`numReads`) that `centrifuger-quant` reports from the classification output, exported in CAMI profile format; a read with k best hits counts 1/k towards each.
 
 ### Metabuli
 

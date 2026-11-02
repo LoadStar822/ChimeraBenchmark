@@ -91,7 +91,9 @@ class CentrifugerTool:
         ]
 
         # Only run quantification (profile) when profile output dir is enabled.
+        # The profile takes the species-level read counts of centrifuger-quant, as for Metabuli.
         if profile_out_prefix:
+            quant_tsv = f"{profile_out_prefix}_quant.tsv"
             cami_profile = f"{profile_out_prefix}_cami_profile.tsv"
             quant_parts = [
                 self._quant_bin(),
@@ -100,18 +102,26 @@ class CentrifugerTool:
                 "-c",
                 raw_tsv,
                 "--output-format",
-                "2",
+                "0",
             ]
             quant_script = "\n".join(
                 [
                     "set -euo pipefail",
-                    f"{shlex.join(quant_parts)} > {shlex.quote(cami_profile)}",
+                    f"{shlex.join(quant_parts)} > {shlex.quote(quant_tsv)}",
                 ]
             )
+            profile_cmd = ["python", convert_script, "--quant", quant_tsv, "--profile-out", cami_profile]
             steps.append(
                 {
                     "name": "quant",
                     "cmd": ["bash", "-lc", quant_script],
+                    "outputs": {"centrifuger_quant_tsv": quant_tsv},
+                }
+            )
+            steps.append(
+                {
+                    "name": "convert_profile",
+                    "cmd": profile_cmd,
                     "outputs": {"cami_profile_tsv": cami_profile},
                 }
             )
