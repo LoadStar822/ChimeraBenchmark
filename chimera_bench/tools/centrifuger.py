@@ -91,7 +91,7 @@ class CentrifugerTool:
         ]
 
         # Only run quantification (profile) when profile output dir is enabled.
-        # The profile takes the species-level read counts of centrifuger-quant, as for Metabuli.
+        # Convert native EM abundance to sequence abundance using reported genome sizes.
         if profile_out_prefix:
             quant_tsv = f"{profile_out_prefix}_quant.tsv"
             cami_profile = f"{profile_out_prefix}_cami_profile.tsv"
@@ -110,7 +110,8 @@ class CentrifugerTool:
                     f"{shlex.join(quant_parts)} > {shlex.quote(quant_tsv)}",
                 ]
             )
-            profile_cmd = ["python", convert_script, "--quant", quant_tsv, "--profile-out", cami_profile]
+            profile_cmd = ["python", convert_script, "--quant", quant_tsv, "--profile-out", cami_profile,
+                           "--profile-method", "native-sequence"]
             steps.append(
                 {
                     "name": "quant",

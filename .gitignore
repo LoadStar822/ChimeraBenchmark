@@ -48,3 +48,7 @@ results/real/**
 !results/real/fna_c2_crc3_head3m/robustness_sensitivity_auc.tsv
 !results/real/fna_c2_crc3_head3m/tool_read_identity_audit/
 !results/real/fna_c2_crc3_head3m/tool_read_identity_audit/tool_audited_signal_auc_comparison.3tools.tsv
+
+# Centrifuger native EM sequence-abundance comparison
+!results/profile/centrifuger_native_comparison.tsv
+!results/profile/centrifuger_native_sample_metrics.tsv

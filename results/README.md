@@ -105,7 +105,7 @@ Truth and predicted profiles are both compared as sequence abundance (the share 
 - ATCC MSA-1003 and ZymoBIOMICS use DNA-based compositions; see [Dataset-specific rules](#dataset-specific-rules).
 - The PRJNA637878 profile truth counts reads of the same per-read labels.
 
-Predicted abundances are taken from each tool's native output without unit conversion: Chimera reports abundance by bases; Sylph uses the `Sequence_abundance` column; MetaPhlAn 4 uses the estimated read counts (bases for long reads) of `-t rel_ab_w_read_stats`; ganon uses `ganon report --report-type reads`; Bracken and Metabuli use their default abundance outputs; Centrifuger uses the species-level read counts (`numReads`) of `centrifuger-quant`.
+Predicted profiles are compared as sequence abundance: Chimera reports abundance by bases; Sylph uses the `Sequence_abundance` column; MetaPhlAn 4 uses the estimated read counts (bases for long reads) of `-t rel_ab_w_read_stats`; ganon uses `ganon report --report-type reads`; Bracken and Metabuli use their default abundance outputs; Centrifuger uses the native species-level EM abundance (`abundance`) of `centrifuger-quant`, weighted by the reported species genome size (`genomeSize`) and normalised to sequence abundance (see [Centrifuger](#centrifuger)).
 
 ## Dataset-specific rules
 
@@ -171,7 +171,7 @@ In total 654,198 of 42,090,303 labelled mates (1.55%) in 14 of the 19 samples we
 Cross-dataset summaries use only explicitly selected complete runs (see `paper_run_manifest.tsv`) and never scan directories for the "latest run". All TSV files and per-dataset tables come from the same set of runs.
 
 - Per-read classification covers CAMI II Strain Madness long/short, CAMI II Marine long/short and `prjna637878-supported19-single-read`, and compares Chimera, Centrifuger, Kraken2, Metabuli and ganon. ATCC and ZymoBIOMICS have no per-read truth.
-- Abundance profiling covers all 11 datasets and compares the native abundance outputs of Chimera, Centrifuger, Metabuli, ganon, Bracken, Sylph and MetaPhlAn 4. Abundance estimates for Kraken2 are given by Bracken.
+- Abundance profiling covers all 11 datasets and compares the sequence-abundance estimates of Chimera, Centrifuger, Metabuli, ganon, Bracken, Sylph and MetaPhlAn 4. Abundance estimates for Kraken2 are given by Bracken.
 
 The summary tables are `builds/summary.tsv`, `classify/summary.tsv`, `classify/sample_metrics.tsv` and `profile/summary.tsv`.
 
@@ -243,7 +243,14 @@ Following the Bracken manual, datasets with a stated read length use the matchin
 ### Centrifuger
 
 Centrifuger's per-read classification uses the default inference parameters.
-Profiles are the species-level read counts (`numReads`) that `centrifuger-quant` reports from the classification output, exported in CAMI profile format; a read with k best hits counts 1/k towards each.
+Abundance profiles are produced with `centrifuger-quant -x INDEX -c CLASSIFICATIONS --output-format 0` (the default tabular format). From the species-rank rows (`abundance > 0`), the native EM taxonomic abundance `a_i = abundance` is converted to sequence abundance using the genome size `L_i = genomeSize` reported on the same row, `s_i = a_i * L_i / sum_j(a_j * L_j)`, and exported in CAMI profile format. Profiles normalized directly from the species-level read counts (`numReads`) are retained for comparison in [`profile/centrifuger_native_comparison.tsv`](profile/centrifuger_native_comparison.tsv) and [`profile/centrifuger_native_sample_metrics.tsv`](profile/centrifuger_native_sample_metrics.tsv).
+
+To convert an existing `centrifuger-quant` table:
+
+```bash
+python -m chimera_bench.tools.centrifuger_convert --quant quant.tsv --profile-out native.cami.tsv
+python -m chimera_bench.tools.centrifuger_convert --quant quant.tsv --profile-out counts.cami.tsv --profile-method read-counts
+```
 
 ### Metabuli
 
