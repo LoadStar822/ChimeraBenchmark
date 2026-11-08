@@ -20,13 +20,14 @@ This table lists the builds used in the paper; its machine-readable version is `
 It keeps the raw measurement fields. The tool versions are Centrifuger 1.1.0-r291, Chimera 1.8.0, ganon 2.1.0, Kraken2 2.1.3, Metabuli 1.2.0 and sylph 0.8.1.
 The original `meta.json` of the sylph/CAMI RefSeq build was not kept, so its measurement is carried over from the earlier build table; the other five rows use the original run metadata.
 The Chimera and ganon rows were measured by rebuilding with the same build configuration after the benchmark classification runs had finished, on a host shared with other jobs. The rebuilt databases were checked against the databases used for classification: Chimera's records are identical, with some files differing only in write order; ganon's input list and taxonomy files are byte-identical, and its index differs only in the input file paths it records. ganon builds a species-level database; see the tool notes in `results/README.md`.
+The Kraken2 row is a rebuild with the frozen `ncbi_20260408` taxonomy, and the Bracken files used for profiling were built from this database. For Centrifuger, only the taxonomy file `cami_refseq.2.cfr` was regenerated with the same taxonomy; the index files `cami_refseq.1.cfr` and `cami_refseq.3.cfr` do not depend on the taxonomy and are those of the build in this table.
 
 | Tool | DB Name | Elapsed Seconds | Max RSS (KB) | DB Size | Started At | Finished At |
 | --- | --- | ---: | ---: | ---: | --- | --- |
 | centrifuger | cami_refseq | 937693.595364 | 675187264 | 141 GiB | 2026-01-20T12:32:50+08:00 | 2026-01-31T09:01:03+08:00 |
 | chimera | cami_refseq | 3473.4634470939636 | 85550912 | 106 GiB | 2026-10-01T09:36:50+08:00 | 2026-10-01T10:34:43+08:00 |
 | ganon | cami_refseq | 10845.479605674744 | 109470164 | 76.1 GiB | 2026-10-01T12:16:36+08:00 | 2026-10-01T15:17:22+08:00 |
-| kraken2 | cami_refseq | 119277.976333 | 128058564 | 315 GiB | 2026-01-16T19:27:44+08:00 | 2026-01-18T04:35:42+08:00 |
+| kraken2 | cami_refseq | 80551.55694031715 | 128277956 | 120 GiB | 2026-11-06T22:31:12+08:00 | 2026-11-07T20:53:44+08:00 |
 | metabuli | cami_refseq | 34318.325497 | 87889432 | 242 GiB | 2026-08-21T00:52:46+08:00 | 2026-08-21T10:24:44+08:00 |
 | sylph | cami_refseq | 1810.144336 | 27915272 | 21.6 GiB | 2026-01-02T12:49:53+08:00 | 2026-01-02T13:20:04+08:00 |
 

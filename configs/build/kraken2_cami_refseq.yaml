@@ -8,6 +8,7 @@ tool_config:
   build_bin: kraken2-build
 build:
   target_tsv: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/target.tsv
-  taxonomy_dir: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/ncbi_taxonomy
+  # nodes.dmp, names.dmp, merged.dmp and delnodes.dmp from resources/taxonomy/ncbi_20260408/taxdump.tar.gz
+  taxonomy_dir: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/reruns/tax2026-20261106/taxonomy
   taxonomy_tax: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/results/builds/ganon/cami_refseq/DB/cami_refseq.tax
 

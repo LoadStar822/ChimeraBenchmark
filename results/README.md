@@ -38,8 +38,8 @@ Ad hoc experiments and metric recomputation never update the result tables. This
 
 - All tools in the default benchmark run with the same thread count, `threads=32`. The thread settings of the Fna C2 real-cohort experiment are given in `results/real/README.md`.
 - Apart from thread count and output paths, every tool runs with its default parameters. Settings that a tool's documentation ties to the input type follow the dataset: Metabuli's `--seq-mode`, MetaPhlAn 4's `--long_reads` and Bracken's read-length distribution. ganon's per-read results use the `--binning` preset that its documentation gives for read binning. See [Tools](#tools); the parameter policy of each entry is recorded in the `parameter_policy` column of `paper_run_manifest.tsv`.
-- All classifiers use databases built from the same reference collection (CAMI RefSeq); MetaPhlAn 4 uses its own marker gene database.
-- All evaluations use the NCBI taxonomy snapshot `resources/taxonomy/ncbi_20260408/`.
+- All classifiers use databases built from the same reference collection (CAMI RefSeq); databases that include a taxonomy use the NCBI taxonomy snapshot `resources/taxonomy/ncbi_20260408/`. MetaPhlAn 4 uses its own marker gene database.
+- All evaluations use the same taxonomy snapshot.
 - CAMI II Strain Madness (100 long-read and 100 short-read samples) and CAMI II Marine (10 long-read and 10 short-read samples) are run sample by sample. Accuracy metrics in the summary tables are arithmetic means over samples, and peak memory is the maximum over samples; per-sample results are in `classify/sample_metrics.tsv`.
 
 ## Commands

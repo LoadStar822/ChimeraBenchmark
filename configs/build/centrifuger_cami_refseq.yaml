@@ -8,7 +8,7 @@ tool_config:
   quant_bin: /mnt/sda/tianqinzhong/code/centrifuger/centrifuger-quant
 build:
   target_tsv: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/target.tsv
-  taxonomy_dir: /mnt/sda/CommonData/TaxonomyDataset/CAMIRefseq/ncbi_taxonomy
+  taxonomy_dir: /mnt/sda/tianqinzhong/code/Chimera/third_party/ChimeraBenchmark/resources/taxonomy/ncbi_20260408
   # build_mem: 240G
   args: []
 
